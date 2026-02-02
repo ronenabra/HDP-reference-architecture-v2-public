@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= serviceName %> Logs
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            flex: 0 0 auto;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-list {
+            flex: 1 1 50%;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .log-details-pane {
+            flex: 1 1 50%;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fdfdfd;
+        }
+
+        .log-entry {
+            font-family: monospace;
+            border-bottom: 1px solid #eee;
+            padding: 5px 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .log-entry:hover {
+            background-color: #f1f1f1;
+        }
+
+        .log-entry.selected {
+            background-color: #e9ecef;
+            border-left: 4px solid #0d6efd;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+    <script>
+        let isPaused = false;
+        let selectedId = null;
+
+        function selectLog(id, entry) {
+            selectedId = id;
+
+            // UI Highlight
+            document.querySelectorAll('.log-entry').forEach(el => el.classList.remove('selected'));
+            document.getElementById('log-' + id).classList.add('selected');
+
+            // Render Details
+            const details = JSON.parse(decodeURIComponent(entry.getAttribute('data-details')));
+            const html = `
+                <h4>Log Details</h4>
+                <div class="mb-2">
+                    <span class="badge bg-${entry.getAttribute('data-level') === 'ERROR' ? 'danger' : (entry.getAttribute('data-level') === 'WARN' ? 'warning' : 'secondary')}">${entry.getAttribute('data-level')}</span>
+                    <span class="text-muted ms-2">${entry.getAttribute('data-timestamp')}</span>
+                </div>
+                <div class="mb-3"><strong>Message:</strong> ${entry.getAttribute('data-message')}</div>
+                <div class="mb-3"><strong>ID:</strong> ${id}</div>
+                <div><strong>Full Payload:</strong></div>
+                <pre>${JSON.stringify(details, null, 2)}</pre>
+            `;
+            document.getElementById('details-pane').innerHTML = html;
+        }
+
+        function refreshLogs() {
+            if (isPaused) return;
+
+            fetch('/api/logs')
+                .then(res => res.json())
+                .then(logs => {
+                    const list = document.getElementById('log-list');
+                    const currentScroll = list.scrollTop;
+
+                    const html = logs.map(log => {
+                        const isSelected = selectedId === log.id ? 'selected' : '';
+                        const levelColor = log.level === 'ERROR' ? 'danger' : (log.level === 'WARN' ? 'warning' : 'secondary');
+                        // Encode details to store in data attribute
+                        const detailsEncoded = encodeURIComponent(JSON.stringify(log.details));
+
+                        return `
+                        <div id="log-${log.id}" class="log-entry ${isSelected}" 
+                             data-level="${log.level}" 
+                             data-timestamp="${log.timestamp}" 
+                             data-message="${log.message}"
+                             data-details="${detailsEncoded}"
+                             onclick="selectLog('${log.id}', this)">
+                            <span class="badge bg-${levelColor} me-2" style="width: 60px;">${log.level}</span>
+                            <span class="text-muted me-3 small">${log.timestamp.split('T')[1].split('.')[0]}</span>
+                            <span>${log.message}</span>
+                        </div>
+                        `;
+                    }).join('');
+
+                    if (list.innerHTML !== html) {
+                        list.innerHTML = html;
+                        // Restore selection if it exists in new list
+                        if (selectedId && document.getElementById('log-' + selectedId)) {
+                            // Keep selection
+                        } else if (selectedId) {
+                            // ID gone (rotated out), clear details? No, keep logic simple.
+                        }
+                    }
+                });
+        }
+
+        setInterval(refreshLogs, 3000);
+        window.onload = refreshLogs;
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <h5 class="m-0">
+            <%= serviceName %> Logs
+        </h5>
+        <div class="d-flex align-items-center gap-3">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="logsNav"
+                    data-bs-toggle="dropdown">
+                    Switch Log View
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="http://localhost:4000/logs-view">PCM Logs</a></li>
+                    <li><a class="dropdown-item" href="http://localhost:3000/logs-view">Doctor App Logs</a></li>
+                    <li><a class="dropdown-item" href="http://localhost:3001/logs-view">Adapter Logs</a></li>
+                    <li><a class="dropdown-item" href="http://localhost:3002/logs-view">FHIR Logs</a></li>
+                </ul>
+            </div>
+            <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" id="pauseSwitch" onchange="isPaused = this.checked">
+                <label class="form-check-label" for="pauseSwitch">Pause</label>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div id="log-list" class="log-list">
+            <div class="p-3 text-muted">Loading logs...</div>
+        </div>
+        <div id="details-pane" class="log-details-pane">
+            <div class="text-muted text-center mt-5">Select a log entry to view details</div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+version: '3.8'
+
+networks:
+  pcm-net:
+    driver: bridge
+
+services:
+  # 1. PCM Core (Identity & Consent Hub)
+  pcm-core:
+    build: ./src/pcm-core
+    container_name: pcm-core
+    ports:
+      - "4000:3001" # UI (HTTP)
+      - "4001:3000" # API (HTTPS/mTLS)
+    volumes:
+      - ./src/pcm-core:/app
+      - /app/node_modules
+      - ./certs:/app/certs
+      - ./logs/pcm-core:/app/logs
+      - ./logs:/app/shared-logs:ro
+      - ./docs/api-docs.html:/app/api-docs.html:ro
+    networks:
+      - pcm-net
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+
+  # 2. Data Source Gateway (NGINX Entry Point)
+  ds-gateway:
+    build: ./src/ds-gateway
+    container_name: ds-gateway
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/ds-gateway/nginx.conf:/etc/nginx/nginx.conf
+      - ./certs:/etc/nginx/certs
+    networks:
+      - pcm-net
+    depends_on:
+      - ds-auth-adapter
+      - ds-fhir-server
+
+  # 3. Data Source Auth Adapter (PEP / Mapper)
+  ds-auth-adapter:
+    build:
+      context: src/ds-auth-adapter
+    container_name: ds-auth-adapter
+    volumes:
+      - ./src/ds-auth-adapter:/app
+      - /app/node_modules
+      - ./certs:/app/certs
+      - ./logs/ds-auth-adapter:/app/logs
+    networks:
+      - pcm-net
+    environment:
+      - PORT=3000
+      - PCM_INTROSPECT_URL=http://pcm-core:3000/introspect
+
+  # 4. Data Source FHIR Server (Internal Resource Server)
+  ds-fhir-server:
+    build: ./src/ds-fhir-server
+    container_name: ds-fhir-server
+    volumes:
+      - ./src/ds-fhir-server:/app
+      - /app/node_modules
+      - ./certs:/app/certs
+      - ./logs/ds-fhir-server:/app/logs
+    networks:
+      - pcm-net
+    environment:
+      - PORT=3000
+
+  # 5. Service Provider Client (The Doctor's App)
+  sp-client:
+    build: ./src/sp-client
+    container_name: sp-client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/sp-client:/app
+      - ./certs:/app/certs
+      - ./logs/sp-client:/app/logs
+    networks:
+      - pcm-net
+    environment:
+      - PORT=3000
+      - PCM_AUTH_URL=https://pcm-core:3000
+      - PCM_FHIR_URL=https://pcm-core:3000/r4
+      - DS_GATEWAY_URL=https://ds-gateway:8080/fhir

@@ -1,0 +1,62 @@
+{
+  "resourceType": "Organization",
+  "id": "org-ds-hmo-b",
+  "meta": {
+    "lastUpdated": "2025-01-01T13:28:17Z",
+    "profile": [
+      "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-source"
+    ]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Activated data-source organization for HMO B. Referenced in Consent.provision.actor as a custodian (CST).</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Organization/{data-source-id}</code></p></div>"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+      "value": "HMO-B-DS-001"
+    }
+  ],
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+          "code": "source",
+          "display": "Data Source"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
+          "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+          "code": "73",
+          "display": "Health Maintenance Organization"
+        }
+      ]
+    }
+  ],
+  "endpoint": [
+    {
+      "reference": "Endpoint/endpoint-hmo-b"
+    }
+  ],
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "thumbprint",
+          "valueString": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+        }
+      ],
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-applicable-certificates"
+    }
+  ],
+  "active": true,
+  "name": "HMO B - Clinical Data Source",
+  "partOf": {
+    "reference": "Organization/org-parent-hmo-b-submit"
+  }
+}

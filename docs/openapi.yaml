@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: PCM API (FHIR + OAuth2)
+  version: "2026-01-05"
+  description: |
+    Combined OpenAPI entry point that references the FHIR and OAuth2 specifications.
+servers:
+  - url: https://pcm.fhir.health.gov.il/r4
+    description: PCM FHIR base URL
+  - url: https://pcm.fhir.health.gov.il
+    description: PCM OAuth2 base URL
+
+tags:
+  - name: Organization
+    description: Parent, service-provider, and data-source organizations.
+  - name: Endpoint
+    description: FHIR server endpoints for data sources.
+  - name: HealthcareService
+    description: Canonical and instance service definitions.
+  - name: Consent
+    description: Consent requests and approvals. Deletion is not supported; service providers may only deactivate consents they created.
+  - name: VerificationResult
+    description: Approvals for service instances.
+  - name: CapabilityStatement
+    description: Server metadata and supported interactions.
+  - name: SMART
+    description: SMART on FHIR OAuth2 configuration.
+  - name: OAuth2
+    description: Token issuance and introspection.
+
+paths:
+  /.well-known/smart-configuration:
+    $ref: "./openapi-fhir.yaml#/paths/~1.well-known~1smart-configuration"
+  /metadata:
+    $ref: "./openapi-fhir.yaml#/paths/~1metadata"
+  /Organization:
+    $ref: "./openapi-fhir.yaml#/paths/~1Organization"
+  /Organization/{id}:
+    $ref: "./openapi-fhir.yaml#/paths/~1Organization~1{id}"
+  /Endpoint:
+    $ref: "./openapi-fhir.yaml#/paths/~1Endpoint"
+  /Endpoint/{id}:
+    $ref: "./openapi-fhir.yaml#/paths/~1Endpoint~1{id}"
+  /HealthcareService:
+    $ref: "./openapi-fhir.yaml#/paths/~1HealthcareService"
+  /HealthcareService/{id}:
+    $ref: "./openapi-fhir.yaml#/paths/~1HealthcareService~1{id}"
+  /Consent:
+    $ref: "./openapi-fhir.yaml#/paths/~1Consent"
+  /Consent/{id}:
+    $ref: "./openapi-fhir.yaml#/paths/~1Consent~1{id}"
+  /VerificationResult:
+    $ref: "./openapi-fhir.yaml#/paths/~1VerificationResult"
+  /VerificationResult/{id}:
+    $ref: "./openapi-fhir.yaml#/paths/~1VerificationResult~1{id}"
+  /token:
+    $ref: "./openapi-oauth.yaml#/paths/~1token"
+  /introspect:
+    $ref: "./openapi-oauth.yaml#/paths/~1introspect"
+
+components:
+  securitySchemes:
+    $ref: "./openapi-fhir.yaml#/components/securitySchemes"

@@ -1,0 +1,547 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-consent-include-actors-endpoints",
+  "link": [
+    {
+      "relation": "self",
+      "url": "https://pcm.fhir.health.gov.il/r4/Consent?_id=resource-id-12345&_include=Consent:actor&_include:iterate=Organization:endpoint&_include:iterate=Organization:partof"
+    }
+  ],
+  "entry": [
+    {
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "Consent",
+        "id": "consent-approved-hosp-a-cross-org-summary",
+        "meta": {
+          "lastUpdated": "2026-01-05T08:25:00Z",
+          "profile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-consent"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Approved consent including selected data sources. Service providers use it to request source access tokens and resolve endpoints.</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Consent/{consent-id}</code></p></div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://pcm.fhir.health.gov.il/identifier/pcm-consent-id",
+            "value": "PCM-CONSENT-0101"
+          }
+        ],
+        "scope": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/consentscope",
+              "code": "patient-privacy",
+              "display": "Patient Privacy"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/pcm-consent-access-mode",
+                "code": "continuous",
+                "display": "Continuous"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                "code": "INFA",
+                "display": "information access"
+              }
+            ]
+          }
+        ],
+        "patient": {
+          "identifier": {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "324573740"
+          }
+        },
+        "extension": [
+          {
+            "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-pcm-service",
+            "valueReference": {
+              "reference": "HealthcareService/svc-instance-hosp-a-cross-org-summary"
+            }
+          }
+        ],
+        "provision": {
+          "purpose": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "TREAT",
+              "display": "treatment"
+            }
+          ],
+          "period": {
+            "start": "2026-01-05T00:00:00+02:00",
+            "end": "2026-07-05T00:00:00+02:00"
+          },
+          "actor": [
+            {
+              "role": {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                    "code": "IRCP",
+                    "display": "information recipient"
+                  }
+                ]
+              },
+              "reference": {
+                "reference": "Organization/org-sp-hospital-a"
+              }
+            },
+            {
+              "role": {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                    "code": "CST",
+                    "display": "custodian"
+                  }
+                ]
+              },
+              "reference": {
+                "reference": "Organization/org-ds-hmo-b"
+              }
+            }
+          ],
+          "type": "permit"
+        },
+        "status": "active",
+        "dateTime": "2026-01-05T10:22:30+02:00"
+      }
+    },
+    {
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-sp-hospital-a",
+        "meta": {
+          "lastUpdated": "2025-01-01T13:28:17Z",
+          "profile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-service-provider"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Activated service-provider organization for Hospital A. Referenced as the requestor (IRCP) in consent requests.</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Organization/{service-provider-id}</code></p></div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+            "value": "HOSP-A-SP-001"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+                "code": "service-provider",
+                "display": "Service Provider"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+                "code": "1",
+                "display": "General Hospital"
+              }
+            ]
+          }
+        ],
+        "extension": [
+          {
+            "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-oauth2-redirect-uri",
+            "valueUrl": "https://app.hospital-a.example.org/pcm/oauth2/callback"
+          },
+          {
+            "extension": [
+              {
+                "url": "thumbprint",
+                "valueString": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+              }
+            ],
+            "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-applicable-certificates"
+          }
+        ],
+        "active": true,
+        "name": "Hospital A - Patient App (Service Provider)",
+        "partOf": {
+          "reference": "Organization/org-parent-hospital-a"
+        }
+      }
+    },
+    {
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-ds-hmo-b",
+        "meta": {
+          "lastUpdated": "2025-01-01T13:28:17Z",
+          "profile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-source"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Activated data-source organization for HMO B. Referenced in Consent.provision.actor as a custodian (CST).</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Organization/{data-source-id}</code></p></div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+            "value": "HMO-B-DS-001"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+                "code": "source",
+                "display": "Data Source"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+                "code": "73",
+                "display": "Health Maintenance Organization"
+              }
+            ]
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "Endpoint/endpoint-hmo-b"
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "thumbprint",
+                "valueString": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+              }
+            ],
+            "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-applicable-certificates"
+          }
+        ],
+        "active": true,
+        "name": "HMO B - Clinical Data Source",
+        "partOf": {
+          "reference": "Organization/org-parent-hmo-b-submit"
+        }
+      }
+    },
+    {
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Endpoint",
+        "id": "endpoint-hmo-b",
+        "meta": {
+          "profile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-endpoint"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Validated FHIR endpoint for HMO B. Returned during retrieval flows so providers can call the data source.</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Endpoint/{endpoint-id}</code></p></div>"
+        },
+        "payloadType": [
+          {
+            "coding": [
+              {
+                "code": "urn:ihe:pcc:xphr:2007",
+                "system": "urn:oid:1.3.6.1.4.1.19376.1.2.3",
+                "display": "XPHR Extract"
+              }
+            ]
+          }
+        ],
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "thumbprint",
+                "valueString": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+              }
+            ],
+            "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-applicable-certificates"
+          }
+        ],
+        "connectionType": {
+          "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+          "code": "hl7-fhir-rest",
+          "display": "HL7 FHIR REST"
+        },
+        "status": "active",
+        "address": "https://fhir.hmo-b.example.org/r4",
+        "managingOrganization": {
+          "reference": "Organization/org-ds-hmo-b"
+        }
+      }
+    },
+    {
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-parent-hospital-a",
+        "meta": {
+          "lastUpdated": "2025-01-01T13:28:17Z",
+          "profile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-parent"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Activated parent organization for Hospital A. It is the legal entity referenced by the service-provider and data-source child orgs.</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Organization/{parent-id}</code></p></div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+            "value": "HOSP-A-PARENT-001"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+                "code": "parent-org",
+                "display": "Parent Organization"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+                "code": "1",
+                "display": "General Hospital"
+              }
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+972-3-555-0100"
+          }
+        ],
+        "address": [
+          {
+            "text": "1 Hospital A Rd, Jerusalem"
+          }
+        ],
+        "contact": [
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+                  "code": "ADMIN"
+                }
+              ]
+            },
+            "name": {
+              "text": "Hospital A - Administration"
+            },
+            "telecom": [
+              {
+                "system": "email",
+                "value": "admin@hospital-a.example.org"
+              }
+            ]
+          },
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+                  "code": "PATINF"
+                }
+              ]
+            },
+            "name": {
+              "text": "Hospital A - Patient Information"
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "+972-3-555-0101"
+              }
+            ]
+          },
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "system": "http://fhir.health.gov.il/cs/pcm-contactentity-type",
+                  "code": "SEC"
+                }
+              ]
+            },
+            "name": {
+              "text": "Hospital A - Security"
+            },
+            "telecom": [
+              {
+                "system": "email",
+                "value": "soc@hospital-a.example.org"
+              }
+            ]
+          }
+        ],
+        "active": true,
+        "name": "Hospital A (Parent Legal Entity)"
+      }
+    },
+    {
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-parent-hmo-b-submit",
+        "meta": {
+          "profile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-parent"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>HMO B updates its parent organization record after NTN onboarding. This supplies required contacts and operational details used by PCM for activation.</p><p>FHIR REST: <code>PUT https://pcm.fhir.health.gov.il/r4/Organization/{parent-id}</code></p></div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+            "value": "HMO-B-PARENT-001"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+                "code": "parent-org",
+                "display": "Parent Organization"
+              }
+            ]
+          },
+          {
+            "coding": [
+              {
+                "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+                "code": "73",
+                "display": "Health Maintenance Organization"
+              }
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+972-3-555-0200"
+          }
+        ],
+        "address": [
+          {
+            "text": "10 HMO B Ave, Tel Aviv"
+          }
+        ],
+        "contact": [
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+                  "code": "ADMIN"
+                }
+              ]
+            },
+            "name": {
+              "text": "HMO B - Administration"
+            },
+            "telecom": [
+              {
+                "system": "email",
+                "value": "admin@hmo-b.example.org"
+              }
+            ]
+          },
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+                  "code": "PATINF"
+                }
+              ]
+            },
+            "name": {
+              "text": "HMO B - Patient Information"
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "+972-3-555-0210"
+              }
+            ]
+          },
+          {
+            "purpose": {
+              "coding": [
+                {
+                  "system": "http://fhir.health.gov.il/cs/pcm-contactentity-type",
+                  "code": "SEC"
+                }
+              ]
+            },
+            "name": {
+              "text": "HMO B - Security"
+            },
+            "telecom": [
+              {
+                "system": "email",
+                "value": "soc@hmo-b.example.org"
+              }
+            ]
+          }
+        ],
+        "active": false,
+        "name": "HMO B (Parent Legal Entity)"
+      }
+    }
+  ],
+  "type": "searchset",
+  "total": 1
+}

@@ -1,0 +1,60 @@
+{
+  "resourceType": "Organization",
+  "id": "org-sp-hospital-a-submit",
+  "meta": {
+    "profile": [
+      "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-service-provider"
+    ]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Hospital A registers its service-provider child organization. PCM uses it to identify the IRCP requestor and to store redirect and applicable certificate thumbprints.</p><p>FHIR REST: <code>PUT https://pcm.fhir.health.gov.il/r4/Organization/{service-provider-id}</code></p></div>"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+      "value": "HOSP-A-SP-001"
+    }
+  ],
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+          "code": "service-provider",
+          "display": "Service Provider"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
+          "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+          "code": "1",
+          "display": "General Hospital"
+        }
+      ]
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-oauth2-redirect-uri",
+      "valueUrl": "https://app.hospital-a.example.org/pcm/oauth2/callback"
+    },
+    {
+      "extension": [
+        {
+          "url": "thumbprint",
+          "valueString": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+        }
+      ],
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-applicable-certificates"
+    }
+  ],
+  "active": false,
+  "name": "Hospital A - Patient App (Service Provider)",
+  "partOf": {
+    "reference": "Organization/org-parent-hospital-a"
+  }
+}

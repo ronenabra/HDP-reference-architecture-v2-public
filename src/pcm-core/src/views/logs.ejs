@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified System Logs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            height: 100vh;
+            overflow: hidden;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            flex: 0 0 auto;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top-Bottom Split */
+        .main-pane {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .log-list {
+            height: 60%;
+            /* Default height */
+            flex-shrink: 0;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .resizer {
+            height: 5px;
+            background: #eee;
+            cursor: row-resize;
+            flex-shrink: 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .resizer:hover {
+            background: #ccc;
+        }
+
+        .log-details-pane {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fdfdfd;
+        }
+
+        /* Table Styles */
+        .table-fixed-head {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-row {
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .log-row:hover {
+            background-color: #f1f1f1;
+        }
+
+        .log-row.selected {
+            background-color: #e9ecef !important;
+        }
+
+        /* Badge Colors */
+        .badge-pcm-core {
+            background-color: #0d6efd;
+        }
+
+        .badge-doctor-app {
+            background-color: #198754;
+        }
+
+        .badge-ds-auth-adapter {
+            background-color: #fd7e14;
+        }
+
+        .badge-ds-fhir {
+            background-color: #6f42c1;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+    <script>
+        let isPaused = false;
+        let selectedId = null;
+
+        function selectLog(id, entry) {
+            selectedId = id;
+
+            // UI Highlight
+            document.querySelectorAll('.log-row').forEach(el => el.classList.remove('selected'));
+            entry.classList.add('selected');
+
+            // Render Details
+            const details = JSON.parse(decodeURIComponent(entry.getAttribute('data-details')));
+            const timestamp = entry.getAttribute('data-timestamp');
+            const level = entry.getAttribute('data-level');
+            const component = entry.getAttribute('data-component');
+            const message = entry.getAttribute('data-message');
+
+            const html = `
+                <h4>Log Details</h4>
+                <div class="mb-3">
+                    <span class="badge bg-secondary">${component}</span>
+                    <span class="badge bg-${level === 'ERROR' ? 'danger' : (level === 'WARN' ? 'warning' : 'secondary')}">${level}</span>
+                    <span class="text-muted ms-2">${timestamp}</span>
+                </div>
+                <div class="mb-3"><strong>Message:</strong> ${message}</div>
+                <div class="mb-3"><strong>ID:</strong> ${id}</div>
+                <div><strong>Full Payload:</strong></div>
+                <pre>${JSON.stringify(details, null, 2)}</pre>
+            `;
+            document.getElementById('details-pane').innerHTML = html;
+        }
+
+        function refreshLogs() {
+            if (isPaused) return;
+
+            fetch('/api/unified-logs')
+                .then(res => res.json())
+                .then(logs => {
+                    const tbody = document.getElementById('log-table-body');
+
+                    const html = logs.map(log => {
+                        const isSelected = selectedId === log.id ? 'selected' : '';
+                        const levelColor = log.level === 'ERROR' ? 'text-danger fw-bold' : (log.level === 'WARN' ? 'text-warning fw-bold' : 'text-secondary');
+                        const detailsEncoded = encodeURIComponent(JSON.stringify(log.details));
+                        const componentClass = 'badge-' + (log.component ? log.component.toLowerCase().replace(/ /g, '-') : 'secondary');
+
+                        return `
+                        <tr id="log-${log.id}" class="log-row ${isSelected}" 
+                            data-details="${detailsEncoded}"
+                            data-timestamp="${log.timestamp}"
+                            data-level="${log.level}"
+                            data-component="${log.component}"
+                            data-message="${log.message}"
+                            onclick="selectLog('${log.id}', this)">
+                            <td style="width: 160px;">${log.timestamp.split('T')[1].split('.')[0]}</td>
+                            <td style="width: 120px;"><span class="badge ${componentClass}">${log.component}</span></td>
+                            <td style="width: 80px;" class="${levelColor}">${log.level}</td>
+                            <td>${log.message.substring(0, 100)}</td>
+                        </tr>
+                        `;
+                    }).join('');
+
+                    if (tbody.innerHTML !== html) {
+                        tbody.innerHTML = html;
+                    }
+                });
+        }
+
+        setInterval(refreshLogs, 3000);
+        window.onload = refreshLogs;
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <h5 class="m-0">Central Unified System Logs</h5>
+        <div class="d-flex align-items-center gap-3">
+            <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" id="pauseSwitch" onchange="isPaused = this.checked">
+                <label class="form-check-label" for="pauseSwitch">Pause</label>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="main-pane">
+            <div id="log-list" class="log-list">
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="table-fixed-head">
+                        <tr>
+                            <th>Time</th>
+                            <th>Component</th>
+                            <th>Level</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-table-body">
+                        <!-- Logs here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="resizer" class="resizer"></div>
+            <div id="details-pane" class="log-details-pane">
+                <div class="text-muted text-center mt-3">Select a log entry to view details</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const resizer = document.getElementById('resizer');
+        const listPane = document.getElementById('log-list');
+        const mainPane = document.querySelector('.main-pane');
+
+        let y = 0;
+        let h = 0;
+
+        const mouseDownHandler = function (e) {
+            y = e.clientY;
+            const rect = listPane.getBoundingClientRect();
+            h = rect.height;
+
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+            resizer.classList.add('resizing');
+        };
+
+        const mouseMoveHandler = function (e) {
+            const dy = e.clientY - y;
+            const newHeight = ((h + dy) / mainPane.clientHeight) * 100;
+            // Limit range to avoid collapsing
+            if (newHeight > 10 && newHeight < 90) {
+                listPane.style.height = `${newHeight}%`;
+            }
+        };
+
+        const mouseUpHandler = function () {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+            resizer.classList.remove('resizing');
+        };
+
+        resizer.addEventListener('mousedown', mouseDownHandler);
+    </script>
+</body>
+
+</html>

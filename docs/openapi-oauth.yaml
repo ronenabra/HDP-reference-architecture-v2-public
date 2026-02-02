@@ -1,0 +1,268 @@
+openapi: 3.1.0
+info:
+  title: PCM OAuth2 API
+  version: "2026-01-05"
+  description: |
+    OpenAPI definition for the PCM OAuth2 endpoints (token issuance and introspection).
+    These endpoints are served at the PCM base URL (without /r4).
+servers:
+  - url: https://pcm.fhir.health.gov.il
+    description: PCM OAuth2 base URL
+
+tags:
+  - name: OAuth2
+    description: Token issuance and introspection.
+
+paths:
+  /token:
+    post:
+      tags: [OAuth2]
+      summary: Issue access token (client_credentials)
+      description: |
+        Issues an opaque access token using client_credentials Oauth2 flow, protected with mTLS.
+        The issued token is associated with the client_assertion certificate (NTN registered client cert).
+        For data source access, the client_assertion MUST include UDAP B2B extensions
+        with a Consent reference (URL).
+      security:
+        - mutualTLS: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+            examples:
+              clientCredentials:
+                summary: PCM management token request (RFC 8707 + private_key_jwt)
+                value:
+                  grant_type: client_credentials
+                  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+                  client_assertion: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vcGNtLmZoaXIuaGVhbHRoLmdvdi5pbC9Pcmdhbml6YXRpb24vb3JnLXNwIiwic3ViIjoiaHR0cDovL3BjbS5maGlyLmhlYWx0aC5nb3YuaWwvT3JnYW5pemF0aW9uL29yZy1zcCIsImF1ZCI6Imh0dHBzOi8vcGNtLmZoaXIuaGVhbHRoLmdvdi5pbC90b2tlbiIsImp0aSI6ImY0YjM4ZmZkLTMyZTQtNGFhOS04ZWE2LWFlY2I0Y2E3OTU4MSIsImlhdCI6MTcwNjY0MDAwMCwiZXhwIjoxNzA2NjQwMzAwfQ.R6wTt6m8gT3_ExampleSignature
+                  scope: system/*.cruds
+                  resource: https://pcm.fhir.health.gov.il/r4
+              dataSourceAccess:
+                summary: Data source access token request (UDAP B2B + RFC 8707)
+                value:
+                  grant_type: client_credentials
+                  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+                  client_assertion: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vcGNtLmZoaXIuaGVhbHRoLmdvdi5pbC9Pcmdhbml6YXRpb24vb3JnLXNwIiwic3ViIjoiaHR0cDovL3BjbS5maGlyLmhlYWx0aC5nb3YuaWwvT3JnYW5pemF0aW9uL29yZy1zcCIsImF1ZCI6Imh0dHBzOi8vcGNtLmZoaXIuaGVhbHRoLmdvdi5pbC90b2tlbiIsImp0aSI6ImQxNzdhN2U4LWU1ZTAtNDQ3Zi1hY2M2LWVmOTczNjVhOTM0MSIsImlhdCI6MTcwNjY0MDAwMCwiZXhwIjoxNzA2NjQwMzAwLCJleHRlbnNpb25zIjp7ImhsNy1iMmIiOnsib3JnYW5pemF0aW9uX2lkIjoiaHR0cDovL3BjbS5maGlyLmhlYWx0aC5nb3YuaWwvT3JnYW5pemF0aW9uL29yZy1kcy1obW8tYiIsImNvbnNlbnRfcmVmZXJlbmNlIjpbImh0dHBzOi8vcGNtLmZoaXIuaGVhbHRoLmdvdi5pbC9yNC9Db25zZW50L2NvbnNlbnQtMTIzIl0sInB1cnBvc2Vfb2ZfdXNlIjpbIlRSRUFUIl19fX0.S9H_ExampleSignature
+                  scope: patient/Observation.rs
+                  resource: https://fhir.hmo-b.example.org/r4
+              curlExample:
+                summary: curl example (mTLS + form-encoded)
+                value:
+                  command: >-
+                    curl --cert sp-client.crt --key sp-client.key --cacert rootCA.crt
+                    -X POST https://pcm.fhir.health.gov.il/token
+                    -H "Content-Type: application/x-www-form-urlencoded"
+                    --data-urlencode "grant_type=client_credentials"
+                    --data-urlencode "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                    --data-urlencode "client_assertion=<signed-jwt>"
+                    --data-urlencode "scope=system/*.cruds"
+                    --data-urlencode "resource=https://pcm.fhir.health.gov.il/r4"
+      responses:
+        '200':
+          description: Access token response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              examples:
+                managementTokenResponse:
+                  summary: PCM management token (opaque)
+                  value:
+                    access_token: 2f1b8b7e-2d1a-4b0b-9e9a-9f02a7b3b6a1
+                    token_type: Bearer
+                    expires_in: 30
+                    scope: system/*.cruds
+                dataSourceTokenResponse:
+                  summary: Data source access token (opaque)
+                  value:
+                    access_token: 8d3b1c9a-4f2a-4b9d-9b5a-6c1f4a7b2d11
+                    token_type: Bearer
+                    expires_in: 30
+                    scope: patient/Observation.rs
+        '400':
+          $ref: '#/components/responses/OAuthError'
+        '401':
+          $ref: '#/components/responses/OAuthError'
+  /introspect:
+    post:
+      tags: [OAuth2]
+      summary: Introspect access token
+      description: |
+        Validates an access token and returns its associated claims.
+        Protected with mTLS and requires bearer token authentication.
+      security:
+        - mutualTLS: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/IntrospectionRequest'
+            examples:
+              introspectionRequest:
+                summary: Introspect opaque access token
+                value:
+                  token: 2f1b8b7e-2d1a-4b0b-9e9a-9f02a7b3b6a1
+      responses:
+        '200':
+          description: Introspection response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntrospectionResponse'
+              examples:
+                introspectionResponse:
+                  summary: Active token with PCM context
+                  value:
+                    active: true
+                    scope: system/*.cruds
+                    client_id: http://pcm.fhir.health.gov.il/Organization/org-sp
+                    organization_id: org-sp
+                    patient: http://fhir.health.gov.il/identifier/il-national-id|000000018
+                    fhirContext:
+                      - type: Consent
+                        identifier:
+                          system: http://pcm.fhir.health.gov.il/identifier/pcm-consent-id
+                          value: PCM-CONSENT-0001
+                      - type: HealthcareService
+                        identifier:
+                          system: http://pcm.fhir.health.gov.il/identifier/pcm-healthcareservice-catalog-id
+                          value: 98765
+                    cnf:
+                      x5t#S256: dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk
+                    exp: 1706640030
+                    iat: 1706640000
+                    iss: http://pcm.fhir.health.gov.il/
+                    aud: https://pcm.fhir.health.gov.il/r4
+                    sub: http://pcm.fhir.health.gov.il/Organization/org-sp
+        '400':
+          $ref: '#/components/responses/OAuthError'
+        '401':
+          $ref: '#/components/responses/OAuthError'
+
+components:
+  securitySchemes:
+    mutualTLS:
+      type: mutualTLS
+      description: mTLS client authentication.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque
+      description: OAuth2 bearer token required for introspection.
+  schemas:
+    TokenRequest:
+      type: object
+      required:
+        - grant_type
+        - client_assertion_type
+        - client_assertion
+        - resource
+      properties:
+        grant_type:
+          type: string
+          enum: [client_credentials]
+        client_assertion_type:
+          type: string
+          enum: [urn:ietf:params:oauth:client-assertion-type:jwt-bearer]
+        client_assertion:
+          type: string
+          description: |
+            Signed JWT (private_key_jwt) used for client authentication. Must be signed
+            with the private key corresponding to the mTLS client certificate.
+            Required claims:
+              - iss: Client ID (Organization URI)
+              - sub: Client ID (same as iss)
+              - aud: Token endpoint URL (https://pcm.fhir.health.gov.il/token)
+              - jti: Unique identifier
+              - iat/exp: Issued/expiration times (short-lived)
+            For data source access, the JWT MUST include UDAP B2B extensions:
+              - extensions.hl7-b2b.organization_id
+              - extensions.hl7-b2b.consent_reference (array of Consent URLs)
+              - extensions.hl7-b2b.purpose_of_use (array, e.g. ["TREAT"])
+        scope:
+          type: string
+          description: Requested scopes.
+        resource:
+          type: string
+          description: RFC 8707 resource indicator (required). Used to indicate data source FHIR base URL for data source access tokens.
+    TokenResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_in
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          enum: [Bearer]
+        expires_in:
+          type: integer
+        scope:
+          type: string
+    IntrospectionRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Token to introspect.
+    IntrospectionResponse:
+      type: object
+      properties:
+        active:
+          type: boolean
+        scope:
+          type: string
+        client_id:
+          type: string
+        organization_id:
+          type: string
+        patient:
+          type: string
+        fhirContext:
+          type: array
+          items:
+            type: object
+        cnf:
+          type: object
+        exp:
+          type: integer
+        iat:
+          type: integer
+        iss:
+          type: string
+        aud:
+          type: string
+        sub:
+          type: string
+  responses:
+    OAuthError:
+      description: OAuth2 error response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+          examples:
+            invalidRequest:
+              summary: Missing required parameter
+              value:
+                error: invalid_request
+                error_description: Missing resource parameter (RFC 8707)
+            invalidClient:
+              summary: Invalid client assertion
+              value:
+                error: invalid_client
+                error_description: Missing or invalid client_assertion

@@ -1,0 +1,26 @@
+{
+  "resourceType": "VerificationResult",
+  "id": "approval-hmo-b-parent-for-hosp-a-instance-submit",
+  "meta": {
+    "profile": [
+      "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-verificationresult-service-approval"
+    ]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>HMO B parent submits an approval (VerificationResult) for Hospital A's instance. This contributes to PCM activation decisions.</p><p>FHIR REST: <code>POST https://pcm.fhir.health.gov.il/r4/VerificationResult</code></p></div>"
+  },
+  "target": [
+    {
+      "reference": "HealthcareService/svc-instance-hosp-a-cross-org-summary-submit"
+    }
+  ],
+  "validator": [
+    {
+      "organization": {
+        "reference": "Organization/org-parent-hmo-b-submit"
+      }
+    }
+  ],
+  "status": "validated"
+}

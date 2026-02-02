@@ -1,0 +1,258 @@
+{
+  "resourceType": "CapabilityStatement",
+  "id": "pcm-capabilitystatement",
+  "url": "http://pcm.fhir.health.gov.il/CapabilityStatement/pcm-capabilitystatement",
+  "description": "Only the resources and interactions defined by pcm_process_flow.md are declared here.",
+  "format": [
+    "json"
+  ],
+  "software": {
+    "name": "PCM FHIR Server"
+  },
+  "implementation": {
+    "description": "PCM FHIR endpoint for consent and service orchestration.",
+    "url": "https://pcm.fhir.health.gov.il/r4"
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">CapabilityStatement for the PCM FHIR server. It supports Organization onboarding updates, Endpoint registration, HealthcareService catalog/instance management, VerificationResult approvals, and Consent lifecycle operations as documented in pcm_process_flow.md.</div>"
+  },
+  "rest": [
+    {
+      "security": {
+        "description": "Client authentication uses mTLS and client_credentials tokens; PCM enforces authorization."
+      },
+      "resource": [
+        {
+          "supportedProfile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-parent",
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-service-provider",
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-source",
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-system"
+          ],
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "search-type"
+            },
+            {
+              "code": "update"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "_id",
+              "type": "token",
+              "documentation": "Search by logical id."
+            },
+            {
+              "name": "identifier",
+              "type": "token",
+              "documentation": "Search by organization business identifier."
+            },
+            {
+              "name": "active",
+              "type": "token",
+              "documentation": "Search by activation status."
+            },
+            {
+              "name": "type",
+              "type": "token",
+              "documentation": "Search by organization type."
+            },
+            {
+              "name": "partof",
+              "type": "reference",
+              "documentation": "Search by parent organization reference."
+            }
+          ],
+          "searchInclude": [
+            "Organization:endpoint",
+            "Organization:partof"
+          ],
+          "type": "Organization",
+          "documentation": "PCM creates Organization skeletons; organizations update allowed contact and linkage fields. Activation is PCM-controlled."
+        },
+        {
+          "supportedProfile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-endpoint",
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-endpoint-system"
+          ],
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "search-type"
+            },
+            {
+              "code": "create"
+            },
+            {
+              "code": "update"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "_id",
+              "type": "token",
+              "documentation": "Search by logical id."
+            },
+            {
+              "name": "thumbprint",
+              "type": "token",
+              "definition": "http://pcm.fhir.health.gov.il/SearchParameter/pcm-endpoint-thumbprint",
+              "documentation": "Search by applicable certificate thumbprint (x5t#S256)."
+            }
+          ],
+          "type": "Endpoint",
+          "documentation": "FHIR server endpoint for a Data Source organization or the PCM system."
+        },
+        {
+          "supportedProfile": [
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-healthcareservice-canonical",
+            "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-healthcareservice-instance"
+          ],
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "search-type"
+            },
+            {
+              "code": "create"
+            },
+            {
+              "code": "update"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "_id",
+              "type": "token",
+              "documentation": "Search by logical id."
+            },
+            {
+              "name": "active",
+              "type": "token",
+              "documentation": "Search by activation status."
+            },
+            {
+              "name": "identifier",
+              "type": "token",
+              "documentation": "Search by HealthcareService business identifier."
+            },
+            {
+              "name": "category",
+              "type": "token",
+              "documentation": "Search by HealthcareService.category."
+            },
+            {
+              "name": "type",
+              "type": "token",
+              "documentation": "Search by HealthcareService.type."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "documentation": "Search by HealthcareService.name."
+            },
+            {
+              "name": "providedBy",
+              "type": "reference",
+              "documentation": "Search by HealthcareService.providedBy (instance profile only)."
+            }
+          ],
+          "type": "HealthcareService",
+          "documentation": "Catalog definitions and instance registrations tied to organizations."
+        },
+        {
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "search-type"
+            },
+            {
+              "code": "create"
+            },
+            {
+              "code": "update"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "_id",
+              "type": "token",
+              "documentation": "Search by logical id."
+            },
+            {
+              "name": "identifier",
+              "type": "token",
+              "documentation": "Search by PCM consent business identifier."
+            },
+            {
+              "name": "status",
+              "type": "token",
+              "documentation": "Search by Consent.status."
+            },
+            {
+              "name": "patient",
+              "type": "reference",
+              "documentation": "Search by patient logical reference (supports patient.identifier chain)."
+            },
+            {
+              "name": "pcm-service",
+              "type": "reference",
+              "definition": "http://pcm.fhir.health.gov.il/SearchParameter/pcm-consent-service",
+              "documentation": "Search by the pcmService extension reference (HealthcareService instance)."
+            }
+          ],
+          "searchInclude": [
+            "Consent:actor"
+          ],
+          "type": "Consent",
+          "profile": "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-consent",
+          "documentation": "Consent requests and approved consents for PCM services. Supports _include=Consent:actor and _include:iterate=Organization:endpoint|Organization:partof on consent searches."
+        },
+        {
+          "interaction": [
+            {
+              "code": "read"
+            },
+            {
+              "code": "search-type"
+            },
+            {
+              "code": "create"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "_id",
+              "type": "token",
+              "documentation": "Search by logical id."
+            }
+          ],
+          "type": "VerificationResult",
+          "profile": "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-verificationresult-service-approval",
+          "documentation": "Approvals by data source parent organizations targeting service instances."
+        }
+      ],
+      "mode": "server",
+      "documentation": "PCM server supports only the interactions described in the process flow."
+    }
+  ],
+  "name": "PcmCapabilityStatement",
+  "title": "PCM FHIR Capability Statement",
+  "status": "active",
+  "experimental": false,
+  "date": "2026-01-05",
+  "publisher": "PCM",
+  "kind": "instance",
+  "fhirVersion": "4.0.1"
+}

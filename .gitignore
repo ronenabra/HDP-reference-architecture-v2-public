@@ -1,0 +1,35 @@
+# OS files
+.DS_Store
+Thumbs.db
+.idea/
+# Logs
+logs/
+*.log
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Docker
+.docker/
+
+# Deployment & Secrets - should be part of repo as this is just a demo
+# certs/
+# *.key
+# *.crt
+# *.csr
+# *.srl
+# .env
+
+# Temporary
+tmp/
+temp/
+coverage/
+cookies.txt
+src/pcm-core/api-docs.html

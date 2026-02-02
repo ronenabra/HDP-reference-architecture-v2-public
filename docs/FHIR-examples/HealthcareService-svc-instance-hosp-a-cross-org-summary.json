@@ -1,0 +1,137 @@
+{
+  "resourceType": "HealthcareService",
+  "id": "svc-instance-hosp-a-cross-org-summary",
+  "meta": {
+    "profile": [
+      "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-healthcareservice-instance"
+    ],
+    "tag": [
+      {
+        "system": "http://pcm.fhir.health.gov.il/cs/pcm-meta-tag",
+        "code": "instance",
+        "display": "Instance"
+      }
+    ]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Approved service instance for Hospital A. Service providers reference this instance when requesting consent.</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/HealthcareService/{instance-id}</code></p></div>"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/service-category",
+          "code": "35",
+          "display": "Hospital"
+        }
+      ],
+      "text": "Cross-organization continuity of care"
+    }
+  ],
+  "type": [
+    {
+      "coding": [
+        {
+          "code": "INFA",
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "display": "information access"
+        }
+      ]
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-based-on-canonical-healthcareservice",
+      "valueReference": {
+        "reference": "HealthcareService/svc-catalog-cross-org-summary"
+      }
+    },
+    {
+      "valuePeriod": {
+        "start": "2026-01-01T00:00:00+02:00",
+        "end": "2026-07-01T00:00:00+02:00"
+      },
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-approval-window"
+    },
+    {
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-access-mode",
+      "valueCode": "continuous"
+    },
+    {
+      "valueDuration": {
+        "system": "http://unitsofmeasure.org",
+        "value": 6,
+        "code": "mo",
+        "unit": "months"
+      },
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-access-duration"
+    },
+    {
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-example-query",
+      "valueString": "GET [FHIR BASE]/Observation?category=laboratory&_lastUpdated=ge{{period.start}}"
+    },
+    {
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-allow-patient-basket-change",
+      "valueBoolean": true
+    },
+    {
+      "extension": [
+        {
+          "url": "bucket",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "laboratoryTests",
+                "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+                "display": "Laboratory tests"
+              }
+            ]
+          }
+        },
+        {
+          "valueDuration": {
+            "system": "http://unitsofmeasure.org",
+            "value": 2,
+            "code": "a",
+            "unit": "years"
+          },
+          "url": "historyDepth"
+        }
+      ],
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-information-bucket"
+    },
+    {
+      "extension": [
+        {
+          "url": "bucket",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "medications",
+                "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+                "display": "Medications"
+              }
+            ]
+          }
+        },
+        {
+          "valueDuration": {
+            "system": "http://unitsofmeasure.org",
+            "value": 1,
+            "code": "a",
+            "unit": "years"
+          },
+          "url": "historyDepth"
+        }
+      ],
+      "url": "http://pcm.fhir.health.gov.il/StructureDefinition/ext-information-bucket"
+    }
+  ],
+  "active": true,
+  "providedBy": {
+    "reference": "Organization/org-sp-hospital-a"
+  },
+  "name": "Hospital A - Patient App / Cross-Org Summary",
+  "extraDetails": "Approved instance; patients can now grant consents for Hospital A to access data."
+}

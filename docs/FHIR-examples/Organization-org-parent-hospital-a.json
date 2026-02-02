@@ -1,0 +1,113 @@
+{
+  "resourceType": "Organization",
+  "id": "org-parent-hospital-a",
+  "meta": {
+    "lastUpdated": "2025-01-01T13:28:17Z",
+    "profile": [
+      "http://pcm.fhir.health.gov.il/StructureDefinition/pcm-organization-parent"
+    ]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Activated parent organization for Hospital A. It is the legal entity referenced by the service-provider and data-source child orgs.</p><p>FHIR REST: <code>GET https://pcm.fhir.health.gov.il/r4/Organization/{parent-id}</code></p></div>"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "http://pcm.fhir.health.gov.il/identifier/example-organization-id",
+      "value": "HOSP-A-PARENT-001"
+    }
+  ],
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://fhir.health.gov.il/cs/pcm-org-type",
+          "code": "parent-org",
+          "display": "Parent Organization"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
+          "system": "http://fhir.health.gov.il/cs/institution-type-moh",
+          "code": "1",
+          "display": "General Hospital"
+        }
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+972-3-555-0100"
+    }
+  ],
+  "address": [
+    {
+      "text": "1 Hospital A Rd, Jerusalem"
+    }
+  ],
+  "contact": [
+    {
+      "purpose": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+            "code": "ADMIN"
+          }
+        ]
+      },
+      "name": {
+        "text": "Hospital A - Administration"
+      },
+      "telecom": [
+        {
+          "system": "email",
+          "value": "admin@hospital-a.example.org"
+        }
+      ]
+    },
+    {
+      "purpose": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/contactentity-type",
+            "code": "PATINF"
+          }
+        ]
+      },
+      "name": {
+        "text": "Hospital A - Patient Information"
+      },
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "+972-3-555-0101"
+        }
+      ]
+    },
+    {
+      "purpose": {
+        "coding": [
+          {
+            "system": "http://fhir.health.gov.il/cs/pcm-contactentity-type",
+            "code": "SEC"
+          }
+        ]
+      },
+      "name": {
+        "text": "Hospital A - Security"
+      },
+      "telecom": [
+        {
+          "system": "email",
+          "value": "soc@hospital-a.example.org"
+        }
+      ]
+    }
+  ],
+  "active": true,
+  "name": "Hospital A (Parent Legal Entity)"
+}
