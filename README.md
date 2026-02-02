@@ -14,14 +14,15 @@ This repository contains the Reference Architecture Proof of Concept (POC) for t
 *   **Token Context**: Introspection includes Consent identifier plus HealthcareService catalog identifier (for downstream policy checks).
 *   **Certificate Consistency Warnings**: PCM and DS adapter log warnings when `client_assertion`/`cnf` cert and mTLS peer cert differ (non-blocking).
 
+## Swagger
+*   **📘 PCM API Docs (Redoc HTML)**: [https://ronenabra.github.io/HDP-reference-architecture-v2-public/api-docs.html](https://ronenabra.github.io/HDP-reference-architecture-v2-public/api-docs.html)
+
 ## 🏗️ Architecture
 The system consists of 4 main Dockerized services:
 1.  **PCM Core**: The central "Government" server (Identity Provider, Consent Repository, Portal).
 2.  **Service Provider Client ("Doctor App")**: The consumer application requesting data.
 3.  **Data Source Adapter (`ds-auth-adapter`)**: Security Gateway that validates PCM tokens and mints internal tokens.
 4.  **FHIR Server (`ds-fhir-server`)**: Internal resource server hosting the health data.
-
-For detailed architecture logic, see [system-architecture.md](./system-architecture.md).
 
 ## 🛠️ Prerequisites
 *   [Docker Desktop](https://www.docker.com/products/docker-desktop) (or Docker Engine + Compose)
@@ -55,8 +56,7 @@ Once the containers are running:
 *   **📊 Unified Logs Dashboard**: [http://localhost:4000/logs-view](http://localhost:4000/logs-view)
     *   *Watch the system interactions in real-time.*
 *   **🔐 PCM FHIR API (mTLS + OAuth2)**: https://localhost:4001/r4
-*   **📘 PCM API Docs (Redoc HTML)**: https://htmlpreview.github.io/?https://github.com/ronenabra/HDP-reference-architecture-v2/blob/main/docs/api-docs.html
-*   **🏛️ PCM System Org**: `Organization/org-pcm-system` (full FHIR admin access)
+*   **📘 PCM API Docs (Redoc HTML)**: [http://localhost:4000/docs/api](http://localhost:4000/docs/api)
 
 ## 🧪 How to Verify the Flow
 1.  Open the **Doctor's Portal** ([localhost:3000](http://localhost:3000)).
