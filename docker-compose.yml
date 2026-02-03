@@ -7,6 +7,7 @@ networks:
 services:
   # 1. PCM Core (Identity & Consent Hub)
   pcm-core:
+    image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-pcm-core:${VERSION:-latest}
     build: ./src/pcm-core
     container_name: pcm-core
     ports:
@@ -27,6 +28,7 @@ services:
 
   # 2. Data Source Gateway (NGINX Entry Point)
   ds-gateway:
+    image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:${VERSION:-latest}
     build: ./src/ds-gateway
     container_name: ds-gateway
     ports:
@@ -42,6 +44,7 @@ services:
 
   # 3. Data Source Auth Adapter (PEP / Mapper)
   ds-auth-adapter:
+    image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:${VERSION:-latest}
     build:
       context: src/ds-auth-adapter
     container_name: ds-auth-adapter
@@ -58,6 +61,7 @@ services:
 
   # 4. Data Source FHIR Server (Internal Resource Server)
   ds-fhir-server:
+    image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-fhir-server:${VERSION:-latest}
     build: ./src/ds-fhir-server
     container_name: ds-fhir-server
     volumes:
@@ -72,6 +76,7 @@ services:
 
   # 5. Service Provider Client (The Doctor's App)
   sp-client:
+    image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-sp-client:${VERSION:-latest}
     build: ./src/sp-client
     container_name: sp-client
     ports:
