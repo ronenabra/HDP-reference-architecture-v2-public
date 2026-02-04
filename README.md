@@ -2,6 +2,8 @@
 
 This repository contains the Reference Architecture Proof of Concept (POC) for the Health Data Portability (HDP) ecosystem. It demonstrates a secure, federated architecture where Service Providers (e.g., Doctors) access Patient Health Data from Data Sources (e.g., Hospitals) with patient consent, mediated by a centralized Policy & Consent Manager (PCM).
 
+**Note that this project is provided for demonstration purposes only and is not meant to be used as official guidlines!**
+
 ## 🚀 Features
 *   **Federated Identity**: Simulates a central authority (PCM) handling Consent and Authorization.
 *   **Opaque Tokens**: Uses secure, opaque identifiers for external access, translated to internal JWTs by the Data Source Auth Adapter.
@@ -31,7 +33,7 @@ The system consists of 4 main Dockerized services:
 ## 🏁 Getting Started
 
 ### 1. Setup Certificates
-The system uses mTLS and signed JWTs for security. You must generate the certificates first.
+The system uses mTLS and signed JWTs for security. There are pre-generated demo certificates provided or you can generate your own certificates first.
 
 ```bash
 chmod +x scripts/generate_certs.sh
@@ -39,12 +41,32 @@ chmod +x scripts/generate_certs.sh
 ```
 *This will create a `certs/` directory with self-signed keys.*
 
-### 2. Build for Docker
+### 2. Build for Docker (from source)
 Build and start all services using Docker Compose:
 
 ```bash
 docker compose up --build
 ```
+
+### 2b. Run from Published Images (no build)
+If you want to run prebuilt images from GHCR, use the following flow:
+
+1) Download the `docker-compose.yml` from this repo (or copy it into a new folder).
+
+2) Pull the images:
+
+```bash
+# Optional: pin a specific version
+VERSION=0.1.1 docker compose pull
+```
+
+3) Start the stack without building:
+
+```bash
+VERSION=0.1.1 docker compose up --no-build
+```
+
+Without `VERSION`, Docker Compose defaults to `latest` tags.
 
 ### 3. Access the Applications
 Once the containers are running:
