@@ -1,0 +1,153 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "dependent-two-c",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000034"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Fabricated",
+            "given": [
+              "Dependent Two"
+            ]
+          }
+        ],
+        "birthDate": "2015-02-03",
+        "address": [
+          {
+            "text": "Must never appear in system-search projections"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-c"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/dependent-two-c"
+      },
+      "fullUrl": "urn:uuid:63899839-42c0-5d32-9651-818fccb1705a"
+    },
+    {
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "rep-two-c",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000018"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/dependent-two-c"
+        },
+        "active": true,
+        "relationship": [
+          {
+            "coding": [
+              {
+                "system": "http://pcm.fhir.health.gov.il/sandbox/CodeSystem/representative-relationship",
+                "code": "parent"
+              }
+            ]
+          }
+        ],
+        "name": [
+          {
+            "text": "Must never appear in discovery projections"
+          }
+        ],
+        "period": {
+          "end": "2020-01-01"
+        },
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-c"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "RelatedPerson/rep-two-c"
+      },
+      "fullUrl": "urn:uuid:4857a1aa-ec32-5789-a027-f7dac61b961c"
+    },
+    {
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "unknown-role-c",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000018"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/dependent-two-c"
+        },
+        "active": true,
+        "relationship": [
+          {
+            "coding": [
+              {
+                "system": "http://pcm.fhir.health.gov.il/sandbox/CodeSystem/representative-relationship",
+                "code": "unmapped"
+              }
+            ]
+          }
+        ],
+        "name": [
+          {
+            "text": "Must never appear in discovery projections"
+          }
+        ],
+        "period": {
+          "end": "2020-01-01"
+        },
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-c"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "RelatedPerson/unknown-role-c"
+      },
+      "fullUrl": "urn:uuid:a8a185e4-67e1-59c3-a152-3cf9e6ae60bf"
+    }
+  ]
+}

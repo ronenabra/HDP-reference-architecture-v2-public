@@ -7,12 +7,12 @@ const store = require('../src/fhir/store');
 
 const EXT_PCM_SERVICE = 'http://pcm.fhir.health.gov.il/StructureDefinition/ext-pcm-service';
 const EXT_APPLICABLE_CERTS = 'http://pcm.fhir.health.gov.il/StructureDefinition/ext-applicable-certificates';
+const THUMBPRINT = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
 function resetStore() {
     store.data.Organization = new Map();
     store.data.Endpoint = new Map();
     store.data.HealthcareService = new Map();
-    store.data.VerificationResult = new Map();
     store.data.Consent = new Map();
 }
 
@@ -24,7 +24,7 @@ test('FHIRStore search supports common parameters', () => {
         id: 'org-1',
         active: true,
         name: 'Hospital A',
-        type: [{ coding: [{ system: 'http://fhir.health.gov.il/cs/pcm-org-type', code: 'service-provider' }] }]
+        type: [{ coding: [{ system: 'http://pcm.fhir.health.gov.il/cs/pcm-org-type', code: 'service-provider' }] }]
     };
 
     const endpoint = {
@@ -33,7 +33,7 @@ test('FHIRStore search supports common parameters', () => {
         address: 'https://example.org/fhir',
         extension: [{
             url: EXT_APPLICABLE_CERTS,
-            extension: [{ url: 'thumbprint', valueString: 'thumb-123' }]
+            extension: [{ url: 'thumbprint', valueString: THUMBPRINT }]
         }]
     };
 
@@ -51,7 +51,10 @@ test('FHIRStore search supports common parameters', () => {
         resourceType: 'Consent',
         id: 'consent-1',
         status: 'active',
-        patient: { identifier: { system: 'http://fhir.health.gov.il/identifier/il-national-id', value: '123' } },
+        patient: {
+            reference: 'Patient/local-123',
+            identifier: { system: 'http://fhir.health.gov.il/identifier/il-national-id', value: '123' }
+        },
         extension: [{ url: EXT_PCM_SERVICE, valueReference: { reference: 'HealthcareService/svc-1' } }]
     };
 
@@ -61,12 +64,14 @@ test('FHIRStore search supports common parameters', () => {
     store.add(consent);
 
     assert.equal(store.search('Organization', { type: 'service-provider' }).length, 1);
-    assert.equal(store.search('Organization', { name: 'Hospital' }).length, 1);
-    assert.equal(store.search('Endpoint', { thumbprint: 'thumb-123' }).length, 1);
-    assert.equal(store.search('HealthcareService', { providedBy: 'Organization/org-1' }).length, 1);
-    assert.equal(store.search('HealthcareService', { category: '35' }).length, 1);
+    assert.equal(store.search('Endpoint', { thumbprint: THUMBPRINT }).length, 1);
+    assert.equal(store.search('HealthcareService', { organization: 'Organization/org-1' }).length, 1);
+    assert.equal(store.search('HealthcareService', { 'service-category': '35' }).length, 1);
+    assert.equal(store.search('HealthcareService', { 'service-type': 'INFA' }).length, 1);
     assert.equal(store.search('Consent', { status: 'active' }).length, 1);
-    assert.equal(store.search('Consent', { 'patient.identifier': 'http://fhir.health.gov.il/identifier/il-national-id|123' }).length, 1);
-    assert.equal(store.search('Consent', { patient: 'http://fhir.health.gov.il/identifier/il-national-id|123' }).length, 1);
+    assert.equal(store.search('Consent', { 'patient:identifier': 'http://fhir.health.gov.il/identifier/il-national-id|123' }).length, 1);
+    assert.equal(store.search('Consent', { patient: 'Patient/local-123' }).length, 1);
     assert.equal(store.search('Consent', { 'pcm-service': 'HealthcareService/svc-1' }).length, 1);
+    assert.throws(() => store.search('HealthcareService', { providedBy: 'Organization/org-1' }), /Unsupported/);
+    assert.throws(() => store.search('Consent', { 'patient.identifier': '123' }), /Unsupported/);
 });

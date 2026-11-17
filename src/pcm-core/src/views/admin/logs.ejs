@@ -1,0 +1,11 @@
+<section class="card"><h3 class="card-header">Logs</h3><div class="card-body">
+<p>Open Logs to inspect configured current and retained evidence. Full non-AWS diagnostics can contain sensitive credentials and payloads; AWS credentials are always excluded.</p>
+<div class="admin-toolbar"><a class="btn btn-primary" href="<%= basePath %>/logs-view?diagnostics=true" data-help-key="common.nav-logs">Open Logs</a>
+<a class="btn btn-outline-dark" href="<%= basePath %>/admin/logs/download" data-help-key="admin.logs-json">Download full logs JSON</a></div>
+<p data-help-key="admin.logs-json">Download includes all available configured current and retained files, regardless of viewer filters. Unavailable sources are reported separately.</p>
+<form method="post" action="<%= basePath %>/admin/logs/clear" data-confirm="Clear current and retained history logs for every configured built-in component? Read-only extension sources are retained." data-progress="admin-operation-state"><button class="btn btn-outline-warning" data-help-key="admin.logs-clear">Clear built-in logs</button></form>
+<p>Clear removes current and retained built-in evidence for everyone. Read-only extensions remain. Partial failures are reported per component; new events may appear immediately.</p>
+</div></section><section class="card"><h3 class="card-header">Sanity check</h3><div class="card-body">
+<form method="post" action="<%= basePath %>/admin/sanity-check" data-progress="admin-operation-state"><button class="btn btn-outline-success" data-help-key="admin.sanity-run">Run sanity check</button></form>
+<p>Check application endpoints and configured test flows. Results distinguish connectivity from verified patient evidence; they are not conformance certification.</p><%- partial('sanity-result') %>
+<p id="admin-operation-state" class="progress-state" role="status" aria-live="polite" hidden></p></div></section>

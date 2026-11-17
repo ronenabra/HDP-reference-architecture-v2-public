@@ -1,7 +1,10 @@
 /**
  * Helpers for building fhirContext entries.
  */
-const CATALOG_ID_SYSTEM = 'http://pcm.fhir.health.gov.il/identifier/pcm-healthcareservice-catalog-id';
+const { IDENTIFIER_SYSTEMS } = require('../../../shared/pcm-contract');
+
+const CATALOG_ID_SYSTEM = IDENTIFIER_SYSTEMS.healthcareServiceCatalog;
+const INSTANCE_ID_SYSTEM = IDENTIFIER_SYSTEMS.healthcareServiceInstance;
 
 /**
  * Normalize a value into an array.
@@ -11,13 +14,14 @@ const CATALOG_ID_SYSTEM = 'http://pcm.fhir.health.gov.il/identifier/pcm-healthca
 const toArray = value => (Array.isArray(value) ? value : (value ? [value] : []));
 
 /**
- * Find a catalog identifier on a HealthcareService.
+ * Find a HealthcareService identifier for the requested system.
  * @param {object|null|undefined} service
+ * @param {string} system
  * @returns {object|null}
  */
-const findCatalogIdentifier = service => {
+const findIdentifier = (service, system) => {
     if (!service) return null;
-    return toArray(service.identifier).find(id => id.system === CATALOG_ID_SYSTEM) || null;
+    return toArray(service.identifier).find(id => id.system === system) || null;
 };
 
 /**
@@ -29,15 +33,15 @@ const findCatalogIdentifier = service => {
 function buildHealthcareServiceContext(service, canonicalService) {
     if (!service && !canonicalService) return null;
 
-    const catalogIdentifier = findCatalogIdentifier(service) || findCatalogIdentifier(canonicalService);
-    const value = catalogIdentifier?.value || service?.id || canonicalService?.id;
+    const instanceIdentifier = findIdentifier(service, INSTANCE_ID_SYSTEM);
+    const value = instanceIdentifier?.value || service?.id || canonicalService?.id;
 
     if (!value) return null;
 
     return {
         type: 'HealthcareService',
         identifier: {
-            system: CATALOG_ID_SYSTEM,
+            system: INSTANCE_ID_SYSTEM,
             value
         }
     };
@@ -45,5 +49,6 @@ function buildHealthcareServiceContext(service, canonicalService) {
 
 module.exports = {
     CATALOG_ID_SYSTEM,
+    INSTANCE_ID_SYSTEM,
     buildHealthcareServiceContext
 };

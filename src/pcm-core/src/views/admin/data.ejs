@@ -1,0 +1,8 @@
+      <div class="card"><h2 class="card-header h5" data-help-key="admin.data-section">Managed HAPI clinical data</h2><div class="card-body">
+        <p class="small">Each operation is target-bound, validated before mutation, and verified against private HAPI counts. The legacy Node source is intentionally excluded.</p>
+        <div class="result-panel" data-help-key="admin.refresh-status">
+          <button type="button" class="btn btn-outline-secondary" data-admin-refresh data-admin-refresh-url="<%= shell.address(basePath, 'sources', workspace.selected.id, 'data') %>" data-help-key="admin.refresh" data-help-disabled-key="admin.refresh-status">Refresh saved server details</button>
+          <p role="status" aria-live="polite" data-admin-refresh-status data-help-key="admin.refresh-status">Refresh to see saved server details and recovery controls. Unsaved form changes will be discarded.</p>
+        </div>
+        <%- managedServerBlocks || '<p data-help-key="admin.data-empty" class="text-muted">No managed HAPI servers are configured.</p>' %>
+      </div></div>

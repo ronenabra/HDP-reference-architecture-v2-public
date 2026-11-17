@@ -1,0 +1,160 @@
+load_module /usr/lib/nginx/modules/ngx_http_gateway_arrival_module.so;
+
+events {}
+
+http {
+    gateway_arrival_log /runtime/logs/ds-gateway/current.log "${DS_HEALTH_ORGANIZATION_ID}";
+    client_max_body_size ${DS_BODY_LIMIT_BYTES};
+    log_subrequest on;
+
+    map $http_x_correlation_id $correlation_id {
+        "" $request_id;
+        default $http_x_correlation_id;
+    }
+    map $http_x_flow_id $flow_id {
+        "" "";
+        default $http_x_flow_id;
+    }
+    map $status $log_level {
+        ~^5 ERROR;
+        ~^4 WARN;
+        default INFO;
+    }
+
+    log_format ds_gateway_json escape=json
+        '{"timestamp":"$time_iso8601","level":"$log_level","message":"Gateway Response: $status $request_method $uri$is_args$args",'
+        '"details":{"type":"GATEWAY_RESPONSE","requestId":"$request_id","arrivalId":"$gateway_arrival_id","arrivalProtocol":"nginx-early/1","correlationId":"$correlation_id",'
+        '"flowId":"$flow_id","category":"system","visibility":"default","healthOrganizationId":"${DS_HEALTH_ORGANIZATION_ID}","componentRole":"gateway","method":"$request_method","url":"$uri$is_args$args","originalUrl":"$request_uri",'
+        '"timestampEpoch":"$msec","traceId":"$gateway_trace_id","spanId":"$gateway_span_id","parentSpanId":"$gateway_parent_span_id","traceFlags":"$gateway_trace_flags","spanKind":"server","traceContextOrigin":"$gateway_trace_origin",'
+        '"statusCode":"$status","status":"$status","upstreamStatus":"$upstream_status",'
+        '"upstreamAddr":"$upstream_addr","upstreamResponseTime":"$upstream_response_time",'
+        '"requestTime":"$request_time","authStatus":"$auth_resp_status","bytesSent":"$bytes_sent"}}';
+
+    access_log /runtime/logs/ds-gateway/current.log ds_gateway_json;
+    error_log /runtime/logs/ds-gateway/error.log warn;
+    proxy_connect_timeout 5s;
+    proxy_send_timeout 30s;
+    proxy_read_timeout 30s;
+
+    upstream ds_auth_adapter {
+        server ${DS_AUTH_ADAPTER_HOST}:${DS_AUTH_ADAPTER_PORT};
+    }
+
+    server {
+        listen ${DS_GATEWAY_HTTP_PORT};
+        add_header X-Correlation-Id $correlation_id always;
+        add_header X-Flow-Id $flow_id always;
+        add_header X-PCM-Conformance-Mode "${PCM_MODE_HEADER}" always;
+        add_header Warning "${PCM_MODE_WARNING_HEADER}" always;
+
+        location = /healthz {
+            access_log off;
+            default_type application/json;
+            return 200 '{"status":"ok","service":"ds-gateway-http"}';
+        }
+
+        location = /.well-known/oauth-authorization-server {
+            proxy_pass http://ds_auth_adapter/.well-known/oauth-authorization-server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Correlation-Id $correlation_id;
+            proxy_set_header X-Flow-Id $flow_id;
+            proxy_set_header Traceparent $gateway_traceparent;
+        }
+
+        location = /.well-known/jwks.json {
+            proxy_pass http://ds_auth_adapter/.well-known/jwks.json;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Correlation-Id $correlation_id;
+            proxy_set_header X-Flow-Id $flow_id;
+            proxy_set_header Traceparent $gateway_traceparent;
+        }
+
+        location / {
+            return 404;
+        }
+    }
+
+    server {
+        listen ${DS_GATEWAY_PORT} ssl;
+        add_header X-Correlation-Id $correlation_id always;
+        add_header X-Flow-Id $flow_id always;
+        add_header X-PCM-Conformance-Mode "${PCM_MODE_HEADER}" always;
+        add_header Warning "${PCM_MODE_WARNING_HEADER}" always;
+
+        ssl_certificate ${DS_GATEWAY_CERT};
+        ssl_certificate_key ${DS_GATEWAY_KEY};
+        ssl_client_certificate ${ROOT_CA_CERT};
+        ssl_verify_client ${DS_GATEWAY_SSL_VERIFY_CLIENT};
+
+        location = /healthz {
+            access_log off;
+            default_type application/json;
+            return 200 '{"status":"ok","service":"ds-gateway"}';
+        }
+
+        # Only an active batch-presence decision can mint a root-POST token.
+        location = /fhir {
+            auth_request /auth;
+            auth_request_set $auth_resp_x_local_token $upstream_http_x_local_token;
+            auth_request_set $auth_resp_status $upstream_status;
+            proxy_set_header Authorization "";
+            proxy_set_header X-Local-Token $auth_resp_x_local_token;
+            proxy_set_header X-PCM-Import-Credential "";
+            proxy_set_header X-PCM-Upstream-Base "${DS_FHIR_PROXY_PASS}";
+            proxy_set_header X-PCM-Upstream-Verify "${DS_FHIR_PROXY_SSL_VERIFY}";
+            proxy_set_header X-Original-URI $request_uri;
+            proxy_set_header X-Original-Method $request_method;
+            proxy_set_header X-PCM-Request-URI $request_uri;
+            proxy_set_header X-PCM-Request-Method $request_method;
+            proxy_set_header X-Correlation-Id $correlation_id;
+            proxy_set_header X-Flow-Id $flow_id;
+            proxy_set_header Traceparent $gateway_traceparent;
+            proxy_pass http://ds_auth_adapter/fhir-proxy;
+        }
+
+        location /fhir/ {
+            auth_request /auth;
+            auth_request_set $auth_resp_x_local_token $upstream_http_x_local_token;
+            auth_request_set $auth_resp_status $upstream_status;
+            proxy_set_header Authorization "";
+            proxy_set_header X-Local-Token $auth_resp_x_local_token;
+            proxy_set_header X-PCM-Import-Credential "";
+            proxy_set_header X-PCM-Upstream-Base "${DS_FHIR_PROXY_PASS}";
+            proxy_set_header X-PCM-Upstream-Verify "${DS_FHIR_PROXY_SSL_VERIFY}";
+            proxy_set_header X-Original-URI $request_uri;
+            proxy_set_header X-Original-Method $request_method;
+            proxy_set_header X-PCM-Request-URI $request_uri;
+            proxy_set_header X-PCM-Request-Method $request_method;
+            proxy_set_header X-Correlation-Id $correlation_id;
+            proxy_set_header X-Flow-Id $flow_id;
+            proxy_set_header Traceparent $gateway_traceparent;
+            proxy_pass http://ds_auth_adapter/fhir-proxy/;
+        }
+
+        location = /auth {
+            internal;
+            # Complete clinical catalog scopes travel in the signed private
+            # authorization header. Bound it above the default 4 KiB limit.
+            proxy_buffer_size 64k;
+            proxy_buffers 4 64k;
+            proxy_busy_buffers_size 128k;
+            proxy_pass http://ds_auth_adapter/auth-check;
+            proxy_pass_request_body off;
+            proxy_set_header Content-Length "";
+            proxy_set_header X-Original-URI $request_uri;
+            proxy_set_header X-Original-Method $request_method;
+            proxy_set_header Authorization $http_authorization;
+            proxy_set_header X-Client-Cert $ssl_client_escaped_cert;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Correlation-Id $correlation_id;
+            proxy_set_header X-Flow-Id $flow_id;
+            proxy_set_header Traceparent $gateway_traceparent;
+        }
+    }
+}

@@ -1,0 +1,101 @@
+server:
+  port: 8080
+  max-http-request-header-size: 64KB
+  forward-headers-strategy: none
+  ssl:
+    enabled: ${HO_FHIR_TLS_ENABLED:false}
+    certificate: ${HO_FHIR_TLS_CERTIFICATE:}
+    certificate-private-key: ${HO_FHIR_TLS_PRIVATE_KEY:}
+  tomcat:
+    relaxed-query-chars: "|"
+
+management:
+  server:
+    port: 8081
+    address: 127.0.0.1
+    ssl:
+      enabled: false
+  endpoints:
+    access:
+      default: none
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      access: read_only
+      probes:
+        enabled: true
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
+  main:
+    allow-bean-definition-overriding: false
+    allow-circular-references: true
+  ai:
+    mcp:
+      server:
+        enabled: false
+  datasource:
+    url: ${HO_FHIR_DATABASE_URL}
+    username: ${HO_FHIR_DATABASE_USER}
+    password: ${HO_FHIR_DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  flyway:
+    enabled: false
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        search:
+          enabled: false
+        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+        hbm2ddl:
+          auto: update
+
+hapi:
+  fhir:
+    fhir_version: R4
+    default_encoding: JSON
+    default_pretty_print: false
+    # Preserve uploaded provenance without appending server request IDs.
+    store_meta_source_information: SOURCE_URI
+    server_address: ${HO_FHIR_EXTERNAL_BASE}
+    openapi_enabled: false
+    ig_runtime_upload_enabled: false
+    bulk_export_enabled: false
+    bulk_import_enabled: false
+    # Required only by the private, credential-gated system $expunge used for
+    # target-specific Admin replacement/reset. Public write routes stay closed.
+    allow_multiple_delete: true
+    expunge_enabled: true
+    graphql_enabled: false
+    cr:
+      enabled: false
+    cdshooks:
+      enabled: false
+    narrative_enabled: false
+    mdm_enabled: false
+    cors:
+      allowed_origin: []
+    subscription:
+      resthook_enabled: false
+      websocket_enabled: false
+    validation:
+      requests_enabled: false
+      responses_enabled: false
+    custom-bean-packages: org.hl7.hdp.pcm.hapi
+
+logging:
+  level:
+    root: INFO
+    org.hl7.hdp.pcm.hapi: INFO
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

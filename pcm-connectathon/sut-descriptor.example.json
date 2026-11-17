@@ -1,0 +1,220 @@
+{
+  "schemaVersion": "4.0",
+  "pcmIg": {
+    "version": "0.4.2",
+    "commit": "bd093a1764a56dd8ad76af365f33b74a735daee0"
+  },
+  "target": {
+    "mode": "connectathon",
+    "preset": "connectathon-easy",
+    "simulationControls": {
+      "publicClientMtls": false,
+      "serverCertificateVerification": false,
+      "oauthBearer": false,
+      "clientAssertionSignature": false,
+      "clientAssertionAudience": false,
+      "clientAssertionReplay": false,
+      "clientAssertionExpiry": false,
+      "tokenResourceBinding": false,
+      "tokenAudience": false,
+      "tokenExpiry": false,
+      "consentState": false,
+      "serviceState": false,
+      "patientIdentifier": false,
+      "patientMapping": false,
+      "smartScopes": false,
+      "smartInteractions": false,
+      "smartQueryFilters": false,
+      "informationBucket": false,
+      "sensitivityLabels": false,
+      "history": false,
+      "references": false,
+      "includes": false,
+      "paging": false,
+      "resultFiltering": false,
+      "presenceAuthorization": false
+    },
+    "perSourceSimulation": {
+      "legacy-ds": {
+        "publicClientMtls": false,
+        "serverCertificateVerification": false,
+        "oauthBearer": false,
+        "clientAssertionSignature": false,
+        "clientAssertionAudience": false,
+        "clientAssertionReplay": false,
+        "clientAssertionExpiry": false,
+        "tokenResourceBinding": false,
+        "tokenAudience": false,
+        "tokenExpiry": false,
+        "consentState": false,
+        "serviceState": false,
+        "patientIdentifier": false,
+        "patientMapping": false,
+        "smartScopes": false,
+        "smartInteractions": false,
+        "smartQueryFilters": false,
+        "informationBucket": false,
+        "sensitivityLabels": false,
+        "history": false,
+        "references": false,
+        "includes": false,
+        "paging": false,
+        "resultFiltering": false,
+        "presenceAuthorization": false
+      }
+    },
+    "awsCredentialIsolation": true,
+    "pcmOAuthBaseUrl": "https://localhost:4101/api/fhir-service/r4",
+    "contractEnvironment": "test",
+    "logicalIssuer": "https://pcm2mtest.health.gov.il/api/fhir-service/r4",
+    "tokenMaximumSeconds": 86400,
+    "conformanceExceptions": [
+      "PCM-SANDBOX-FULL-DIAGNOSTICS"
+    ],
+    "pcmFhirBaseUrl": "https://localhost:4101/api/fhir-service/r4"
+  },
+  "healthOrganizations": [
+    {
+      "name": "ho-a",
+      "baseUrl": "https://localhost:8180/fhir",
+      "audience": "https://ho-a-gateway:8080/fhir",
+      "organizationId": "org-team-a-ho-a-source",
+      "endpointId": "endpoint-team-a-ho-a",
+      "clinicalData": {
+        "managed": true,
+        "serverId": "ho-a",
+        "bootstrapPolicy": "disabled",
+        "expectedSource": null,
+        "limits": {
+          "maxBytes": 805306368,
+          "maxEntries": 200000
+        }
+      },
+      "capabilities": [
+        "clinical",
+        "online-presence",
+        "batch-presence",
+        "fake-time"
+      ]
+    },
+    {
+      "name": "ho-b",
+      "baseUrl": "https://localhost:8181/fhir",
+      "audience": "https://ho-b-gateway:8080/fhir",
+      "organizationId": "org-team-a-ho-b-source",
+      "endpointId": "endpoint-team-a-ho-b",
+      "clinicalData": {
+        "managed": true,
+        "serverId": "ho-b",
+        "bootstrapPolicy": "disabled",
+        "expectedSource": null,
+        "limits": {
+          "maxBytes": 805306368,
+          "maxEntries": 200000
+        }
+      },
+      "capabilities": [
+        "clinical",
+        "online-presence",
+        "batch-presence",
+        "fake-time"
+      ]
+    },
+    {
+      "name": "ho-c",
+      "baseUrl": "https://localhost:8182/fhir",
+      "audience": "https://ho-c-gateway:8080/fhir",
+      "organizationId": "org-team-a-ho-c-source",
+      "endpointId": "endpoint-team-a-ho-c",
+      "clinicalData": {
+        "managed": true,
+        "serverId": "ho-c",
+        "bootstrapPolicy": "disabled",
+        "expectedSource": null,
+        "limits": {
+          "maxBytes": 805306368,
+          "maxEntries": 200000
+        }
+      },
+      "capabilities": [
+        "clinical",
+        "online-presence",
+        "batch-presence",
+        "fake-time"
+      ]
+    }
+  ],
+  "legacyDataSource": {
+    "id": "legacy-ds",
+    "enabled": true,
+    "compatibilityOnly": true,
+    "managedHapi": false,
+    "baseUrl": "https://localhost:8183/fhir",
+    "capabilities": [
+      "clinical-mock",
+      "fixture-reset"
+    ]
+  },
+  "runtime": {
+    "repositoryCommit": "e4a614de6e19a5c89f381a24160a58cb29d21321",
+    "sandboxRelease": "0.1.2",
+    "images": {
+      "pcm-core": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-pcm-core:0.1.2",
+        "immutable": null
+      },
+      "sp-client": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-sp-client:0.1.2",
+        "immutable": null
+      },
+      "ho-a-adapter": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:0.1.2",
+        "immutable": null
+      },
+      "ho-b-adapter": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:0.1.2",
+        "immutable": null
+      },
+      "ho-c-adapter": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:0.1.2",
+        "immutable": null
+      },
+      "ho-a-hapi": {
+        "configured": "pcm-ho-fhir:0.4.2",
+        "immutable": null
+      },
+      "ho-b-hapi": {
+        "configured": "pcm-ho-fhir:0.4.2",
+        "immutable": null
+      },
+      "ho-c-hapi": {
+        "configured": "pcm-ho-fhir:0.4.2",
+        "immutable": null
+      },
+      "ho-a-gateway": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:0.1.2",
+        "immutable": null
+      },
+      "ho-b-gateway": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:0.1.2",
+        "immutable": null
+      },
+      "ho-c-gateway": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:0.1.2",
+        "immutable": null
+      },
+      "legacy-ds-adapter": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:0.1.2",
+        "immutable": null
+      },
+      "legacy-ds-fhir": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-fhir-server:0.1.2",
+        "immutable": null
+      },
+      "legacy-ds-gateway": {
+        "configured": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:0.1.2",
+        "immutable": null
+      }
+    }
+  }
+}

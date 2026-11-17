@@ -1,0 +1,55 @@
+{
+  "region": "us-east-1",
+  "cluster": "pcm-connectathon",
+  "servicePrefix": "pcm-connectathon",
+  "efsFileSystemId": "fs-xxxxxxxx",
+  "taskExecutionRoleArn": "arn:aws:iam::ACCOUNT:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT:role/pcmConnectathonTaskRole",
+  "subnets": ["subnet-xxxxxxxx", "subnet-yyyyyyyy"],
+  "securityGroups": ["sg-xxxxxxxx"],
+  "assignPublicIp": true,
+  "cpu": 1024,
+  "memory": 2048,
+  "desiredCount": 1,
+  "logGroup": "/ecs/pcm-connectathon",
+  "teamAdminPassword": "change-me",
+  "localJwtIssuer": "https://ds.team-a.example.org",
+  "localJwtSigningKeyPath": "/runtime/certs/ds-gateway.key",
+  "localJwtKeyId": "",
+  "publicBaseUrls": {
+    "spClient": "http://team-a-sp.example.org",
+    "pcmUi": "http://team-a-pcm-ui.example.org",
+    "pcmApi": "https://team-a-pcm-api.example.org",
+    "referenceDataSource": "https://team-a-ds.example.org:8443/fhir"
+  },
+  "images": {
+    "pcmCore": "ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/pcm-core:0.1.2",
+    "spClient": "ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/sp-client:0.1.2",
+    "dsGateway": "ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/ds-gateway:0.1.2",
+    "dsAuthAdapter": "ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/ds-auth-adapter:0.1.2",
+    "dsFhirServer": "ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/ds-fhir-server:0.1.2"
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:REGION:ACCOUNT:targetgroup/team-a-sp/...",
+      "containerName": "sp-client",
+      "containerPort": 3002
+    },
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:REGION:ACCOUNT:targetgroup/team-a-pcm-ui/...",
+      "containerName": "pcm-core",
+      "containerPort": 3001
+    },
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:REGION:ACCOUNT:targetgroup/team-a-pcm-api/...",
+      "containerName": "pcm-core",
+      "containerPort": 3000
+    },
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:REGION:ACCOUNT:targetgroup/team-a-ds/...",
+      "containerName": "ds-gateway",
+      "containerPort": 8080
+    }
+  ],
+  "hostedZoneId": "ZXXXXXXXXXXXXX"
+}

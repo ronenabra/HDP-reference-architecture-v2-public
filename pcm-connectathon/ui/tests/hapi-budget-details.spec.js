@@ -1,0 +1,34 @@
+'use strict';
+/** Exact native terminal snapshot remains inspectable through the existing message/search/detail/export flows. */
+const { test, expect } = require('@playwright/test');
+test('native budget ERROR is readable alone through central/source-local Logs and retained search', async ({ page, request }, info) => {
+    const manifest = await (await request.get('/fixture/manifest')).json();
+    expect(manifest.budgetSnapshot.exactBytes).toBeGreaterThan(0);
+    await page.goto('/logs-view?source=ho-a-hapi-runtime&diagnostics=false');
+    await expect.poll(() => page.evaluate(() => currentLogs.some(row => row.details.type === 'HAPI_ERROR'))).toBe(false);
+    const hidden = await (await request.get('/api/unified-logs?page=true&source=ho-a-hapi-runtime&diagnostics=false')).json();
+    expect(hidden.criticalDiagnostic).toBeTruthy();
+    await page.goto('/logs-view?source=ho-a-hapi-runtime&diagnostics=true');
+    await expect.poll(() => page.evaluate(() => currentLogs.some(row => row.details.budgetFailure?.setting === 'maxAllocatedBytes'))).toBe(true);
+    const terminal = await page.evaluate(() => currentLogs.find(row => row.details.budgetFailure?.setting === 'maxAllocatedBytes'));
+    await expect(page.locator('[data-log-id="' + terminal.id + '"]')).toContainText(terminal.message);
+    expect(terminal.message).toContain('maxAllocatedBytes limit=1 bytes observed=');
+    await page.locator('[data-log-id="' + terminal.id + '"]').click();
+    await expect(page.locator('#panel-json')).toContainText('QUERY_BUDGET_EXCEEDED');
+    await expect(page.locator('#panel-json')).toContainText('budgetFailure');
+    const raw = await page.evaluate(() => selectedResult.raw);
+    expect(JSON.parse(raw).message).toBe(terminal.message);
+    if (await page.locator('#workbench').isVisible()) await page.locator('#close-workbench').click();
+    await page.locator('[data-open-panel="filters"]').click();
+    await page.locator('#search-text').fill('maxPageIdVisits');
+    await page.locator('#search-source').fill('ho-a-hapi-runtime');
+    await page.locator('#search-start').click();
+    await expect.poll(() => page.evaluate(() => searchSession?.state)).toBe('complete');
+    const found = await page.evaluate(() => currentLogs.find(row => row.details.budgetFailure?.setting === 'maxPageIdVisits'));
+    expect(found.message).toContain('limit=1 visits observed=');
+    const exported = await request.get('/admin/logs/download'); expect([200, 207]).toContain(exported.status());
+    expect(await exported.text()).toContain(terminal.message);
+    await page.goto('/logs-view?diagnostics=true');
+    await expect.poll(() => page.evaluate(() => currentLogs.some(row => row.details.budgetFailure?.setting === 'maxPageIdVisits'))).toBe(true);
+    await info.attach('native-terminal-viewer', { body: JSON.stringify({ terminal, found, raw, exportStatus: exported.status() }), contentType: 'application/json' });
+});

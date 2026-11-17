@@ -5,6 +5,7 @@ Thumbs.db
 # Logs
 logs/
 *.log
+*.log.gz
 
 # Editor files
 .vscode/
@@ -14,22 +15,69 @@ logs/
 # Node
 node_modules/
 npm-debug.log
-package-lock.json
+# The root npm lock is release input and must remain reviewable/reproducible.
+!package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
 
 # Docker
 .docker/
 
-# Deployment & Secrets - should be part of repo as this is just a demo
-# certs/
-# *.key
-# *.crt
-# *.csr
-# *.srl
-# .env
+# Generated local configuration and certificates. Existing tracked demo fixtures
+# remain tracked; new examples belong in explicit template/fixture locations.
+.env
+.env.local
+.env.*.local
+/certs/
+/teams/*/certs/
+
+# Terraform runtime state and plans; retain source and dependency lock files.
+pcm-connectathon/aws/terraform/.terraform/
+pcm-connectathon/aws/terraform/**/.terraform/
+pcm-connectathon/aws/terraform/terraform.tfstate
+pcm-connectathon/aws/terraform/**/terraform.tfstate
+pcm-connectathon/aws/terraform/terraform.tfstate.backup
+pcm-connectathon/aws/terraform/**/terraform.tfstate.backup
+pcm-connectathon/aws/terraform/**/terraform.tfstate.d/
+pcm-connectathon/aws/terraform/*.tfplan
+pcm-connectathon/aws/terraform/**/*.tfplan
 
 # Temporary
 tmp/
 temp/
 coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+**/playwright/.cache/
 cookies.txt
 src/pcm-core/api-docs.html
+teams/*/logs/
+teams/*/state/
+teams/*/tmp/
+teams/*/backups/
+
+# Generated verification output stays local.
+/docs/implementation-evidence/
+
+# Canonical standards are independent publications, installed only for local tests.
+/vendor/
+/docs/FHIR-examples/
+/docs/simplifier-docs/
+/docs/openapi.yaml
+/docs/openapi-fhir.yaml
+/docs/openapi-oauth.yaml
+/docs/pcm_process_flow.md
+/docs/pcm-ig-source-map.md
+
+# Separately published population datasets and local downloads
+/datasets/
+/downloads/
+
+# Hash-addressed public contract cache and downloaded profile inputs
+/.contract-inputs/

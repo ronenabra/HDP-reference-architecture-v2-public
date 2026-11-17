@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "pcm-ci-dataset/1",
+  "purpose": "Owned disposable DEMO sprint qualification only; catalog plus GUID fixtures, never implicit import",
+  "bundles": [
+    {
+      "serverId": "ho-a",
+      "file": "ho-a.source.transaction.json",
+      "source": "ho-a",
+      "sha256": "48921a9babc19993a68d8cd75a7a02c36e1a4db0d5ab5360c6580ceb2e7a839e"
+    },
+    {
+      "serverId": "ho-b",
+      "file": "ho-b.source.transaction.json",
+      "source": "ho-b",
+      "sha256": "5eef4be6f4474fc44a2651fd459036f744febe2b76d7b0988ee13b1c55d55776"
+    },
+    {
+      "serverId": "ho-c",
+      "file": "ho-c.source.transaction.json",
+      "source": "ho-c",
+      "sha256": "78317d01d0844711ab8e33c20e5b706e062da23dcc3e008477aaff4e8e9ecb27"
+    }
+  ]
+}

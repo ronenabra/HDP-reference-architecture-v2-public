@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "pcm-ci-dataset/1",
+  "purpose": "Explicit full-gate qualification only: accepted DEMO clinical types and 100 GUID Patients on A; never normal bootstrap",
+  "bundles": [
+    {
+      "serverId": "ho-a",
+      "file": "ho-a.source.transaction.json",
+      "source": "ho-a",
+      "sha256": "22b815228e6d985a37f8fa7a051d9f262001d0685736cd43151e49db81e6f769"
+    },
+    {
+      "serverId": "ho-b",
+      "file": "ho-b.source.transaction.json",
+      "source": "ho-b",
+      "sha256": "adfa9599ac73fba9ec3381fc4c7da95f58121e24adf75f1df70bd2befdeb22ac"
+    },
+    {
+      "serverId": "ho-c",
+      "file": "ho-c.source.transaction.json",
+      "source": "ho-c",
+      "sha256": "80ab1a084073b8150a7e62b241ea01a3471f453418f6d6c21ca0688bb859ebbe"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+<% const pcmUi = typeof publicBaseUrls !== 'undefined' ? publicBaseUrls.pcmUi : '';  const basePath = typeof browserBase === 'string' ? browserBase : ''; %>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Doctor patient library</title>
+    <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+    <script defer src="<%= basePath %>/assets/connectathon.js"></script>
+    <script defer src="<%= basePath %>/assets/doctor-tools.js"></script>
+    <script defer src="<%= basePath %>/assets/help-copy.js"></script>
+    <script defer src="<%= basePath %>/assets/help.js"></script>
+</head>
+<body data-browser-base="<%= basePath %>" class="container py-3 doctor-page doctor-library-page" data-help-team="<%= teamId %>">
+<main>
+<header class="header sandbox-header doctor-shell-header mb-2">
+        <div class="sandbox-heading">
+            <h1 data-help-key="demo.patient-library"><span class="badge bg-dark align-middle" data-help-key="common.team"><%= teamId %></span> Doctor <small class="text-muted">Patient library</small></h1>
+
+            <p class="doctor-application-context" data-help-key="doctor.library-context"><strong>Requesting application:</strong> <span><%= typeof applicationLabel === 'string' ? applicationLabel : identity %></span></p>
+        </div>
+
+        <nav aria-label="Sandbox pages" class="doctor-navigation sandbox-navigation">
+            <a href="<%= basePath %>/?identity=<%= encodeURIComponent(identity) %>" aria-current="page" class="btn btn-sm btn-outline-secondary" data-help-key="common.nav-doctor">Doctor</a>
+            <a href="<%= pcmUi %>/ui" class="btn btn-sm btn-outline-secondary" data-help-key="common.nav-consents">Consents</a>
+            <a href="<%= pcmUi %>/logs-view" class="btn btn-sm btn-outline-dark" data-help-key="common.nav-logs">Logs</a>
+            <div class="doctor-tools">
+                <button type="button" id="doctor-tools-button" class="btn btn-sm btn-outline-secondary" aria-expanded="false" aria-controls="doctor-tools-panel" data-help-key="doctor.tools">Tools</button>
+                <div id="doctor-tools-panel" hidden role="region" aria-label="Doctor tools">
+                    <a class="btn btn-outline-primary" href="<%= basePath %>/smart/start?identity=<%= encodeURIComponent(identity) %>&scope=<%= encodeURIComponent('patient/*.rs') %>" data-help-key="doctor.smart-start" data-help-proxy>Test SMART application launch</a>
+                    <a class="btn btn-outline-secondary" href="<%= basePath %>/?identity=<%= encodeURIComponent(identity) %>#manual-testing" data-help-key="doctor.manual" data-help-proxy>Manual request testing</a>
+                    <form action="<%= basePath %>/reset" method="POST" data-confirm="Reset Doctor state for all requesting applications and shared Doctor token caches? This affects other users of this Doctor application and clears this tab’s saved request drafts. PCM Consent records and clinical data are not deleted."><button class="btn btn-outline-danger" data-help-key="doctor.reset" data-help-proxy>Reset Doctor state</button></form>
+                    <button type="button" data-tools-close data-help-key="doctor.tools" data-help-proxy class="btn btn-outline-secondary">Close tools</button>
+                </div>
+            </div>
+            <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox"> Explain this page</label>
+        </nav>
+    </header>
+
+    <aside class="alert alert-warning doctor-shell-notice py-2" aria-label="Sandbox notice" data-help-key="common.mode"><strong>Synthetic patients only.</strong> Selecting a patient does not create or approve a consent.</aside>
+    <nav aria-label="Patient library navigation" class="doctor-local-navigation"><a class="btn btn-outline-secondary" href="<%= basePath %>/?identity=<%= encodeURIComponent(identity) %>" data-help-key="doctor.library-back" data-help-proxy>Back to request</a></nav>
+    <div class="library-views" role="tablist" aria-label="Patient lists">
+        <button type="button" class="btn btn-outline-primary" id="library-demo-tab" role="tab" aria-controls="library-demo" data-library-view="demo" aria-selected="true" data-help-key="demo.patient-views">Demo &amp; test patients (<span data-library-count="demo"><%= fixed.length %></span>)</button>
+        <button type="button" class="btn btn-outline-primary" id="library-sample-tab" role="tab" aria-controls="library-sample" data-library-view="sample" aria-selected="false" tabindex="-1" data-help-key="demo.patient-views">Source sample (<span data-library-count="sample"><%= (state.candidates || []).length %></span>)</button>
+    </div>
+    <div class="doctor-tab-content">
+    <div class="library-filter">
+        <label for="library-find">Find in this list</label>
+        <input type="search" id="library-find" class="form-control" aria-describedby="library-filter-hint" data-help-key="demo.patient-find">
+        <button type="button" id="library-clear-filter" class="btn btn-outline-secondary" data-help-key="demo.patient-find">Clear filter</button>
+        <p id="library-filter-hint">Filter by name or identifier. The same filter stays when you switch lists; it never searches a source.</p>
+    </div>
+    <p id="library-selection-state" role="status" aria-live="polite" data-help-key="doctor.patient-error"></p>
+    <% const groups = [{ id: 'demo', title: 'Demo & test patients', patients: fixed }, { id: 'sample', title: 'Source sample', patients: state.candidates || [] }]; %>
+    <% groups.forEach(group => { %>
+    <section id="library-<%= group.id %>" role="tabpanel" data-library-group="<%= group.id %>" <%= group.id === 'sample' ? 'hidden' : '' %> aria-labelledby="library-<%= group.id %>-tab">
+        <h2 class="visually-hidden" id="library-heading-<%= group.id %>"><%= group.title %></h2>
+        <% if (group.id === 'demo') { %>
+        <p data-help-key="consent.test-exception">Available without contacting a source. Only the exact standard test identifiers 1 and 2 receive automatic test approval without a patient decision.</p>
+        <% } else { %>
+        <p>Load up to ten synthetic patients from the selected source. All sampled patients require Consent review.</p>
+        <form id="patient-load" data-state="<%= state.state %>" data-refreshed-at="<%= state.refreshedAt || '' %>" data-rejected="<%= state.rejected || 0 %>" data-error="<%= state.error || '' %>">
+            <input type="hidden" name="identity" value="<%= identity %>">
+            <div class="library-source-field">
+                <label for="sample-source">Data source</label>
+                <select id="sample-source" name="sourceId" class="form-select" data-help-key="demo.patient-source" <%= sources.length ? '' : 'disabled' %>>
+                    <% sources.forEach(source => { %><option value="<%= source.id %>" <%= state.sourceId === source.id ? 'selected' : '' %>><%= source.name %></option><% }); %>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="sample-load" data-help-key="demo.patient-load" data-help-proxy <%= sources.length ? '' : 'disabled' %>>Load sample</button>
+            <button type="button" id="sample-cancel" class="btn btn-outline-secondary" data-help-key="demo.patient-cancel" data-help-proxy hidden>Cancel</button>
+        </form>
+        <p id="sample-state" role="status" aria-live="polite" data-help-key="demo.patient-state"><%= sources.length ? state.state : (typeof conformance !== 'undefined' && (conformance.preset === 'strict' || conformance.mode === 'strict') ? 'Unsupported: sampling is disabled in Strict. Use Demo & test patients or enter a supported identifier on the request.' : 'No source: sampling is disabled or no eligible managed source is configured. Use Demo & test patients or enter an identifier on the request.') %></p>
+        <% } %>
+        <p data-library-filter-status role="status" aria-live="polite"></p>
+        <table class="library-table">
+            <caption class="visually-hidden"><%= group.title %> — identity and review requirements</caption>
+            <thead><tr><th scope="col">Name</th><% if (group.id === 'sample') { %><th scope="col">Date of birth</th><% } %><th scope="col">Identifier</th><% if (group.id === 'demo') { %><th scope="col">Identifier type</th><th scope="col">Review</th><% } %><th scope="col">Actions</th></tr></thead>
+            <tbody <%- group.id === 'sample' ? 'id="sample-results"' : '' %>>
+            <% group.patients.forEach(patient => { %>
+                <tr data-patient-row>
+                    <td data-label="Name" data-patient-name><%= patient.display || 'Name unknown' %></td>
+                    <% if (group.id === 'sample') { %><td data-label="Date of birth"><%= patient.birthDate || 'Not provided' %></td><% } %>
+                    <td data-label="Identifier" data-patient-value><%= patient.idValue %></td>
+                    <% if (group.id === 'demo') { %><td data-label="Identifier type"><%= patient.identifierType || 'Israeli national identifier' %></td>
+                    <td data-label="Review"><%= patient.review || (patient.standardTest ? 'Automatic test approval' : 'Consent review required') %></td>
+                    <% } %><td data-label="Actions">
+                        <form action="<%= basePath %>/patients/select" method="post">
+                            <input type="hidden" name="identity" value="<%= identity %>">
+                            <input type="hidden" name="patientId" value="<%= patient.idSystem %>|<%= patient.idValue %>">
+                            <% if (group.id === 'sample') { %><input type="hidden" name="sampleGeneration" value="<%= state.generation %>"><% } %>
+                            <button class="btn btn-outline-primary" data-help-key="doctor.patient-picker" data-help-proxy>Use patient</button>
+                        </form>
+                        <details data-identifier-details><summary data-help-key="demo.patient-details">Patient details</summary><dl><dt>Name</dt><dd><%= patient.display || 'Name unknown' %></dd><% if (group.id === 'sample') { %><dt>Date of birth</dt><dd><%= patient.birthDate || 'Not provided' %></dd><dt>Source</dt><dd><%= sources.find(source => source.id === state.sourceId)?.name || state.sourceId || 'Unavailable' %></dd><dt>Identifier type</dt><dd><%= patient.identifierType %></dd><dt>Review</dt><dd><%= patient.review %></dd><% } %><dt>System URI</dt><dd><code><%= patient.idSystem %></code></dd><dt>Full identifier</dt><dd><code><%= patient.idSystem %>|<%= patient.idValue %></code></dd></dl></details>
+                    </td>
+                </tr>
+            <% }); %>
+            </tbody>
+        </table>
+        <p data-library-empty hidden>No matching patients in this list. Clear the filter or choose another list.</p>
+    </section>
+    <% }); %>
+    </div>
+    <p>For another identifier, return to the request and choose Enter identifier. Loading or selecting a patient never approves consent or fetches clinical records.</p>
+</main>
+<script src="<%= basePath %>/assets/patient-library.js" defer></script>
+</body>
+</html>

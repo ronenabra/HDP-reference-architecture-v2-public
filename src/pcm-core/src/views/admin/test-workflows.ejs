@@ -1,0 +1,18 @@
+<section id="test-workflows" aria-labelledby="test-workflows-title" data-test-workflows>
+<h3 id="test-workflows-title" data-help-key="admin.test-workflows">Test workflows</h3>
+<p>Local test codes send no real SMS or email. Saving a changed timing or retry setting invalidates outstanding local sign-in/discovery flows; restart those tests. It never extends a Contract, issued token or grant deadline.</p>
+<% if (req.query?.workflowSaved === String(config.runtime.revision)) { %><p role="status" class="alert alert-info">Saved revision <%= config.runtime.revision %>. New local flows use these settings. Changed settings invalidate outstanding local flows; restart sign-in after a change. Unchanged settings preserve counters and deadlines. Remote source adoption is not checked.</p><% } %>
+<form method="post" action="<%= basePath %>/admin/config/test-workflows" data-workflow-settings>
+<input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>">
+<% for (const [group, label] of [['otp', 'Local OTP'], ['authentication', 'Sign-in clocks'], ['discovery', 'Dependent discovery']]) { %>
+<fieldset><legend class="h6"><%= label %></legend><div class="admin-security-controls">
+<% require('../admin-workflows').FIELDS.filter(field => field.group === group).forEach(field => { const saved = config.systemAuthorization[field.group][field.name]; %>
+<div class="admin-security-control"><label for="workflow-<%= field.key %>" data-help-key="admin.workflow-<%= group %>"><%= field.label %> (<%= field.unit %>)</label>
+<input class="form-control" id="workflow-<%= field.key %>" name="<%= field.key %>" type="number" step="1" min="<%= field.min %>" max="<%= field.max %>" required value="<%= draft('/admin/config/test-workflows', field.key, saved) %>" data-help-key="admin.workflow-<%= group %>" <%- options.adminError?.details?.field === field.key ? 'aria-invalid="true" aria-errormessage="admin-error-summary"' : '' %>>
+<p class="small">Saved <%= saved %> · range <%= field.min %>–<%= field.max %> <%= field.unit %>.</p></div><% }); %></div></fieldset><% } %>
+<p>OTP resend must be shorter than expiry. Attempts count across all resends. Session lifetime is capped by the original flow deadline. Discovery retries share the request deadline; the single relationship-race retry shares the source deadline.</p>
+<p role="status"><%= options.adminError && req.path === '/admin/config/test-workflows' ? 'Unsaved draft retained after the rejected save. Review current saved values before retrying.' : 'Saved configuration; runtime checks not performed here.' %></p>
+<button class="btn btn-primary" data-help-key="admin.test-workflows">Save test workflows</button>
+</form>
+<p><a href="<%= shell.address(basePath, 'sources', '', 'defaults') %>" data-help-key="admin.presence-limits">Presence and OAuth default budgets</a> · <a href="<%= shell.address(basePath, 'sources') %>" data-help-key="admin.source-context">Source-specific budgets and HMO classification</a></p>
+</section>

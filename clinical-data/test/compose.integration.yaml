@@ -1,0 +1,13 @@
+# Disposable test-only override. It injects the private loader credentials into
+# ordinary HAPI processes solely to exercise the three-HO negative matrix. The
+# production/local steady-state topology in compose.ho.yaml never includes them.
+services:
+  ho-a-hapi:
+    environment:
+      PCM_IMPORT_CREDENTIAL: ${PCM_A_IMPORT_CREDENTIAL:?required for disposable integration}
+  ho-b-hapi:
+    environment:
+      PCM_IMPORT_CREDENTIAL: ${PCM_B_IMPORT_CREDENTIAL:?required for disposable integration}
+  ho-c-hapi:
+    environment:
+      PCM_IMPORT_CREDENTIAL: ${PCM_C_IMPORT_CREDENTIAL:?required for disposable integration}

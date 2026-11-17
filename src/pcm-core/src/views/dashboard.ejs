@@ -1,84 +1,112 @@
+<% const basePath = typeof browserBase === 'string' ? browserBase : ''; %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>PCM Patient Portal</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<h1>My Consents</h1>
-<div class="alert alert-info d-flex justify-content-between">
-    <span>Simulated Patient Portal</span>
-    <div class="dropdown">
-        <a href="/docs/api" class="btn btn-sm btn-outline-primary me-2" target="_blank">API Docs</a>
-        <a href="http://localhost:4000/logs-view" class="btn btn-sm btn-outline-dark" target="_blank">Central System
-            Logs</a>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consents</title>
+    <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+    <script defer src="<%= basePath %>/assets/connectathon.js"></script>
+<script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script></head>
+<body data-browser-base="<%= basePath %>" class="container portal-page" data-help-team="<%= typeof teamId !== "undefined" ? teamId : "local" %>"><main>
+<header class="sandbox-header mb-3">
+    <div class="sandbox-heading">
+        <h1 data-help-key="pcm.page"><span class="badge bg-dark" data-help-key="common.team"><%= teamId %></span> Consents</h1>
+        <p class="mb-0" data-help-key="pcm.registry">Synthetic Consent review. Saved lifecycle does not confirm a source lookup or clinical data access.</p>
     </div>
-</div>
+    <nav aria-label="Sandbox pages" class="sandbox-navigation">
+        <a class="btn btn-outline-secondary" href="<%= publicBaseUrls.spClient %>" data-help-key="common.nav-doctor">Doctor</a>
+        <a class="btn btn-outline-secondary" aria-current="page" href="<%= basePath %>/ui" data-help-key="common.nav-consents">Consents</a>
+        <a class="btn btn-outline-secondary" href="<%= basePath %>/admin/services" data-help-key="services.nav">Services</a>
+        <a class="btn btn-outline-secondary" href="<%= publicBaseUrls.pcmUi %>/admin" data-help-key="common.nav-admin">Admin</a>
+        <a class="btn btn-outline-secondary" href="<%= publicBaseUrls.pcmUi %>/logs-view" data-help-key="common.nav-logs">Logs</a>
+        <a class="btn btn-outline-secondary" href="<%= publicBaseUrls.pcmUi %>/docs/api" data-help-key="common.nav-api">API Docs</a>
+        <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox" data-help-key="common.explain"> Explain this page</label>
+    </nav>
+</header>
+<nav aria-label="Consent workflows" class="portal-toolbar mb-3"><a class="btn btn-outline-primary" data-help-key="workflow.start" href="<%= workflowUrl %>">Test patient sign-in and dependents</a></nav>
 
-<h3>Pending Requests</h3>
+<p class="alert alert-warning" data-help-key="consent.test-exception">Only values <strong>1 and 2</strong> in <code>http://fhir.health.gov.il/identifier/il-hdp-test-id</code> are automatically approved. These are test auto-approvals, not explicit patient approvals. Other valid identifiers require review.</p>
+<% if (typeof relaxedSources !== 'undefined' && relaxedSources.length) { %>
+<div class="alert alert-warning" data-help-key="consent.relaxed-access">
+    <strong>Sandbox mode: data access may bypass consent approval</strong>
+    <p>Consent approval checks are disabled for <%= relaxedSources.join(' and for ') %>. Requests for synthetic data may therefore succeed even when consent has not been approved.</p>
+    <p>Successful data access does not mean consent was approved or change its status. Check the consent status shown in PCM to confirm whether approval has been granted.</p>
+</div>
+<% } %>
 <div class="card">
     <div class="card-header bg-light">
-        <strong>Consent Registry</strong>
+        <h2 class="h5 mb-0" data-help-key="pcm.registry">Consent registry</h2>
     </div>
     <div class="card-body p-0">
         <% if (consents.length===0) { %>
-            <div class="p-3 text-center text-muted">No consent requests found.</div>
+            <div data-help-key="pcm.registry-empty" class="p-3 text-center text-muted">No consent requests found.</div>
             <% } else { %>
-                <table class="table table-striped table-hover mb-0">
+                <div class="table-responsive" role="region" aria-label="Consent requests" tabindex="0"><table class="table table-striped table-hover mb-0 consent-registry">
                     <thead class="table-light">
                         <tr>
-                            <th>Status</th>
-                            <th>Consent ID</th>
-                            <th>Parent Organization</th>
-                            <th>Service Provider</th>
-                            <th>Purpose / Service</th>
-                            <th>Patient</th>
-                            <th>Review</th>
+                            <th data-help-key="pcm.status">Status</th>
+                            <th data-help-key="pcm.consent-id">Consent ID</th>
+                            <th data-help-key="pcm.parent">Parent Organization</th>
+                            <th data-help-key="pcm.requester">Service Provider</th>
+                            <th data-help-key="pcm.service">Purpose / Service</th>
+                            <th data-help-key="pcm.patient">Patient</th>
+                            <th data-help-key="pcm.review">Review</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% consents.forEach(function(c) { %>
+                        <% consents.forEach(function(c, index) { %>
                             <tr>
-                                <td>
-                                    <span
+                                <td data-label="Status" data-help-key="pcm.status">
+                                    <div class="consent-status-summary"><span data-help-key="pcm.status"
                                         class="badge bg-<%= c.status === 'proposed' ? 'warning text-dark' : (c.status === 'active' ? 'success' : 'secondary') %>">
-                                        <%= c.status %>
+                                        <%= c.lifecycle?.label || c.status %>
                                     </span>
+                                    <span class="consent-fhir-status">FHIR: <%= c.status %></span></div>
+                                    <% if (c.testAutoApproved) { %><div class="consent-test-origin" data-help-key="consent.test-approved">Test auto-approved<br>No patient approval decision</div><% } %>
+                                    <button type="button" class="btn consent-status-toggle" data-consent-status-toggle data-status-consent="<%= c.id %>" data-help-key="pcm.status-details" data-help-proxy aria-expanded="false" aria-controls="consent-status-details-<%= index %>" aria-label="Show status details for Consent <%= c.id %>" hidden>Show status details</button>
                                 </td>
-                                <td>
+                                <td data-label="Consent ID" data-help-key="pcm.consent-id">
                                     <small class="text-muted">
                                         <%= c.id %>
                                     </small>
                                 </td>
-                                <td>
+                                <td data-label="Parent Organization" data-help-key="pcm.parent">
                                     <%= c.parentOrgName %>
                                 </td>
-                                <td>
+                                <td data-label="Service Provider" data-help-key="pcm.requester">
                                     <!-- Requester Name (Org) -->
                                     <%= c.requesterName %>
                                 </td>
-                                <td>
+                                <td data-label="Purpose / Service" data-help-key="pcm.service">
                                     <%= c.serviceName %>
                                 </td>
-                                <td>
+                                <td data-label="Patient" data-help-key="pcm.patient">
                                     <%= c.patient?.identifier?.value || 'N/A' %>
                                 </td>
-                                <td>
+                                <td data-label="Review" data-help-key="pcm.review">
                                     <% if (c.status==='proposed' ) { %>
-                                        <a href="/ui/approve/<%= c.id %>" class="btn btn-sm btn-primary">Review</a>
+                                        <a href="<%= publicBaseUrls.pcmUi %>/ui/approve/<%= c.id %>" class="btn btn-sm btn-primary" data-help-key="pcm.review">Review</a>
                                         <% } else { %>
-                                            <button class="btn btn-sm btn-secondary" disabled>Approved</button>
-                                            <% } %>
+                                            <a href="<%= publicBaseUrls.pcmUi %>/ui/approve/<%= c.id %>" class="btn btn-sm btn-outline-primary" data-help-key="pcm.review-details">View Consent</a>
+                                        <% } %>
+                                </td>
+                            </tr>
+                            <tr class="consent-status-detail-row" id="consent-status-details-<%= index %>" hidden>
+                                <td colspan="7">
+                                    <dl class="consent-status-facts">
+                                        <div><dt>Recorded lifecycle</dt><dd data-help-key="pcm.status"><%= c.lifecycle?.cause || 'Cause unknown / unrecorded' %></dd></div>
+                                        <div><dt>What this means</dt><dd data-help-key="pcm.status"><%= c.lifecycle?.restoration || 'Consent lifecycle details are unavailable. Open View Consent to inspect the recorded status.' %></dd></div>
+                                        <div><dt>FHIR status</dt><dd data-help-key="pcm.status"><%= c.status %></dd></div>
+                                        <% if (c.testAutoApproved) { %><div><dt>Approval origin</dt><dd data-help-key="consent.test-approved">Originally approved automatically for testing. No patient approval decision was recorded.</dd></div><% } %>
+                                    </dl>
                                 </td>
                             </tr>
                             <% }); %>
                     </tbody>
-                </table>
+                </table></div>
                 <% } %>
     </div>
 </div>
-</body>
-
-</html>
+</main></body></html>

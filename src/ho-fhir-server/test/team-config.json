@@ -1,0 +1,9 @@
+{
+  "presence": {
+    "batch": {
+      "maxPatients": 100,
+      "maxPayloadBytes": 65536,
+      "timeoutMilliseconds": 5000
+    }
+  }
+}

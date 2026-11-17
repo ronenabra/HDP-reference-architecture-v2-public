@@ -1,0 +1,1820 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PCM Connectathon Team Config",
+  "type": "object",
+  "$defs": {
+    "opaqueClientId": {
+      "type": "string",
+      "pattern": "^(?!.*[/:])[A-Za-z0-9][A-Za-z0-9._~-]{7,127}$"
+    },
+    "businessIdentifier": {
+      "type": "object",
+      "required": [
+        "system",
+        "value"
+      ],
+      "properties": {
+        "system": {
+          "const": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "string",
+      "not": {
+        "const": "system/*.cruds"
+      }
+    },
+    "thumbprint": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "assertionCertificates": {
+      "type": "object",
+      "properties": {
+        "RS256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "ES384": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "ES256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "patient": {
+      "type": "object",
+      "required": [
+        "idSystem",
+        "idValue",
+        "display"
+      ],
+      "properties": {
+        "idSystem": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "idValue": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "organization": {
+      "type": "object",
+      "required": [
+        "id",
+        "clientId",
+        "businessIdentifier"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "clientId": {
+          "$ref": "#/$defs/opaqueClientId"
+        },
+        "businessIdentifier": {
+          "$ref": "#/$defs/businessIdentifier"
+        },
+        "parentBusinessIdentifier": {
+          "$ref": "#/$defs/businessIdentifier"
+        },
+        "certThumbprint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/thumbprint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assertionCertificates": {
+          "$ref": "#/$defs/assertionCertificates"
+        },
+        "redirectUri": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "redirectUris": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "minLength": 1
+          }
+        },
+        "smartScopes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^patient/"
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/scope"
+          }
+        },
+        "institutionType": {
+          "type": "string",
+          "enum": [
+            "hmo",
+            "hospital",
+            "other"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "healthOrganization": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "parentOrganization",
+        "dataSourceOrganization",
+        "endpointId",
+        "endpoint",
+        "gatewayPort",
+        "clientId",
+        "adapterIssuer",
+        "adapterAudience",
+        "database",
+        "certificates",
+        "import",
+        "clinicalData"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "ho-a",
+            "ho-b",
+            "ho-c"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parentOrganization": {
+          "type": "object",
+          "required": [
+            "id",
+            "businessIdentifier"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "businessIdentifier": {
+              "$ref": "#/$defs/businessIdentifier"
+            }
+          },
+          "additionalProperties": false
+        },
+        "dataSourceOrganization": {
+          "type": "object",
+          "required": [
+            "id",
+            "businessIdentifier"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "businessIdentifier": {
+              "$ref": "#/$defs/businessIdentifier"
+            }
+          },
+          "additionalProperties": false
+        },
+        "endpointId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "gatewayPort": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 65535
+        },
+        "clientId": {
+          "$ref": "#/$defs/opaqueClientId"
+        },
+        "adapterIssuer": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "adapterAudience": {
+          "type": "string",
+          "pattern": "^urn:pcm:ho:[a-c]:fhir-server$"
+        },
+        "database": {
+          "type": "object",
+          "required": [
+            "name",
+            "user",
+            "passwordEnv"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{2,62}$"
+            },
+            "user": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{2,62}$"
+            },
+            "passwordEnv": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]+$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "certificates": {
+          "type": "object",
+          "required": [
+            "gatewayServerCert",
+            "gatewayServerKey",
+            "gatewayMtlsCert",
+            "gatewayMtlsKey",
+            "gatewayAssertionCert",
+            "gatewayAssertionKey",
+            "hapiServerCert",
+            "hapiServerKey"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "import": {
+          "type": "object",
+          "required": [
+            "credentialEnv",
+            "stateNamespace"
+          ],
+          "properties": {
+            "credentialEnv": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]+$"
+            },
+            "stateNamespace": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]+$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "clinicalData": {
+          "type": "object",
+          "required": [
+            "managed",
+            "serverId",
+            "privateFhirBaseUrl",
+            "bundleRoot",
+            "bootstrap",
+            "limits"
+          ],
+          "properties": {
+            "managed": {
+              "const": true
+            },
+            "serverId": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]+$"
+            },
+            "privateFhirBaseUrl": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https?://"
+            },
+            "bundleRoot": {
+              "type": "string",
+              "minLength": 1
+            },
+            "bootstrap": {
+              "type": "object",
+              "required": [
+                "policy",
+                "bundleReference",
+                "expectedSource"
+              ],
+              "properties": {
+                "policy": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "if-empty",
+                    "replace"
+                  ]
+                },
+                "bundleReference": {
+                  "type": "string"
+                },
+                "expectedSource": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "limits": {
+              "type": "object",
+              "required": [
+                "maxBytes",
+                "maxEntries"
+              ],
+              "properties": {
+                "maxBytes": {
+                  "type": "integer",
+                  "minimum": 27465318
+                },
+                "maxEntries": {
+                  "type": "integer",
+                  "minimum": 7155
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "assertionCertificates": {
+          "$ref": "#/$defs/assertionCertificates"
+        },
+        "institutionType": {
+          "type": "string",
+          "enum": [
+            "hmo",
+            "hospital",
+            "other"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "workflowPatientIdentifier": {
+      "type": "object",
+      "required": [
+        "system",
+        "value"
+      ],
+      "properties": {
+        "system": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "additionalProperties": false
+    },
+    "presenceSourceLimits": {
+      "type": "object",
+      "properties": {
+        "maxPatients": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 10000
+        },
+        "maxPayloadBytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 16777216
+        },
+        "timeoutMilliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000
+        },
+        "maxRarBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        },
+        "maxFormBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        },
+        "maxEncodedFormBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50331648
+        },
+        "maxResponseBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        }
+      },
+      "additionalProperties": false
+    },
+    "clinicalQueryLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxAllocatedBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8589934592
+        },
+        "timeoutMilliseconds": {
+          "type": "integer",
+          "minimum": 1001,
+          "maximum": 300000
+        },
+        "maxConcurrentQueries": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "maxPageIdVisits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "maxPageBodyVisits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "maxPageRefills": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024
+        },
+        "maxPageIncludes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maxPagePayloadBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        },
+        "maxCountCandidates": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "maxCountNativeIdVisits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000000
+        },
+        "maxRetainedSearches": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "searchTtlMilliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600000
+        },
+        "maxQueryUriCharacters": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8192
+        },
+        "maxPrivateAuthorizationBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 57344
+        }
+      }
+    }
+  },
+  "required": [
+    "configVersion",
+    "teamId",
+    "conformance",
+    "contract",
+    "security",
+    "securitySimulation",
+    "presence",
+    "runtime",
+    "publicBaseUrls",
+    "internalBaseUrls",
+    "healthOrganizations",
+    "legacyDataSource",
+    "certificates",
+    "certificateRoles",
+    "organizations",
+    "oauthClients",
+    "systemAuthorization"
+  ],
+  "properties": {
+    "configVersion": {
+      "const": "pcm-team-config/5"
+    },
+    "teamId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "conformance": {
+      "type": "object",
+      "required": [
+        "mode",
+        "preset",
+        "policyVersion",
+        "compatibilityAdapters"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "strict",
+            "connectathon"
+          ]
+        },
+        "preset": {
+          "type": "string",
+          "enum": [
+            "connectathon-easy",
+            "connectathon-balanced",
+            "connectathon-mtls",
+            "strict"
+          ]
+        },
+        "policyVersion": {
+          "const": "pcm-sandbox-policy/4"
+        },
+        "compatibilityAdapters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "legacy-jose-kid",
+              "legacy-rs256-assertion",
+              "legacy-es384-assertion",
+              "legacy-introspection-token-audience",
+              "legacy-organization-url-client-id",
+              "legacy-management-scope-cruds"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contract": {
+      "type": "object",
+      "required": [
+        "pcmIgVersion",
+        "pcmIgCommit",
+        "canonicalBase",
+        "operational",
+        "environment",
+        "conformanceExceptions"
+      ],
+      "properties": {
+        "pcmIgVersion": {
+          "const": "0.4.2"
+        },
+        "pcmIgCommit": {
+          "const": "bd093a1764a56dd8ad76af365f33b74a735daee0"
+        },
+        "canonicalBase": {
+          "const": "http://pcm.fhir.health.gov.il"
+        },
+        "operational": {
+          "type": "object",
+          "required": [
+            "oauthBase",
+            "fhirBase"
+          ],
+          "properties": {
+            "oauthBase": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            "fhirBase": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            }
+          },
+          "additionalProperties": false
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "production",
+            "test"
+          ]
+        },
+        "conformanceExceptions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "const": "PCM-SANDBOX-FULL-DIAGNOSTICS"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "pcmApi",
+        "dataSourceGateway",
+        "serviceProviderToDataSource",
+        "dsGatewayToFhirServer"
+      ],
+      "properties": {
+        "pcmApi": {
+          "type": "object",
+          "required": [
+            "clientAuth",
+            "allowAnyTokenResource",
+            "accessTokenExpiresInSeconds"
+          ],
+          "properties": {
+            "clientAuth": {
+              "type": "string",
+              "enum": [
+                "tls",
+                "mtls"
+              ]
+            },
+            "allowAnyTokenResource": {
+              "type": "boolean"
+            },
+            "accessTokenExpiresInSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400
+            },
+            "allowServiceProviderOwnTokenIntrospection": {
+              "type": "boolean",
+              "description": "Optional sandbox own-SP introspection. Defaults true outside Strict; Strict prohibits true."
+            }
+          },
+          "additionalProperties": false
+        },
+        "dataSourceGateway": {
+          "type": "object",
+          "required": [
+            "clientAuth"
+          ],
+          "properties": {
+            "clientAuth": {
+              "type": "string",
+              "enum": [
+                "tls",
+                "mtls"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "serviceProviderToDataSource": {
+          "type": "object",
+          "required": [
+            "verifyServerCertificate"
+          ],
+          "properties": {
+            "verifyServerCertificate": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "dsGatewayToFhirServer": {
+          "type": "object",
+          "required": [
+            "protocol",
+            "verifyServerCertificate"
+          ],
+          "properties": {
+            "protocol": {
+              "type": "string",
+              "enum": [
+                "http",
+                "https"
+              ]
+            },
+            "verifyServerCertificate": {
+              "type": "boolean"
+            },
+            "customUrl": {
+              "type": "string"
+            },
+            "customUrlScope": {
+              "const": "legacy-ds"
+            }
+          },
+          "additionalProperties": false
+        },
+        "dsFhirServer": {
+          "type": "object",
+          "required": [
+            "enforceMappedPatients"
+          ],
+          "properties": {
+            "enforceMappedPatients": {
+              "const": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "securitySimulation": {
+      "type": "object",
+      "required": [
+        "global",
+        "perSource",
+        "awsCredentialIsolation"
+      ],
+      "properties": {
+        "global": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "perSource": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          }
+        },
+        "awsCredentialIsolation": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "presence": {
+      "type": "object",
+      "description": "Data Source-local operational controls; these values are not PCM-IG national defaults.",
+      "required": [
+        "batch"
+      ],
+      "properties": {
+        "batch": {
+          "type": "object",
+          "required": [
+            "maxPatients",
+            "maxPayloadBytes",
+            "timeoutMilliseconds"
+          ],
+          "properties": {
+            "maxPatients": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 10000
+            },
+            "maxPayloadBytes": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 16777216
+            },
+            "timeoutMilliseconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "maxRarBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16777216
+            },
+            "maxFormBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16777216
+            },
+            "maxEncodedFormBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50331648
+            },
+            "maxResponseBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16777216
+            }
+          },
+          "additionalProperties": false
+        },
+        "sources": {
+          "type": "object",
+          "description": "Local overrides keyed by registered managed/custom source ID or legacy; semantic validation rejects unknown sources.",
+          "additionalProperties": {
+            "$ref": "#/$defs/presenceSourceLimits"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": [
+        "certsDir",
+        "logsDir",
+        "stateDir"
+      ],
+      "properties": {
+        "certsDir": {
+          "type": "string"
+        },
+        "logsDir": {
+          "type": "string"
+        },
+        "stateDir": {
+          "type": "string"
+        },
+        "queryLimitsRevisionOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "additionalProperties": true
+    },
+    "publicBaseUrls": {
+      "type": "object"
+    },
+    "internalBaseUrls": {
+      "type": "object"
+    },
+    "healthOrganizations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/healthOrganization"
+      }
+    },
+    "legacyDataSource": {
+      "type": "object",
+      "required": [
+        "id",
+        "enabled",
+        "compatibilityOnly",
+        "managedHapi",
+        "publicFhirBaseUrl",
+        "internalFhirBaseUrl",
+        "fixtureResetSupported"
+      ],
+      "properties": {
+        "id": {
+          "const": "legacy-ds"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "compatibilityOnly": {
+          "const": true
+        },
+        "managedHapi": {
+          "const": false
+        },
+        "publicFhirBaseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "internalFhirBaseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "fixtureResetSupported": {
+          "const": true
+        },
+        "institutionType": {
+          "type": "string",
+          "enum": [
+            "hmo",
+            "hospital",
+            "other"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "certificates": {
+      "type": "object"
+    },
+    "certificateRoles": {
+      "type": "object",
+      "required": [
+        "pcm",
+        "presenceOrchestrator",
+        "serviceProvider",
+        "hospitalBServiceProvider",
+        "referenceDataSource",
+        "dsFhirServer",
+        "untrustedClient",
+        "authenticationOrchestrator",
+        "discoveryOrchestrator"
+      ],
+      "$defs": {
+        "pair": {
+          "type": "object",
+          "required": [
+            "cert",
+            "key"
+          ],
+          "properties": {
+            "cert": {
+              "type": "string",
+              "minLength": 1
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "properties": {
+        "pcm": {
+          "type": "object",
+          "required": [
+            "server"
+          ],
+          "properties": {
+            "server": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "presenceOrchestrator": {
+          "type": "object",
+          "required": [
+            "mtls",
+            "assertion"
+          ],
+          "properties": {
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "serviceProvider": {
+          "type": "object",
+          "required": [
+            "mtls",
+            "assertion"
+          ],
+          "properties": {
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "hospitalBServiceProvider": {
+          "type": "object",
+          "required": [
+            "mtls",
+            "assertion"
+          ],
+          "properties": {
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "referenceDataSource": {
+          "type": "object",
+          "required": [
+            "server",
+            "mtls",
+            "assertion"
+          ],
+          "properties": {
+            "server": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "dsFhirServer": {
+          "type": "object",
+          "required": [
+            "server"
+          ],
+          "properties": {
+            "server": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "untrustedClient": {
+          "type": "object",
+          "required": [
+            "mtls"
+          ],
+          "properties": {
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "authenticationOrchestrator": {
+          "type": "object",
+          "required": [
+            "mtls",
+            "assertion"
+          ],
+          "properties": {
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        },
+        "discoveryOrchestrator": {
+          "type": "object",
+          "required": [
+            "mtls",
+            "assertion"
+          ],
+          "properties": {
+            "mtls": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            },
+            "assertion": {
+              "$ref": "#/properties/certificateRoles/$defs/pair"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "organizations": {
+      "type": "object",
+      "required": [
+        "pcm",
+        "serviceProvider",
+        "hospitalBServiceProvider",
+        "referenceDataSource",
+        "teamDataSource",
+        "untrustedClient"
+      ],
+      "properties": {
+        "pcm": {
+          "$ref": "#/$defs/organization"
+        },
+        "serviceProvider": {
+          "$ref": "#/$defs/organization"
+        },
+        "hospitalBServiceProvider": {
+          "$ref": "#/$defs/organization"
+        },
+        "referenceDataSource": {
+          "$ref": "#/$defs/organization"
+        },
+        "teamDataSource": {
+          "$ref": "#/$defs/organization"
+        },
+        "untrustedClient": {
+          "type": "object",
+          "required": [
+            "clientId"
+          ],
+          "properties": {
+            "clientId": {
+              "$ref": "#/$defs/opaqueClientId"
+            }
+          },
+          "additionalProperties": true
+        },
+        "dataSources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/organization"
+          }
+        },
+        "removedDataSourceRegistrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "clientId",
+              "endpointId"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9.-]{1,64}$"
+              },
+              "clientId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "endpointId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9.-]{1,64}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "oauthClients": {
+      "type": "object",
+      "required": [
+        "presenceOrchestrator",
+        "authenticationOrchestrator",
+        "discoveryOrchestrator"
+      ],
+      "properties": {
+        "presenceOrchestrator": {
+          "type": "object",
+          "required": [
+            "clientId",
+            "name"
+          ],
+          "properties": {
+            "clientId": {
+              "const": "pcm-presence-orchestrator"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "assertionCertificates": {
+              "$ref": "#/$defs/assertionCertificates"
+            }
+          },
+          "additionalProperties": false
+        },
+        "authenticationOrchestrator": {
+          "type": "object",
+          "required": [
+            "clientId",
+            "name"
+          ],
+          "properties": {
+            "clientId": {
+              "$ref": "#/$defs/opaqueClientId"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "assertionCertificates": {
+              "$ref": "#/$defs/assertionCertificates"
+            }
+          },
+          "additionalProperties": false
+        },
+        "discoveryOrchestrator": {
+          "type": "object",
+          "required": [
+            "clientId",
+            "name"
+          ],
+          "properties": {
+            "clientId": {
+              "$ref": "#/$defs/opaqueClientId"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "assertionCertificates": {
+              "$ref": "#/$defs/assertionCertificates"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "service": {
+      "type": "object"
+    },
+    "identityMapping": {
+      "type": "object",
+      "required": [
+        "businessIdOverrides"
+      ],
+      "properties": {
+        "businessIdOverrides": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "patients": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/patient"
+      }
+    },
+    "admin": {
+      "type": "object"
+    },
+    "systemAuthorization": {
+      "type": "object",
+      "required": [
+        "configurationKind",
+        "clientEntitlements",
+        "participatingHmos",
+        "memberships",
+        "presenceEligiblePatients",
+        "otp",
+        "authentication",
+        "discovery"
+      ],
+      "properties": {
+        "configurationKind": {
+          "const": "synthetic-local"
+        },
+        "clientEntitlements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "presence-check",
+                "patient-authentication",
+                "dependent-discovery",
+                "sandbox-patient-sample"
+              ]
+            },
+            "uniqueItems": true,
+            "maxItems": 4
+          }
+        },
+        "participatingHmos": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "maxItems": 3
+        },
+        "memberships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "identifier",
+              "homeHmoId"
+            ],
+            "properties": {
+              "identifier": {
+                "$ref": "#/$defs/workflowPatientIdentifier"
+              },
+              "homeHmoId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sandboxFixture": {
+                "type": "boolean"
+              },
+              "fixtureBirthDate": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "loginEligibility": {
+                "type": "object",
+                "properties": {
+                  "foreignPassportEligible": {
+                    "type": "boolean"
+                  },
+                  "israeliNationalWithId": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "localSso": {
+                "type": "object",
+                "required": [
+                  "birthDate"
+                ],
+                "properties": {
+                  "birthDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "display": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "presenceEligiblePatients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/workflowPatientIdentifier"
+          }
+        },
+        "otp": {
+          "type": "object",
+          "required": [
+            "transport",
+            "channels",
+            "expirySeconds",
+            "resendSeconds",
+            "maxAttempts",
+            "maxResends",
+            "contactMaxAgeSeconds"
+          ],
+          "properties": {
+            "transport": {
+              "const": "local"
+            },
+            "channels": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "sms",
+                  "email"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1,
+              "maxItems": 2
+            },
+            "expirySeconds": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 600
+            },
+            "resendSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300
+            },
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "maxResends": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "contactMaxAgeSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 31536000
+            }
+          },
+          "additionalProperties": false
+        },
+        "authentication": {
+          "type": "object",
+          "required": [
+            "flowLifetimeSeconds",
+            "authenticatedLifetimeSeconds",
+            "timeoutMilliseconds"
+          ],
+          "properties": {
+            "flowLifetimeSeconds": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 3600
+            },
+            "authenticatedLifetimeSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            },
+            "timeoutMilliseconds": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 120000
+            }
+          },
+          "additionalProperties": false
+        },
+        "discovery": {
+          "type": "object",
+          "required": [
+            "timeoutMilliseconds",
+            "maxPagesPerSource",
+            "maxRetries",
+            "eligibleRelationships"
+          ],
+          "properties": {
+            "timeoutMilliseconds": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 120000
+            },
+            "maxPagesPerSource": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "eligibleRelationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "system",
+                  "code"
+                ],
+                "properties": {
+                  "system": {
+                    "type": "string",
+                    "format": "uri",
+                    "minLength": 1
+                  },
+                  "code": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "serviceCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "bindings"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "application",
+              "providerRole",
+              "serviceKey",
+              "instanceId",
+              "instanceIdentifier"
+            ],
+            "properties": {
+              "application": {
+                "type": "string",
+                "minLength": 1
+              },
+              "providerRole": {
+                "type": "string",
+                "minLength": 1
+              },
+              "serviceKey": {
+                "type": "string",
+                "minLength": 1
+              },
+              "instanceId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "instanceIdentifier": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "sandboxSampler": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientId",
+        "sourceIds",
+        "mtlsCert",
+        "mtlsKey"
+      ],
+      "properties": {
+        "clientId": {
+          "type": "string",
+          "minLength": 20
+        },
+        "sourceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ho-a",
+              "ho-b",
+              "ho-c"
+            ]
+          }
+        },
+        "mtlsCert": {
+          "const": "sandbox-sampler.crt"
+        },
+        "mtlsKey": {
+          "const": "sandbox-sampler.key"
+        }
+      },
+      "description": "Retired private sampler configuration, accepted only for explicit preview/backup migration. It grants no runtime authority."
+    },
+    "observability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "role"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,47}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "role": {
+                "enum": [
+                  "application",
+                  "middleware",
+                  "security",
+                  "addon"
+                ]
+              },
+              "format": {
+                "enum": [
+                  "hdp-jsonl",
+                  "otel-log-record"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "sandboxSampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceIds"
+      ],
+      "properties": {
+        "sourceIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 3,
+          "items": {
+            "enum": [
+              "ho-a",
+              "ho-b",
+              "ho-c"
+            ]
+          }
+        }
+      }
+    },
+    "clinicalQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "defaults": {
+          "$ref": "#/$defs/clinicalQueryLimits"
+        },
+        "sources": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/clinicalQueryLimits"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "conformance": {
+            "properties": {
+              "mode": {
+                "const": "strict"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        "required": [
+          "conformance"
+        ]
+      },
+      "then": {
+        "properties": {
+          "conformance": {
+            "properties": {
+              "compatibilityAdapters": {
+                "maxItems": 0
+              }
+            }
+          },
+          "security": {
+            "properties": {
+              "pcmApi": {
+                "properties": {
+                  "clientAuth": {
+                    "const": "mtls"
+                  },
+                  "allowAnyTokenResource": {
+                    "const": false
+                  },
+                  "allowServiceProviderOwnTokenIntrospection": {
+                    "const": false
+                  }
+                }
+              },
+              "dataSourceGateway": {
+                "properties": {
+                  "clientAuth": {
+                    "const": "mtls"
+                  }
+                }
+              },
+              "serviceProviderToDataSource": {
+                "properties": {
+                  "verifyServerCertificate": {
+                    "const": true
+                  }
+                }
+              },
+              "dsGatewayToFhirServer": {
+                "properties": {
+                  "protocol": {
+                    "const": "https"
+                  },
+                  "verifyServerCertificate": {
+                    "const": true
+                  }
+                }
+              },
+              "dsFhirServer": {
+                "properties": {
+                  "enforceMappedPatients": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

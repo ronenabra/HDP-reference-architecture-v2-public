@@ -1,0 +1,2061 @@
+openapi: 3.1.0
+info:
+  title: PCM Connectathon Admin API
+  version: "2026-09-01"
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  description: |
+    Operational API for local pcm-connectathon team environments. These endpoints configure
+    demo security toggles, data-source selection, certificates, logs, backup/restore,
+    and runtime reset. They are separate from the public PCM FHIR/OAuth2 API docs.
+servers:
+  - url: http://localhost:4100
+    description: Team PCM UI/admin base URL
+security:
+  - AdminPassword: []
+tags:
+  - name: Services
+    description: Protected catalog/directory inventory and catalog-only commands, distinct from public PCM discovery.
+  - name: Status
+  - name: Config
+  - name: Certificates
+  - name: Consents
+  - name: Logs
+  - name: Backup
+  - name: Runtime
+  - name: Sanity
+  - name: Clinical data
+paths:
+  /admin/services/inventory:
+    get:
+      tags: [Services]
+      operationId: readAdminServiceCatalog
+      summary: Read the protected complete catalog inventory
+      description: >-
+        Configured Admin login is mandatory even where other local Admin reads are open.
+        Includes pending, disabled, terminal and unassigned definitions, exact private
+        definition authority and version-bound Admin action availability. This is a
+        no-store owner projection, not standard caller-scoped PCM discovery. Items
+        come from the existing public/private store owners. No provider is impersonated.
+      parameters:
+        - $ref: '#/components/parameters/ServiceInventoryOffset'
+        - $ref: '#/components/parameters/ServiceInventoryLimit'
+        - $ref: '#/components/parameters/ServiceInventoryRevision'
+      responses:
+        '200':
+          description: Exact snapshot total and a bounded catalog page with creation CSRF binding
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminServiceInventory' }
+        '400': { description: Unknown or invalid paging fields }
+        '401': { description: Admin login required }
+        '409': { description: Snapshot changed; restart paging }
+        '503': { description: Configured Admin login or owner inventory unavailable }
+  /admin/services/providers:
+    get:
+      tags: [Services]
+      operationId: readAdminServiceProviders
+      summary: Read actual registered service-provider organizations
+      description: >-
+        Uses registered Organization identities, not a fixed configured-role list.
+        Nonsecret credential capability is configured-not-observed or unavailable;
+        files present on disk do not prove successful OAuth authorization. Missing
+        credentials never borrow another identity. Reserved private defaults create
+        no registration, enrollment or permission. No-store and configured Admin login.
+      parameters:
+        - $ref: '#/components/parameters/ServiceInventoryOffset'
+        - $ref: '#/components/parameters/ServiceInventoryLimit'
+        - $ref: '#/components/parameters/ServiceInventoryRevision'
+      responses:
+        '200':
+          description: Exact total and bounded registered provider page
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminServiceInventory' }
+        '400': { description: Unknown or invalid paging fields }
+        '401': { description: Admin login required }
+        '409': { description: Snapshot changed; restart paging }
+        '503': { description: Configured Admin login or owner inventory unavailable }
+  /admin/services/inventory/{id}/providers:
+    get:
+      tags: [Services]
+      operationId: readAdminServiceConnections
+      summary: Read provider connections within one exact catalog group
+      description: >-
+        Enumerates every provider on the returned page and all stored registrations
+        for each exact provider/catalog pair, including multiple and terminal bindings.
+        Not-connected is stated only for a loaded complete pair. Missing owner
+        identities are explicit unavailable rows. An unloaded page proves nothing
+        about connection state. Stored state, effective usability and standard/Admin
+        capabilities are separate; no cross-call atomicity is claimed.
+      parameters:
+        - $ref: '#/components/parameters/ServiceInventoryId'
+        - $ref: '#/components/parameters/ServiceInventoryOffset'
+        - $ref: '#/components/parameters/ServiceInventoryLimit'
+        - $ref: '#/components/parameters/ServiceInventoryRevision'
+      responses:
+        '200':
+          description: Exact pair count and bounded provider page with complete registrations per returned pair
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminServiceInventory' }
+        '400': { description: Unknown or invalid paging fields }
+        '401': { description: Admin login required }
+        '404': { description: Catalog definition not found }
+        '409': { description: Snapshot changed; restart paging }
+        '503': { description: Configured Admin login or owner inventory unavailable }
+  /admin/services/preview:
+    post:
+      tags: [Services]
+      operationId: previewAdminServiceDefinition
+      summary: Generate a fixed service scope or give basic manual syntax advice
+      description: >-
+        Non-mutating bounded authoring under configured Admin login and same-origin
+        CSRF (catalog-preview target). No Patient/source lookup, capability probe,
+        registration, Consent or token. Generated previewProof binds the exact draft
+        and creation/history anchor for 15 minutes. Manual advice has only bounded
+        syntax/issues and never gates exact manual saving or establishes runtime authority.
+        Legacy providerRole with its own form CSRF remains accepted for ordinary clients.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [csrf, definition]
+              properties:
+                csrf: { type: string }
+                definition: { $ref: '#/components/schemas/AdminServiceDefinitionInput' }
+                providerRole: { type: string }
+      responses:
+        '200': { description: Exact savedScope/effectiveScope with origin and fixed anchor; generated proof or advisory manual syntax result }
+        '400': { description: Required fields or bounded envelope invalid }
+        '401': { description: Configured Admin login required }
+        '403': { description: Foreign origin or invalid CSRF }
+  /admin/services/catalog:
+    post:
+      tags: [Services]
+      operationId: createAdminServiceCatalog
+      summary: Create a pending catalog definition with zero provider registrations
+      description: >-
+        Closed bounded JSON over the existing service-definition form. Requires
+        configured Admin login, same-origin CSRF bound to catalog-create and the
+        expected private revision. Strict refuses private writes. PCM owns identity,
+        providedBy is forbidden, duplicate names fail atomically. Public resource,
+        immutable private definition, generation and authoritative audit commit in
+        one existing-store/checkpoint transaction. Later provider connection and
+        activation are explicit separate commands. Manual scope text is retained exactly
+        with advisory syntax only and needs no compiler proof. An optional generated
+        previewProof retains the reviewed fixed anchor; stale/changed proofs refuse.
+        No token or clinical access results.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [csrf, expectedRevision, definition]
+              properties:
+                csrf: { type: string }
+                expectedRevision: { type: integer, minimum: 0 }
+                definition: { $ref: '#/components/schemas/AdminServiceDefinitionInput' }
+                previewProof: { $ref: '#/components/schemas/AdminServicePreviewProof' }
+      responses:
+        '200': { description: Pending canonical identity/version and registrationCount zero }
+        '400': { description: 'Invalid, incomplete, unbounded or extra form fields' }
+        '401': { description: Admin login required }
+        '403': { description: 'Strict private-write restriction, foreign origin or invalid CSRF' }
+        '409': { description: 'Duplicate name, stale revision or conflicting authority' }
+        '503': { description: 'Configured login, persistence or authoritative audit unavailable; no partial commit' }
+  /admin/services/{id}/sandbox:
+    post:
+      tags: [Services]
+      operationId: applyAdminServiceLifecycle
+      summary: Approve, enable, disable or delete one exact service record
+      description: >-
+        Existing single-target private command. Configured Admin login, same-origin
+        target/version CSRF and current expectedVersion are mandatory. Strict
+        excludes all actions. Catalog approval/enable does not require a provider;
+        registration activation requires a usable catalog and operational provider.
+        Global freeze preserves individual states. Terminal decisions remain terminal.
+        Deletion is inactive, non-cascading and dependency/seed/fixed-builtin guarded,
+        including frozen approval history. All authority/audit/checkpoint writes are
+        atomic; external diagnostic delivery follows commit. Runtime deletion alone
+        is not durable across seed/reset; use the existing complete private checkpoint.
+        This does not expose public FHIR DELETE.
+      parameters:
+        - $ref: '#/components/parameters/ServiceInventoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [csrf, expectedVersion, action]
+              properties:
+                csrf: { type: string }
+                expectedVersion: { type: string, pattern: '^[1-9][0-9]*$' }
+                action: { type: string, enum: [activate, enable, disable, delete] }
+      responses:
+        '200': { description: Exact committed target/action/version with diagnostic audit identity }
+        '400': { description: Invalid or extra fields }
+        '401': { description: Admin login required }
+        '403': { description: 'Strict restriction, foreign origin or invalid CSRF' }
+        '404': { description: Service not found }
+        '409': { description: 'Stale version, lifecycle prerequisite or deletion blocker' }
+        '503': { description: 'Configured login, persistence or authoritative audit unavailable' }
+  /admin/services/catalog/{id}/validate:
+    post:
+      tags: [Services]
+      operationId: validateAdminServiceCatalog
+      summary: Validate an exact stored definition before any provider is connected
+      description: >-
+        Requires configured Admin login, same-origin CSRF bound to id/current version
+        and exactly expectedVersion/csrf fields. Strict excludes this private action.
+        Validates the public definition and immutable private authority locally;
+        makes no provider/source call and changes no stored state. The diagnostic
+        result is not approval, an issued token or clinical authority. Approval and
+        enable/disable use the existing version-bound single-target sandbox command.
+      parameters:
+        - $ref: '#/components/parameters/ServiceInventoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [csrf, expectedVersion]
+              properties:
+                csrf: { type: string }
+                expectedVersion: { type: string, pattern: '^[1-9][0-9]*$' }
+      responses:
+        '200': { description: Definition valid for the exact displayed version; state unchanged }
+        '400': { description: 'Invalid or extra form fields, or incomplete definition' }
+        '401': { description: Admin login required }
+        '403': { description: 'Strict restriction, foreign origin or invalid CSRF' }
+        '404': { description: Catalog definition not found }
+        '409': { description: Stale version or missing/unusable immutable private authority }
+        '503': { description: Configured login or diagnostic service unavailable }
+  /admin/status:
+    get:
+      tags: [Status]
+      summary: Read team status and effective configuration
+      responses:
+        "200":
+          description: Current status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStatus"
+  /admin/config/test-workflows:
+    post:
+      tags: [Config]
+      operationId: saveAdminTestWorkflows
+      summary: Save bounded local OTP and sign-in/discovery settings
+      description: >-
+        Requires the current saved revision inside the existing configuration mutex.
+        Saves only the eleven named fields. Changed settings invalidate outstanding
+        local flows and synthetic deliveries before returning; no deadline or attempt
+        budget is silently reset or extended. No real SMS/email is sent. Does not
+        edit membership, client entitlement, eligible relationships, source budgets
+        or Contracts. New PCM workflows adopt saved settings; remote enforcement is
+        not asserted. Publication uses the accepted private exact-byte journal;
+        uncertainty remains fenced for stopped-worker recovery.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminTestWorkflowsInput' }
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AdminTestWorkflowsInput' }
+      responses:
+        "200":
+          description: Saved revision and explicit flow invalidation/adoption consequences
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+        "303": { description: Browser returns to Test workflows with saved revision }
+        "400": { description: Invalid range or fields; non-secret browser draft retained }
+        "401": { description: Team Admin authentication required }
+        "409": { description: Stale revision or unavailable configuration publication owner }
+        "503": { description: Uncertain checkpoint publication remains fenced for reviewed recovery }
+  /admin/workflow-sources/preview:
+    get:
+      tags: [Config]
+      operationId: previewAdminWorkflowSources
+      summary: Inspect eligible HMO source reconciliation without running a workflow
+      description: >-
+        Returns exact saved configuration revision, eligible source identities,
+        Contract versions, Organization/Endpoint versions, before/after assets and
+        reviewDigest. Missing, expired and terminal policies stay visibly unavailable;
+        preview does not renew authority, authenticate or discover dependents.
+      responses:
+        "200":
+          description: Read-only exact review with unavailable-policy reasons
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+            text/html:
+              schema: { type: string }
+        "401": { description: Team Admin authentication required }
+        "409": { description: Current policy graph cannot be inspected safely }
+  /admin/workflow-sources/apply:
+    post:
+      tags: [Config]
+      operationId: applyAdminWorkflowSources
+      summary: Apply unchanged reviewed existing workflow source assets
+      description: >-
+        Requires every exact reviewed field, current config/source/policy versions and
+        digest inside the private configuration mutex. Uses the existing private
+        backup, lifecycle transaction and exact-byte publication journal. Refuses
+        missing/expired/terminal authority and never creates or renews a Contract,
+        activates a source, changes Consent or grants clinical permission.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminWorkflowSourceReviewInput' }
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AdminWorkflowSourceReviewInput' }
+      responses:
+        "200":
+          description: Applied current revision or rendered browser result
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+            text/html:
+              schema: { type: string }
+        "401": { description: Team Admin authentication required }
+        "409": { description: Stale review or missing/unavailable policy; no success claimed }
+        "503": { description: Uncertain checkpoint publication remains fenced for reviewed recovery }
+  /admin/config/doctor-browser/preview:
+    post:
+      tags: [Config]
+      operationId: previewDoctorBrowserAddress
+      summary: Preview the existing Doctor browser address and exact callbacks
+      description: >-
+        Non-mutating preview for existing configured Doctor clients only. Does not
+        create clients, enable SMART for a disabled profile, change scopes or
+        certificates, or infer a registration from request headers. Save the
+        review digest before applying. Separate from public PCM registration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [doctorBase]
+              properties:
+                doctorBase: { type: string, format: uri }
+      responses:
+        "200":
+          description: Exact address/registration changes, current versions and reviewDigest
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+        "400": { description: Unsupported request fields }
+        "401": { description: Team Admin authentication required }
+        "409": { description: Invalid address or unavailable existing registration }
+  /admin/config/doctor-browser/apply:
+    post:
+      tags: [Config]
+      operationId: applyDoctorBrowserAddress
+      summary: Apply an unchanged reviewed Doctor browser address
+      description: >-
+        Updates only the configured Doctor base and exact redirect lists for
+        existing enabled Doctor registrations, with matching PCM Organization
+        metadata. Requires the unchanged preview digest, uses private exact
+        backups and the configuration mutex, and preserves retained authority and
+        clinical data. Pending SMART requests must restart. No generic client CRUD
+        or public dynamic registration is provided.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [doctorBase, reviewDigest]
+              properties:
+                doctorBase: { type: string, format: uri }
+                reviewDigest: { type: string, pattern: "^[a-f0-9]{64}$" }
+      responses:
+        "200":
+          description: Applied address and exact callbacks, or truthful unchanged result
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+        "400": { description: Unsupported request fields }
+        "401": { description: Team Admin authentication required }
+        "409": { description: "Stale review, maintenance fence or publication failure; no success claimed" }
+  /admin/config/own-token-introspection:
+    post:
+      tags: [Config]
+      operationId: configureServiceProviderOwnTokenIntrospection
+      summary: Save the optional sandbox own-token diagnostic override
+      description: >-
+        Easy, Balanced and mTLS default enabled. Strict locks this capability
+        disabled and rejects an enabled override. The default value removes the
+        explicit override. This changes local compatibility configuration only;
+        saving is not runtime enforcement evidence or a production PCM claim.
+        Own-SP POST /introspect uses registered mTLS/private_key_jwt credentials,
+        rechecks original authority without token changes, source calls or usage
+        window writes, and preserves the separate Data Source first-use path.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [allowServiceProviderOwnTokenIntrospection]
+              properties:
+                adminForm: { type: string, const: own-token-capability }
+                expectedRevision:
+                  oneOf: [{ type: integer, minimum: 0 }, { type: string, pattern: '^[0-9]+$' }]
+                  description: Required with the first-party form marker; stale saves reject before publication.
+                allowServiceProviderOwnTokenIntrospection:
+                  oneOf:
+                    - { type: boolean }
+                    - { type: string, enum: [default, "true", "false"] }
+      responses:
+        "200":
+          description: Saved capability with effective enabled/default/origin and runtime reload contract
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+        "400": { description: 'Invalid value, unsupported fields or Strict enabled override; no save' }
+        "401": { description: Team Admin authentication required }
+        "409": { description: Stale first-party form revision; no save }
+  /admin/config/security:
+    post:
+      tags: [Config]
+      summary: Save retained security settings or legacy upstream
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                adminForm:
+                  type: string
+                  enum: [security, legacy-upstream, token-duration]
+                  description: Optional first-party form owner. token-duration accepts only adminForm, expectedRevision and accessTokenExpiresInSeconds; environment and all other settings are preserved. Legacy security/upstream API bodies retain their existing contract.
+                expectedRevision:
+                  type: integer
+                  minimum: 0
+                  description: Required with adminForm; stale saved configuration rejects with 409 before a write.
+                pcmApiClientAuth:
+                  type: string
+                  enum: [tls, mtls]
+                dataSourceGatewayClientAuth:
+                  type: string
+                  enum: [tls, mtls]
+                dsGatewayToFhirServerProtocol:
+                  type: string
+                  enum: [http, https]
+                spDsVerifyServerCertificate:
+                  type: boolean
+                dsGatewayToFhirServerVerifyServerCertificate:
+                  type: boolean
+                dsGatewayToFhirServerCustomUrl:
+                  type: string
+                  format: uri
+                  description: Optional legacy Node gateway upstream only. Managed source gateways retain their own private HAPI targets; clearing restores the built-in legacy facade. This does not enable legacy clinical access.
+                dsFhirServerEnforceMappedPatients:
+                  type: boolean
+                  default: true
+                  description: Retained legacy mapping fact. Patient/source context and qualified native scope filtering are always enforced; legacy clinical access is unsupported.
+                allowAnyTokenResource:
+                  type: boolean
+                  const: false
+                  description: Retired bypass; true is rejected. Resource/audience binding is always enforced.
+                accessTokenExpiresInSeconds:
+                  type: integer
+                  default: 30
+                  minimum: 1
+                  maximum: 86400
+                  description: Positive future-issuance lifetime independent of preset. Production maximum is 30 seconds; test maximum is 86400. Earlier authorization deadlines can shorten it. Existing tokens, approval snapshots and first-use clocks are unchanged. New PCM requests read current saved configuration; source/listener adoption is not inferred.
+      responses:
+        "200":
+          description: Saved security settings
+        "400":
+          description: Invalid security setting
+        "409":
+          description: Saved configuration revision changed or legacy migration acknowledgement is required
+  /admin/config/simulation:
+    post:
+      tags: [Config]
+      summary: Apply a security-simulation preset and global/per-source controls
+      description: >-
+        AWS credential isolation is always on and cannot be disabled. Strict controls
+        are fixed. Other presets remain non-conformant developer simulations.
+        Omitted JSON controls select complete preset defaults; supplied JSON controls
+        override those defaults. The bounded first-party form uses adminForm=simulation,
+        expectedRevision, the exact registered sourceId (empty for global), resetDefaults
+        and six control.NAME fields. Omitted global checkboxes mean false; source values
+        must be inherit, true or false. Global edits preserve source overrides unless
+        resetDefaults=true is deliberately selected after the replacement preview.
+        Strict/connectathon transitions reject before saved mutation and require controlled
+        team recreation. Certificate verification is authoritative here; conflicting legacy
+        security-form values are rejected. A save does not prove runtime enforcement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [preset]
+              properties:
+                adminForm: { type: string, const: simulation }
+                expectedRevision:
+                  oneOf: [{ type: integer, minimum: 0 }, { type: string, pattern: '^[0-9]+$' }]
+                  description: Required for the bounded first-party form; stale revisions reject before publication.
+                sourceId:
+                  type: string
+                  description: Exact registered source Organization ID; empty selects global controls. Managed policy aliases resolve server-side.
+                resetDefaults: { type: string, enum: ["true", "false"] }
+                control.publicClientMtls: { type: string, enum: [inherit, "true", "false"] }
+                control.serverCertificateVerification: { type: string, enum: [inherit, "true", "false"] }
+                control.clientAssertionSignature: { type: string, enum: [inherit, "true", "false"] }
+                control.clientAssertionAudience: { type: string, enum: [inherit, "true", "false"] }
+                control.clientAssertionReplay: { type: string, enum: [inherit, "true", "false"] }
+                control.clientAssertionExpiry: { type: string, enum: [inherit, "true", "false"] }
+                preset:
+                  type: string
+                  enum: [connectathon-easy, connectathon-balanced, connectathon-mtls, strict]
+                controls:
+                  type: object
+                  additionalProperties: { type: boolean }
+                perSource:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    additionalProperties: { type: boolean }
+      responses:
+        "200": { description: Validated configuration saved and runtime reload requested }
+        "400": { description: Invalid or retired/fixed Strict control; no publication }
+        "404": { description: Bounded form source is no longer registered }
+        "409": { description: Stale revision or controlled recreation required; saved bytes unchanged }
+  /admin/api/fhir-servers:
+    get:
+      tags: [Clinical data]
+      operationId: listManagedFhirServers
+      summary: List dynamically configured managed HAPI FHIR servers
+      responses:
+        "200":
+          description: Managed servers and explicitly excluded non-HAPI sources
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ManagedFhirServerInventory" }
+  /admin/api/fhir-servers/{serverId}/data:
+    parameters:
+      - in: path
+        name: serverId
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Clinical data]
+      operationId: getManagedFhirServerData
+      summary: Read target-wide current counts, history presence, and verified bundle status for one HAPI server
+      responses:
+        "200":
+          description: Per-server target-wide current counts and history presence, separate from source/dataset-tagged uploaded-bundle verification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ManagedFhirServerDataState" }
+        "404": { description: Unknown or unmanaged target }
+        "502":
+          description: The bounded private count or history read failed; no zero count is inferred.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, state]
+                properties:
+                  error: { type: string }
+                  state: { type: string, const: unavailable }
+    delete:
+      tags: [Clinical data]
+      operationId: deleteManagedFhirServerData
+      summary: Delete all resources, history, indexes, and import state from one HAPI server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confirmation]
+              properties:
+                confirmation:
+                  type: string
+                  description: Exact target token delete-all:{teamId}:{serverId}.
+      responses:
+        "202":
+          description: Target-bound operation accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataOperation" }
+        "409": { description: Confirmation is missing or stale }
+  /admin/api/fhir-servers/{serverId}/imports:
+    post:
+      tags: [Clinical data]
+      operationId: importManagedFhirServerBundle
+      summary: Check and import one synthetic FHIR R4 transaction Bundle
+      description: >-
+        Checks transaction structure, references, synthetic tags, allowed types,
+        limits, checksum and counts. Full FHIR profile validation is not performed.
+        HAPI transaction response acceptance and post-load per-type verification
+        are recorded as distinct stages.
+      parameters:
+        - in: path
+          name: serverId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [bundle]
+              properties:
+                bundle: { type: string, format: binary }
+                replace: { type: boolean, default: false }
+      responses:
+        "202":
+          description: Preflighted target-bound operation accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataOperation" }
+        "400": { description: Invalid transaction Bundle }
+        "409": { description: Duplicate/non-empty target requires explicit replace }
+        "413": { description: Configured upload limit exceeded }
+  /admin/api/data-operations/{operationId}:
+    get:
+      tags: [Clinical data]
+      operationId: getDataOperation
+      summary: Poll a long-running data operation
+      description: >-
+        Progress events and stage timestamps are persisted. Elapsed and wait
+        durations are computed from server timestamps at observation time.
+        A pending atomic HAPI transaction has no per-entry percentage.
+      parameters:
+        - in: path
+          name: operationId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "Queued, validating, resetting, loading, verifying, succeeded, or failed operation"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataOperation" }
+        "404": { description: Operation not found }
+  /admin/config/presence-limits:
+    post:
+      tags: [Config]
+      operationId: saveAdminDefaultLimits
+      summary: Save shared local presence and OAuth limits
+      description: >-
+        Protected revision-bound configuration command. Values are decimal strings in
+        displayed units: patients/entries, decimal MB (1,000,000 bytes), or timeout seconds
+        (1,000 milliseconds). Conversion is exact; unsafe, nonfinite and fractional raw
+        units reject without changing configuration or revision. Only owned fields change.
+        Saved configuration does not prove source adoption or remote capacity; review mounts,
+        gateway reload, adapter environment overrides and controlled restart/recreation first.
+        Existing scope, Patient, source, Contract and grant-lifetime enforcement remains.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminDefaultLimitsInput' }
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AdminDefaultLimitsInput' }
+      responses:
+        '200': { description: Saved revision and explicit pending source-adoption statement }
+        '303': { description: Browser return to exact source Limits view or shared Default limits }
+        '400': { description: "Invalid field, exact-unit conversion or canonical configuration; no save" }
+        '401': { description: Configured Admin login required }
+        '404': { description: Registered source or managed target no longer exists }
+        '409': { description: Stale revision or active/uncertain managed upload reservation; no save }
+  /admin/config/data-sources/{id}/limits:
+    post:
+      tags: [Config]
+      operationId: saveAdminSourceLimits
+      summary: Save or inherit one registered source’s local budgets
+      description: >-
+        Protected revision-bound configuration command. Values are decimal strings in
+        displayed units: patients/entries, decimal MB (1,000,000 bytes), or timeout seconds
+        (1,000 milliseconds). Conversion is exact; unsafe, nonfinite and fractional raw
+        units reject without changing configuration or revision. Only owned fields change.
+        Saved configuration does not prove source adoption or remote capacity; review mounts,
+        gateway reload, adapter environment overrides and controlled restart/recreation first.
+        Existing scope, Patient, source, Contract and grant-lifetime enforcement remains.
+        Use the exact registered source Organization ID, never a display name or private budget
+        alias. Every mode field is inherit (remove override) or custom (requires its value).
+        Unknown/removed sources refuse and other explicit overrides are preserved.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminSourceLimitsInput' }
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AdminSourceLimitsInput' }
+      responses:
+        '200': { description: Saved revision and explicit pending source-adoption statement }
+        '303': { description: Browser return to exact source Limits view or shared Default limits }
+        '400': { description: "Invalid field, exact-unit conversion or canonical configuration; no save" }
+        '401': { description: Configured Admin login required }
+        '404': { description: Registered source or managed target no longer exists }
+        '409': { description: Stale revision or active/uncertain managed upload reservation; no save }
+  /admin/config/fhir-servers/{serverId}/limits:
+    post:
+      tags: [Config]
+      operationId: saveAdminUploadLimits
+      summary: Save one idle managed target’s upload limits
+      description: >-
+        Protected revision-bound configuration command. Values are decimal strings in
+        displayed units: patients/entries, decimal MB (1,000,000 bytes), or timeout seconds
+        (1,000 milliseconds). Conversion is exact; unsafe, nonfinite and fractional raw
+        units reject without changing configuration or revision. Only owned fields change.
+        Saved configuration does not prove source adoption or remote capacity; review mounts,
+        gateway reload, adapter environment overrides and controlled restart/recreation first.
+        Existing scope, Patient, source, Contract and grant-lifetime enforcement remains.
+        Active/uncertain operations or reservations refuse edits, preserving their captured
+        full target contract and explicit stopped-worker recovery without automatic retries.
+        External/legacy sources are not managed upload targets. Canonical reviewed minima
+        are 27,465,318 bytes and 7,155 entries; these budgets do not guarantee memory capacity.
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminUploadLimitsInput' }
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AdminUploadLimitsInput' }
+      responses:
+        '200': { description: Saved revision and explicit pending source-adoption statement }
+        '303': { description: Browser return to exact source Limits view or shared Default limits }
+        '400': { description: "Invalid field, exact-unit conversion or canonical configuration; no save" }
+        '401': { description: Configured Admin login required }
+        '404': { description: Registered source or managed target no longer exists }
+        '409': { description: Stale revision or active/uncertain managed upload reservation; no save }
+  /admin/config/fhir-servers/{serverId}/bootstrap:
+    post:
+      tags: [Clinical data]
+      operationId: configureManagedFhirServerBootstrap
+      summary: Save an explicit portable bootstrap mapping for one managed HAPI server
+      parameters:
+        - in: path
+          name: serverId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [policy]
+              properties:
+                policy: { type: string, enum: [disabled, if-empty, replace] }
+                bundleReference:
+                  type: string
+                  description: Safe *.source.transaction.json path relative to the server's configured bundleRoot.
+                expectedSource:
+                  type: string
+                  description: Exact synthetic-source tag expected in the configured Bundle; never inferred from filename or HO order.
+                adminForm:
+                  type: string
+                  enum: [clinical-bootstrap]
+                  description: Optional internal browser form marker; limits this save to the selected startup mapping.
+                expectedRevision:
+                  type: integer
+                  minimum: 0
+                  description: Required with clinical-bootstrap; stale browser forms refuse without overwriting saved configuration.
+      responses:
+        "200": { description: Bootstrap mapping saved and runtime revision advanced; no import was started }
+        "400": { description: Unsafe or incomplete mapping }
+        "409": { description: Stale browser startup form; refresh and review current mapping }
+  /admin/api/patients:
+    get:
+      tags: [Clinical data]
+      operationId: listVerifiedSyntheticPatientsForAdmin
+      summary: List synthetic patients from successfully verified managed-HAPI imports
+      responses:
+        "200": { description: Sandbox-only patient picker inventory with per-source availability }
+  /admin/config/ds-url:
+    post:
+      tags: [Config]
+      summary: Legacy single team data-source selector
+      deprecated: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                  description: Legacy flag for enabling the single teamDataSource entry. Prefer /admin/config/data-sources/add and /remove.
+                endpoint:
+                  type: string
+                  format: uri
+                clientId:
+                  type: string
+                  description: OAuth2 client identifier that PCM will recognize for this data source.
+                generateCertificate:
+                  type: boolean
+                  default: true
+                  description: Generate a team-root-signed certificate/key pair for the data source PCM client.
+                serverTrustMode:
+                  type: string
+                  enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify]
+                  description: Trust mode the Service Provider should use when connecting to this data-source server.
+                serverTrustCaCert:
+                  type: string
+                  description: Optional certs-directory relative CA file for custom-ca mode.
+                serverTrustCertThumbprint:
+                  type: string
+                  description: Optional server certificate x5t#S256 thumbprint for pinning/discovery.
+      responses:
+        "200":
+          description: Saved data-source selection
+        "400":
+          description: Enabled team data source requires an absolute http(s) endpoint
+  /admin/config/data-sources/add:
+    post:
+      tags: [Config]
+      summary: Register a custom source with validated credentials and independent HTTPS trust
+      description: Requires expectedRevision. HTTPS base and opaque assigned/generated client identity are validated before publication. Generate or upload shared P-256/ES256 or separate transport and P-384/ES384 assertion pairs. Source HTTPS trust is independent. No runtime or clinical readiness is inferred. Failed/uncertain publications preserve previous authority or fence the runtime for exact reviewed rollback using the existing private configuration journal.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, endpoint, expectedRevision]
+              properties:
+                name: { type: string, maxLength: 240 }
+                endpoint: { type: string, format: uri, description: HTTPS FHIR base without credentials/query/fragment. }
+                institutionType: { type: string, enum: [hmo, hospital, other], default: other }
+                clientId: { type: string, description: Opaque assigned ID; omit to generate. }
+                expectedRevision: { type: integer }
+                credentialMode: { type: string, enum: [generate, upload] }
+                credentialProfile: { type: string, enum: [shared-es256, separate-es384] }
+                generateCertificate: { type: boolean, description: Legacy generation selector. }
+                serverTrustMode: { type: string, enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify] }
+                serverTrustCaCert: { type: string, description: Validated regular managed CA reference. }
+                serverTrustCertThumbprint: { type: string, description: Exact 43-character base64url SHA-256 certificate fingerprint. }
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, endpoint, expectedRevision, credentialMode]
+              properties:
+                name: { type: string }
+                endpoint: { type: string, format: uri }
+                clientId: { type: string }
+                institutionType: { type: string, enum: [hmo, hospital, other] }
+                expectedRevision: { type: integer }
+                credentialMode: { type: string, enum: [generate, upload] }
+                credentialProfile: { type: string, enum: [shared-es256, separate-es384] }
+                pcmClientAuthCertFile: { type: string, format: binary }
+                pcmClientAuthKeyFile: { type: string, format: binary }
+                pcmTransportCertFile: { type: string, format: binary }
+                pcmTransportKeyFile: { type: string, format: binary }
+                serverTrustMode: { type: string, enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify] }
+                serverTrustCaCert: { type: string }
+                serverTrustCaFile: { type: string, format: binary }
+                serverTrustCertThumbprint: { type: string }
+                serverTrustCertFile: { type: string, format: binary }
+                reusePcmClientCertForServerTrust: { type: boolean, description: Explicitly pin the client certificate only when the source serves that same certificate. }
+      responses:
+        "201": { description: Registration saved; runtime not checked. }
+        "400": { description: "Invalid destination, identity, role material or trust choice; previous registration retained." }
+        "409": { description: Stale revision or unsafe source publication. }
+  /admin/config/data-sources/{id}/institution:
+    post:
+      tags: [Config]
+      operationId: updateSourceRegistration
+      summary: Update source institution or custom-source display and HTTPS endpoint
+      description: Institution-only payload retains its existing behavior. With adminForm=source-registration, name/endpoint/institutionType are owned by this form; client and Organization identities remain fixed. Expected revision is mandatory; no remote data changes occur.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [institutionType, expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                institutionType: { type: string, enum: [hmo, hospital, other] }
+                adminForm: { type: string, enum: [source-registration] }
+                name: { type: string }
+                endpoint: { type: string, format: uri }
+      responses:
+        "200": { description: Saved source settings; runtime not checked. }
+        "400": { description: Invalid source fields. }
+        "409": { description: Stale revision or operator-controlled seed registration. }
+  /admin/config/data-sources/remove:
+    post:
+      tags: [Config]
+      summary: Disable, re-enable or remove a custom source registration
+      description: action defaults to remove and requires a disabled source. Keeps historical Consent references, reserves removed client and Organization identities, rejects seeded team-source removal and never deletes remote clinical data. Disable/re-enable invalidates old authority; re-enable requires fresh authority.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, expectedRevision]
+              properties:
+                id: { type: string }
+                expectedRevision: { type: integer }
+                action: { type: string, enum: [disable, enable, remove], default: remove }
+      responses:
+        "200": { description: Registration lifecycle saved; runtime not checked. }
+        "409": { description: "Stale revision, still-enabled removal or protected seed registration." }
+  /admin/config/data-sources/{id}/cert/generate:
+    post:
+      tags: [Config]
+      summary: Generate or upload role-aware source credentials
+      description: Existing protected endpoint publishes shared ES256 or separate ES384 assertion/transport roles coherently. Requires current expectedRevision; custom disabled or seed-backed sources refuse. HTTPS server trust stays separate and runtime authentication is not inferred.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [expectedRevision, credentialMode, credentialProfile]
+              properties:
+                expectedRevision: { type: integer }
+                credentialMode: { type: string, enum: [generate, upload] }
+                credentialProfile: { type: string, enum: [shared-es256, separate-es384] }
+                pcmClientAuthCertFile: { type: string, format: binary }
+                pcmClientAuthKeyFile: { type: string, format: binary }
+                pcmTransportCertFile: { type: string, format: binary }
+                pcmTransportKeyFile: { type: string, format: binary }
+          application/json:
+            schema:
+              type: object
+              required: [expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                credentialMode: { type: string, enum: [generate], default: generate }
+                credentialProfile: { type: string, enum: [shared-es256, separate-es384] }
+      responses:
+        "200": { description: Credentials saved; runtime not checked. }
+        "400": { description: Invalid or missing role material. }
+        "409": { description: Stale revision or operator-controlled registration. }
+  /admin/config/data-sources/{id}/client-bundle:
+    get:
+      tags: [Config]
+      summary: Download custom data source client bundle
+      description: Returns the client ID, PCM endpoint hints, root CA, and generated cert/key material for the selected custom data source.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Data source client bundle
+        "404":
+          description: Custom data source not found
+  /admin/api/data-operations/{operationId}/recover:
+    post:
+      tags: [Config]
+      operationId: recoverDataOperation
+      summary: Verify a stopped uncertain import against the saved upload and live HAPI data
+      description: Requires a stopped worker. A submitted POST remains reserved until read-only content, reference, count, and history evidence proves one complete transaction. Failure retains the target block for reviewed target-scoped reset/replacement. No POST is replayed. A pre-submission abandoned operation may be released after worker termination.
+      parameters:
+        - in: path
+          name: operationId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workersStopped]
+              properties:
+                workersStopped: { type: boolean, const: true }
+      responses:
+        "200":
+          description: Verified success and Patient inventory published, or stopped pre-submission reservation released
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataOperation" }
+        "409":
+          description: Worker active, proof incomplete, changed target, or conflicting ownership; target remains blocked
+  /admin/api/data-operations/{operationId}/reset:
+    post:
+      tags: [Clinical data]
+      operationId: resetUncertainDataOperation
+      summary: Resolve an unprovable stopped import by resetting only its reserved target
+      description: Requires stopped worker and HAPI transaction plus exact target confirmation. Expunges the named HAPI database, verifies zero resources and history, and releases the original reservation. The saved transaction is never replayed.
+      parameters:
+        - in: path
+          name: operationId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workersStopped, confirmation]
+              properties:
+                workersStopped: { type: boolean, const: true }
+                confirmation: { type: string }
+      responses:
+        "200":
+          description: Named target reset verified empty and old reservation released
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataOperation" }
+        "409":
+          description: Worker active, stale confirmation, reset not verified, or conflicting ownership
+  /admin/config/data-sources/{id}/test:
+    post:
+      tags: [Config]
+      summary: Run a bounded custom-source readiness smoke diagnostic
+      description: Returns pcm-source-readiness/2 observations for DNS, connectivity/TLS, metadata, policy-dependent anonymous access, token acquisition, introspection, and clinical FHIR access. Applicable phases without evidence are not-tested and aggregate to partial. An existing probe token may exercise clinical access without claiming token acquisition or introspection. No authorization state is created. This diagnostic is not a conformance verdict.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                timeoutMilliseconds:
+                  type: integer
+                  minimum: 100
+                  maximum: 30000
+                probeAccessToken:
+                  type: string
+                  description: Existing authorized clinical token; never an import or management credential.
+                probePatient:
+                  type: string
+                  description: Explicit synthetic probe Patient identifier.
+                probePath:
+                  type: string
+                  description: Source-local clinical request path supported by the token class.
+      responses:
+        "200":
+          description: Observed checks passed; status is partial when applicable evidence is absent.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SourceReadiness" }
+        "404":
+          description: Custom data source not found
+        "502":
+          description: One readiness phase failed with a classified remediation
+  /admin/config/data-sources/{id}/client-bundle.zip:
+    get:
+      tags: [Config]
+      summary: Download custom data source client bundle as ZIP
+      description: Returns bundle.json plus the root CA, generated client certificate/key, and optional custom CA file as normal files.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Data source client bundle ZIP
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Custom data source not found
+  /admin/config/data-sources/{id}/server-trust/ca:
+    post:
+      tags: [Config]
+      summary: Upload custom CA certificate for a data source
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      description: Requires current expectedRevision. adminForm=source-trust saves the selected independent trust mode and applicable fields; skip is allowed only in Easy/Balanced. Unsafe CA references, invalid pins and disabled/seed-controlled sources refuse.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                adminForm: { type: string, enum: [source-trust] }
+                serverTrustMode: { type: string, enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify] }
+                serverTrustCaCert: { type: string }
+                serverTrustCertThumbprint: { type: string }
+                serverTrustCaFile:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              type: object
+              required: [expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                adminForm: { type: string, enum: [source-trust] }
+                serverTrustMode: { type: string, enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify] }
+                serverTrustCaCert: { type: string }
+                serverTrustCertThumbprint: { type: string }
+                caCertContent:
+                  type: string
+      responses:
+        "200":
+          description: CA uploaded and source switched to custom-ca trust
+        "400":
+          description: Missing CA certificate content
+        "409": { description: Stale revision or protected registration. }
+        "404":
+          description: Data source not found
+  /admin/config/data-sources/{id}/server-trust/thumbprint:
+    post:
+      tags: [Config]
+      summary: Upload server certificate and calculate x5t#S256
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      description: Requires current expectedRevision. adminForm=source-trust saves the selected independent trust mode and applicable fields; skip is allowed only in Easy/Balanced. Unsafe CA references, invalid pins and disabled/seed-controlled sources refuse.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                adminForm: { type: string, enum: [source-trust] }
+                serverTrustMode: { type: string, enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify] }
+                serverTrustCaCert: { type: string }
+                serverTrustCertThumbprint: { type: string }
+                serverTrustCertFile:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              type: object
+              required: [expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                adminForm: { type: string, enum: [source-trust] }
+                serverTrustMode: { type: string, enum: [team-root-ca, system-ca, custom-ca, pinned-thumbprint, insecure-skip-verify] }
+                serverTrustCaCert: { type: string }
+                serverTrustCertThumbprint: { type: string }
+                thumbprint:
+                  type: string
+      responses:
+        "200":
+          description: Server certificate thumbprint saved
+        "400":
+          description: Missing or invalid certificate/thumbprint
+        "409": { description: Stale revision or protected registration. }
+        "404":
+          description: Data source not found
+  /admin/config/identity-mapping/add:
+    post:
+      tags: [Config]
+      summary: Add or update a business ID identity mapping override
+      description: Updates a legacy Node identity mapping override; it creates no Patient or grant and does not configure managed HAPI matching. The business ID may be supplied as a bare value or as FHIR system|value; bare values use the il-national-id system. Configured team patients are prefilled as Patient/local-[idValue].
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [businessId, internalId]
+              properties:
+                adminForm:
+                  type: string
+                  enum: [legacy-mapping]
+                  description: Optional internal browser form marker. Ordinary API upsert/removal semantics are unchanged.
+                expectedRevision:
+                  type: integer
+                  description: Required current saved revision when adminForm is legacy-mapping; stale forms fail before mutation.
+                businessId:
+                  type: string
+                  description: Business/national identifier from PCM introspection patient context. Accepts a bare value or FHIR system|value; bare values use the il-national-id system.
+                internalId:
+                  type: string
+                  description: Local FHIR patient reference or identifier. Stored exactly as supplied; bare values are not normalized.
+      responses:
+        "201":
+          description: Identity mapping override saved
+        "400":
+          description: Missing or invalid mapping fields
+        "409":
+          description: Stale internal browser form revision; no mapping changed
+  /admin/config/identity-mapping/remove:
+    post:
+      tags: [Config]
+      summary: Remove a business ID identity mapping override
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [businessId]
+              properties:
+                adminForm:
+                  type: string
+                  enum: [legacy-mapping]
+                  description: Optional internal browser form marker. Ordinary API upsert/removal semantics are unchanged.
+                expectedRevision:
+                  type: integer
+                  description: Required current saved revision when adminForm is legacy-mapping; stale forms fail before mutation.
+                businessId:
+                  type: string
+      responses:
+        "200":
+          description: Identity mapping override removed
+        "400":
+          description: Missing businessId
+        "409":
+          description: Stale internal browser form revision; no mapping changed
+  /admin/certs/regenerate:
+    post:
+      tags: [Certificates]
+      summary: Review controlled leaf-certificate renewal without mutation
+      description: >-
+        Returns the existing controlled operator handoff. No credentials or listeners
+        change. Preview with rotate-team-certificates.js before explicit local apply;
+        roots, participant-owned and unknown material remain protected. HTML renders
+        the expected handoff in Certificates. Optional key replacement is explicit.
+        The optional source query preserves navigation context only; it does not
+        narrow the team-wide renewal scope or select credentials.
+      parameters:
+        - in: query
+          name: source
+          required: false
+          schema: { type: string }
+          description: Exact registered source ID retained by the HTML handoff and return links.
+      responses:
+        "409":
+          description: Controlled listener recreation required; no credentials changed
+        "400":
+          description: Invalid or conflicting role ownership; resolve before renewal
+        "401":
+          description: Admin authentication required
+  /admin/certs/upload-thumbprint:
+    post:
+      tags: [Certificates]
+      summary: Store a team data-source certificate thumbprint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                thumbprint:
+                  type: string
+      responses:
+        "200":
+          description: Thumbprint saved
+  /admin/certs/certificate:
+    get:
+      operationId: downloadAdminPublicCertificate
+      tags: [Certificates]
+      summary: Download one registered owner and role's public certificate only
+      description: >-
+        Protected read-only no-store PEM attachment. Resolves only the current
+        inventory owner/role/fingerprint binding beneath the certificate root and
+        serializes the parsed public leaf. Private keys and arbitrary file paths
+        are never accepted or returned. Unknown/unassigned file owners are unavailable.
+        Unknown query parameters are rejected.
+      parameters:
+        - { in: query, name: owner, required: true, schema: { type: string } }
+        - { in: query, name: role, required: true, schema: { type: string } }
+        - { in: query, name: fingerprint, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Public certificate only; attachment certificate.pem with Cache-Control no-store
+          content:
+            application/x-pem-file:
+              schema: { type: string }
+        "400":
+          description: Missing selection or unsupported query field, including path input
+        "401":
+          description: Admin authentication required
+        "404":
+          description: Missing, changed, unregistered or ambiguous owner/role certificate material
+  /admin/certs/download-bundle:
+    get:
+      tags: [Certificates]
+      summary: Download certificates and private keys as JSON
+      responses:
+        "200":
+          description: Credential JSON bundle with named files, private keys, any present CA keys, and public owner/role facts; no-store attachment, not a complete team backup
+  /admin/certs/download-zip:
+    get:
+      tags: [Certificates]
+      summary: Download certificates and private keys as a ZIP file
+      responses:
+        "200":
+          description: Credential ZIP matching the existing certificate-directory layout, including private keys and any present CA keys; no-store attachment, not a complete team backup
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+  /admin/consents:
+    get:
+      tags: [Consents]
+      summary: List enriched consents visible in the admin UI
+      description: Includes the authoritative PCM status and a presentation-only testAutoApproved flag for exact synthetic-test identifiers 1 and 2 with stored HTEST approval evidence. This flag does not represent an explicit patient decision or change the FHIR Consent.
+      responses:
+        "200":
+          description: Consent list with display metadata used by the Admin UI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  consents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        testAutoApproved:
+                          type: boolean
+                          readOnly: true
+                          description: Identifies the existing exact test-ID auto-approval exception, including later expired or cancelled records.
+  /admin/consents/{id}/approve:
+    post:
+      tags: [Consents]
+      summary: Approve a pending consent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Consent approved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  consent:
+                    type: object
+        "404":
+          description: Consent not found
+  /admin/consents/{id}/decline:
+    post:
+      tags: [Consents]
+      summary: Decline a pending consent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Consent declined
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  consent:
+                    type: object
+        "404":
+          description: Consent not found
+  /admin/logs:
+    get:
+      tags: [Logs]
+      summary: Read component logs as JSON
+      description: Current and retained rotated configured logs including per-HO native private-import records and opt-in registered extensions. This authenticated JSON response is unpaged; the central Logs viewer uses bounded retrieval. The existing logs map is accompanied by status, complete and failures. Unreadable or rejected sources are omitted and explicitly reported; healthy sources remain exportable. Completeness covers configured retained files, not a transactional audit snapshot. Full-history data is prepared asynchronously in private temporary storage before transfer. A clear during preparation rejects the whole export with HTTP 409; staging failures return HTTP 500. No arbitrary-volume first-byte deadline is promised.
+      responses:
+        "200":
+          description: Logs grouped by component, with status complete, complete true and an empty failures array.
+        "207":
+          description: Partial export. The logs map contains readable sources only; status is partial, complete is false and failures lists component IDs and errors. Clients must not treat this as a complete export.
+        "409":
+          description: Logs were cleared during export preparation. No export is sent; retry for a fresh snapshot.
+        "500":
+          description: The export could not be staged or prepared. No complete or partial export is claimed.
+  /admin/logs/view:
+    get:
+      tags: [Logs]
+      summary: Open central Logs with legacy diagnostic context
+      description: Protected compatibility bridge to the existing central Logs viewer with Diagnostics enabled. Exact operationId, sourceId, correlationId, configured component and severity are preserved; a known managed target alone maps to its configured organization. Legacy stage, cursor and time constraints, unknown components/targets, and a target combined with an operation require an explicit HTML broader-context link listing omitted constraints. No event is selected by this bridge. Existing import links now pass only the exact operation ID. Central browse and retained search match recorded operation and registered source IDs as parsed exact fields, never payload substrings.
+      parameters:
+        - { name: operationId, in: query, schema: { type: string }, description: Exact operation UUID }
+        - { name: sourceId, in: query, schema: { type: string }, description: Exact recorded registered source ID }
+        - { name: correlationId, in: query, schema: { type: string }, description: Exact recorded request correlation }
+        - { name: target, in: query, schema: { type: string }, description: Legacy managed target context; unsupported combinations are explicitly disclosed }
+        - { name: component, in: query, schema: { type: string }, description: Exact configured log component }
+        - { name: stage, in: query, schema: { type: string }, description: Exact diagnostic stage }
+        - { name: severity, in: query, schema: { type: string }, description: Exact log level }
+        - { name: since, in: query, schema: { type: string, format: date-time }, description: Inclusive lower time }
+        - { name: until, in: query, schema: { type: string, format: date-time }, description: Inclusive upper time }
+        - { name: cursor, in: query, schema: { type: string }, description: Opaque continuation from Next page }
+      responses:
+        "303":
+          description: Supported exact context handed to the central viewer with Diagnostics enabled
+          headers:
+            Location:
+              schema: { type: string }
+              description: Mounted central Logs address
+        "200":
+          description: Explicit broader-context bridge listing constraints the central viewer cannot preserve
+          content:
+            text/html:
+              schema: { type: string }
+        "400":
+          description: Invalid scalar or oversized context
+  /admin/logs/clear:
+    post:
+      tags: [Logs]
+      summary: Clear current and retained history component logs
+      description: Truncates built-in configured current streams in place and removes retained history. Read-only extension files are retained. Active writers may append new events immediately. Results identify cleared, retained and failed sources per component; the central Logs clear entry point uses the same helper and scope.
+      responses:
+        "200":
+          description: Every built-in component cleared and read-only extension sources retained; response includes current-and-retained-history scope and per-component results.
+        "207":
+          description: Partial clear; per-component results identify cleared streams and failures.
+  /admin/logs/download:
+    get:
+      tags: [Logs]
+      summary: Download current and retained history logs as JSON
+      description: A no-store logs.json attachment with the same authenticated per-source completeness contract as GET /admin/logs. A rejected extension never disables export of healthy sources, and partial data is never reported as complete. Full-history data is prepared asynchronously in private temporary storage before transfer. A clear during preparation rejects the whole export with HTTP 409; staging failures return HTTP 500. No arbitrary-volume first-byte deadline is promised.
+      responses:
+        "200":
+          description: Logs grouped by component, with status complete, complete true and an empty failures array.
+        "207":
+          description: Partial export. The logs map contains readable sources only; status is partial, complete is false and failures lists component IDs and errors.
+        "409":
+          description: Logs were cleared during export preparation. No export is sent; retry for a fresh snapshot.
+        "500":
+          description: The export could not be staged or prepared. No complete or partial export is claimed.
+  /admin/backup:
+    get:
+      tags: [Backup]
+      summary: Download ordinary configuration and credentials including private keys
+      description: Protected no-store JSON attachment containing the existing team configuration, complete certificate file map and thumbprints. Excludes clinical databases, complete runtime Consent state and log history; not a private checkpoint backup or HA/DR archive.
+      responses:
+        "200": { description: "Complete ordinary configuration backup attachment" }
+        "401": { description: "Team Admin authentication required" }
+  /admin/restore:
+    post:
+      tags: [Backup]
+      summary: Restore complete live-compatible configuration and reset PCM
+      description: File selection and paste submit the same backupJson form field. Maximum 1 MiB. Requires exact team/config version, current expectedRevision, valid complete config and preserved later source-removal history. Certificate file names/bytes, deployment/listener/contract/credential bindings and preset must match the running team; differing material refuses before writes and requires the controlled stopped-team operator workflow. Existing configuration mutex and exact-byte journal own rollback. Clears PCM resources/private runtime authority and issued tokens, then bootstraps configured catalog; old Consents/runtime catalog choices are not restored and other component adoption is not checked. Any retained migration checkpoint requires its guarded offline recovery owner.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [expectedRevision]
+              properties:
+                expectedRevision: { type: integer }
+                backupJson: { type: string, description: Complete ordinary export serialized as JSON; alternative to direct envelope fields. }
+                teamId: { type: string }
+                teamConfig: { type: object }
+                certificates: { type: object, additionalProperties: { type: string } }
+                exportedAt: { type: string }
+                security: { type: object }
+                thumbprints: { type: object }
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [backupJson, expectedRevision]
+              properties:
+                backupJson: { type: string }
+                expectedRevision: { type: integer }
+      responses:
+        "200": { description: "Compatible config restored and PCM reset/bootstrap complete; other listeners not checked." }
+        "400": { description: "Invalid team/scope/config/JSON or failed restoration; no credential contents echoed." }
+        "401": { description: "Team Admin authentication required" }
+        "409": { description: "Stale review, version/material/restart mismatch or checkpoint authority requires the operator owner." }
+        "413": { description: "Backup exceeds 1 MiB." }
+        "503": { description: "Maintenance or uncertain publication is fenced; keep workers stopped and use reviewed exact-digest recovery." }
+  /admin/reset:
+    post:
+      tags: [Runtime]
+      summary: Reset PCM runtime resources, private authority and issued tokens
+      description: Atomically clears PCM resources and private runtime choices, then bootstraps configured catalog/resources. Runtime Consents/catalog edits are lost. Saved config, clinical source databases and log history remain unchanged. Existing confirmation applies; no new checkbox or phrase. Retained checkpoint/active-operation/uncertain publication fences refuse the action.
+      responses:
+        "200": { description: "PCM runtime reset and bootstrap complete." }
+        "401": { description: "Team Admin authentication required" }
+        "409": { description: "Checkpoint authority, active operations or bootstrap failure requires owner review." }
+        "503": { description: "Maintenance or configuration publication is fenced." }
+  /admin/sanity-check:
+    post:
+      tags: [Sanity]
+      summary: Run the end-to-end pcm-connectathon sanity flow
+      description: Runs the same flow as `pcm-connectathon/scripts/run-sanity-check.js` from the PCM admin process. The run may create and approve a test consent. Browser forms use a 303 redirect to Logs & diagnostics, where recorded checks distinguish passed, failed, incomplete and unexercised states with technical details. Completed panels can be dismissed locally without rerunning or changing operation guards.
+      responses:
+        "303":
+          description: Browser form returns to Admin Logs and diagnostics with the recorded result
+        "200":
+          description: Sanity check passed
+          content:
+            application/json:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: string
+        "500":
+          description: Sanity check failed
+          content:
+            application/json:
+              schema:
+                type: object
+            text/html:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    AdminPassword:
+      type: apiKey
+      in: header
+      name: x-admin-password
+      description: Required only when TEAM_ADMIN_PASSWORD is configured.
+  parameters:
+    ServiceInventoryId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9.-]{1,64}$' }
+    ServiceInventoryOffset:
+      name: offset
+      in: query
+      description: Zero-based offset; nonzero offsets require the unchanged revision.
+      schema: { type: integer, minimum: 0, default: 0 }
+    ServiceInventoryLimit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 50, default: 25 }
+    ServiceInventoryRevision:
+      name: revision
+      in: query
+      description: Exact private snapshot revision; changes require restart from offset zero.
+      schema: { type: integer, minimum: 0 }
+  schemas:
+    AdminDefaultLimitsInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, maxPatients, maxPayloadBytes, timeoutMilliseconds, maxRarBytes, maxFormBytes, maxEncodedFormBytes, maxResponseBytes]
+      properties:
+        expectedRevision: { type: string, pattern: '^[0-9]+$' }
+        adminForm: { type: string, description: Optional internal form marker }
+        maxPatients: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Whole patients' }
+        maxPayloadBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        timeoutMilliseconds: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Seconds; exact milliseconds' }
+        maxRarBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        maxFormBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        maxEncodedFormBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        maxResponseBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+    AdminTestWorkflowsInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, otp.expirySeconds, otp.resendSeconds, otp.maxAttempts, otp.maxResends, otp.contactMaxAgeSeconds, authentication.flowLifetimeSeconds, authentication.authenticatedLifetimeSeconds, authentication.timeoutMilliseconds, discovery.timeoutMilliseconds, discovery.maxPagesPerSource, discovery.maxRetries]
+      properties:
+        expectedRevision:
+          oneOf:
+            - { type: integer, minimum: 0 }
+            - { type: string, pattern: '^[0-9]+$' }
+        otp.expirySeconds:
+          description: "Integer 30–600; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 30, maximum: 600 }
+            - { type: string, pattern: '^[0-9]+$' }
+        otp.resendSeconds:
+          description: "Integer 1–300; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 1, maximum: 300 }
+            - { type: string, pattern: '^[0-9]+$' }
+        otp.maxAttempts:
+          description: "Integer 1–10; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 1, maximum: 10 }
+            - { type: string, pattern: '^[0-9]+$' }
+        otp.maxResends:
+          description: "Integer 0–10; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 0, maximum: 10 }
+            - { type: string, pattern: '^[0-9]+$' }
+        otp.contactMaxAgeSeconds:
+          description: "Integer 1–31536000; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 1, maximum: 31536000 }
+            - { type: string, pattern: '^[0-9]+$' }
+        authentication.flowLifetimeSeconds:
+          description: "Integer 30–3600; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 30, maximum: 3600 }
+            - { type: string, pattern: '^[0-9]+$' }
+        authentication.authenticatedLifetimeSeconds:
+          description: "Integer 1–3600; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 1, maximum: 3600 }
+            - { type: string, pattern: '^[0-9]+$' }
+        authentication.timeoutMilliseconds:
+          description: "Integer 100–120000; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 100, maximum: 120000 }
+            - { type: string, pattern: '^[0-9]+$' }
+        discovery.timeoutMilliseconds:
+          description: "Integer 100–120000; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 100, maximum: 120000 }
+            - { type: string, pattern: '^[0-9]+$' }
+        discovery.maxPagesPerSource:
+          description: "Integer 1–100; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 1, maximum: 100 }
+            - { type: string, pattern: '^[0-9]+$' }
+        discovery.maxRetries:
+          description: "Integer 0–3; lifetimes/contact age/resend in seconds, timeouts in milliseconds, otherwise count. OTP resend must be shorter than expiry."
+          oneOf:
+            - { type: integer, minimum: 0, maximum: 3 }
+            - { type: string, pattern: '^[0-9]+$' }
+    AdminWorkflowSourceReviewInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, versions, sources, sourceVersions, reviewDigest]
+      properties:
+        expectedRevision:
+          oneOf:
+            - { type: integer, minimum: 0 }
+            - { type: string, pattern: '^[0-9]+$' }
+        reviewDigest: { type: string, pattern: '^[a-f0-9]{64}$' }
+        sources:
+          oneOf:
+            - { type: array, items: { type: string } }
+            - { type: string, description: Exact JSON array from the HTML preview }
+        versions:
+          oneOf:
+            - { type: object, additionalProperties: { type: string } }
+            - { type: string, description: Exact JSON object from the HTML preview }
+        sourceVersions:
+          oneOf:
+            - { type: object, additionalProperties: { type: [string, 'null'] } }
+            - { type: string, description: Exact JSON object from the HTML preview }
+    AdminSourceLimitsInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, mode.maxPatients, mode.maxPayloadBytes, mode.timeoutMilliseconds, mode.maxRarBytes, mode.maxFormBytes, mode.maxEncodedFormBytes, mode.maxResponseBytes]
+      properties:
+        expectedRevision: { type: string, pattern: '^[0-9]+$' }
+        adminForm: { type: string, description: Optional internal form marker }
+        maxPatients: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Whole patients' }
+        mode.maxPatients: { type: string, enum: [inherit, custom] }
+        maxPayloadBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        mode.maxPayloadBytes: { type: string, enum: [inherit, custom] }
+        timeoutMilliseconds: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Seconds; exact milliseconds' }
+        mode.timeoutMilliseconds: { type: string, enum: [inherit, custom] }
+        maxRarBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        mode.maxRarBytes: { type: string, enum: [inherit, custom] }
+        maxFormBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        mode.maxFormBytes: { type: string, enum: [inherit, custom] }
+        maxEncodedFormBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        mode.maxEncodedFormBytes: { type: string, enum: [inherit, custom] }
+        maxResponseBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        mode.maxResponseBytes: { type: string, enum: [inherit, custom] }
+    AdminUploadLimitsInput:
+      type: object
+      additionalProperties: false
+      required: [expectedRevision, maxBytes, maxEntries]
+      properties:
+        expectedRevision: { type: string, pattern: '^[0-9]+$' }
+        adminForm: { type: string, description: Optional internal form marker }
+        maxBytes: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Decimal MB; exact bytes' }
+        maxEntries: { type: string, pattern: '^(0|[1-9][0-9]*)([.][0-9]+)?$', description: 'Whole entries' }
+    AdminServiceInventory:
+      type: object
+      required: [schema, source, revision, total, offset, limit, complete, nextOffset, items]
+      description: >-
+        pcm-admin-services/1. Exact local owner total, not a fabricated standard API
+        count. complete means this response contains the entire snapshot; paged
+        responses use nextOffset and revision. Never infer an unreturned pair is
+        not connected. Per-row resource/definition facts retain explicit provenance;
+        standard operations and Admin capabilities remain separate authorities.
+      properties:
+        schema: { type: string, const: pcm-admin-services/1 }
+        source: { type: string, const: protected-owner-inventory }
+        revision: { type: integer, minimum: 0 }
+        total: { type: integer, minimum: 0 }
+        offset: { type: integer, minimum: 0 }
+        limit: { type: integer, minimum: 1, maximum: 50 }
+        complete: { type: boolean }
+        nextOffset: { type: [integer, 'null'], minimum: 0 }
+        items:
+          type: array
+          items:
+            type: object
+            description: Catalog or provider/pair typed projection; see docs/service-templates.md for service administration.
+    AdminServicePreviewProof:
+      type: object
+      additionalProperties: false
+      required: [anchor, signature]
+      properties:
+        anchor: { type: string, format: date-time }
+        signature: { type: string }
+    AdminServiceDefinitionInput:
+      type: object
+      additionalProperties: false
+      required: [name, purpose, category, accessMode, duration, durationUnit, allowChanges, buckets, permissions]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 2000 }
+        purpose: { type: string, minLength: 1, maxLength: 2000 }
+        category: { type: string, const: '35' }
+        accessMode: { type: string, enum: [continuous, one-time] }
+        duration: { type: [integer, string] }
+        durationUnit: { type: string, enum: [a, mo, wk, d, h] }
+        allowChanges: { type: boolean }
+        buckets:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [code, history, historyUnit, sensitivity]
+            properties:
+              code: { type: string }
+              history: { type: [integer, string] }
+              historyUnit: { type: string, enum: [a, mo, wk, d, h] }
+              sensitivity: { type: array, items: { type: string } }
+        permissions:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [type, actions]
+            properties:
+              type: { type: string }
+              actions: { type: string, enum: [r, s, rs] }
+        confidentialityPolicy:
+          type: object
+          additionalProperties: false
+          properties:
+            allowRestricted: { type: boolean }
+        includeMasterData: { type: boolean }
+        scopeOrigin: { type: string, enum: [generated, custom] }
+        approvalScope:
+          type: string
+          minLength: 1
+          maxLength: 16384
+          description: Exact bounded manual scope, including whitespace and newlines; advisory syntax warnings do not block saving. Runtime authority validation remains separate.
+        exampleQueries:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [type, query]
+            properties:
+              type: { type: string }
+              query: { type: string, maxLength: 2000 }
+    ManagedFhirServer:
+      type: object
+      required: [id, healthOrganizationId, name, endpoint, bootstrap, limits, management]
+      properties:
+        id: { type: string }
+        healthOrganizationId: { type: string }
+        name: { type: string }
+        endpoint: { type: string, format: uri }
+        bootstrap:
+          type: object
+          required: [policy]
+          properties:
+            policy: { type: string, enum: [disabled, if-empty, replace] }
+            bundleReference: { type: string }
+            expectedSource: { type: string }
+        limits:
+          type: object
+          properties:
+            maxBytes: { type: integer, minimum: 1 }
+            maxEntries: { type: integer, minimum: 1 }
+        management:
+          type: object
+          required: [upload, deleteAll, legacyDataSource]
+          properties:
+            upload: { type: boolean }
+            deleteAll: { type: boolean }
+            legacyDataSource: { type: boolean, const: false }
+    SourceReadiness:
+      type: object
+      required: [schemaVersion, status, correlationId, sourceId, coverage, phases]
+      properties:
+        schemaVersion: { type: string, const: pcm-source-readiness/2 }
+        status: { type: string, enum: [pass, partial, fail] }
+        correlationId: { type: string }
+        sourceId: { type: string }
+        endpoint: { type: string, format: uri }
+        durationMilliseconds: { type: integer, minimum: 0 }
+        coverage:
+          type: object
+          properties:
+            observedPhases: { type: integer, minimum: 0 }
+            untestedPhases:
+              type: array
+              items: { type: string }
+            authenticatedClinical: { type: boolean }
+        phases:
+          type: array
+          items:
+            type: object
+            required: [phase, status, durationMilliseconds]
+            properties:
+              phase: { type: string }
+              status: { type: string, enum: [pass, fail, not-tested, not-applicable] }
+              observed: { type: boolean }
+              reason: { type: string }
+              outcome: { type: string }
+              classification: { type: string }
+              remediation: { type: string }
+              httpStatus: { type: integer }
+              durationMilliseconds: { type: integer, minimum: 0 }
+    DataOperation:
+      type: object
+      required: [id, serverId, kind, phase, status, createdAt, updatedAt, diagnostics]
+      properties:
+        schemaVersion: { type: integer, const: 2 }
+        needsReconciliation: { type: boolean }
+        inventoryInvalidated: { type: boolean }
+        submittedOutcome: { type: string, enum: [not-submitted, unknown, verified-complete, resolved-by-target-reset] }
+        failureStage: { type: string }
+        failureDeadlineMs: { type: [integer, 'null'], minimum: 0 }
+        reconciliationFailure: { type: string }
+        contentSha256: { type: string, pattern: "^[a-f0-9]{64}$" }
+        reconciliationVerifiedAt: { type: string, format: date-time }
+        deadlines:
+          type: object
+          properties:
+            connectUploadMs: { type: integer, minimum: 1000 }
+            transactionWaitMs: { type: integer, minimum: 1000 }
+            verificationMs: { type: integer, minimum: 1000 }
+        id: { type: string, format: uuid }
+        serverId: { type: string }
+        kind: { type: string, enum: [import, reset, replace, bootstrap] }
+        phase: { type: string, enum: [queued, validating, resetting, loading, verifying, succeeded, failed] }
+        status: { type: string, enum: [accepted, running, completed, failed, reconciliation-required] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        completedAt: { type: string, format: date-time }
+        elapsedMilliseconds: { type: integer, minimum: 0 }
+        observedAt: { type: string, format: date-time, description: Server time of this status observation. }
+        stageElapsedMilliseconds: { type: [integer, 'null'], minimum: 0 }
+        waitMilliseconds: { type: [integer, 'null'], minimum: 0, description: "Time since transaction submission, frozen at response or terminal failure." }
+        transactionDeadlineAt: { type: string, format: date-time, description: Latest response deadline from submission time plus connect/upload and wait budgets. }
+        currentStage: { type: string, description: "Last persisted stage event; pending stages are observations, not proof of HAPI commit." }
+        stageStartedAt: { type: string, format: date-time }
+        lastCompletedStage: { type: string }
+        stageTimestamps:
+          type: object
+          description: First recorded server timestamp for each stage event.
+          additionalProperties: { type: string, format: date-time }
+        progressEvents:
+          type: array
+          description: Concise persisted milestones without clinical content or inferred entry progress.
+          items:
+            type: object
+            required: [event, at]
+            properties:
+              event: { type: string }
+              at: { type: string, format: date-time }
+              type: { type: string, description: "Verified FHIR resource type, present only for type-verified events." }
+              count: { type: integer, minimum: 0, description: "Verified tagged count, present only for type-verified events." }
+        verificationTypeTotal: { type: integer, minimum: 0 }
+        verifiedTypes:
+          type: array
+          description: Resource types whose tagged post-load count checks completed.
+          items:
+            type: object
+            required: [type, count]
+            properties:
+              type: { type: string }
+              count: { type: integer, minimum: 0 }
+        result: { type: string, enum: [verified, skipped, not-completed] }
+        bundleName: { type: string }
+        source: { type: string }
+        version: { type: string }
+        sha256: { type: string, pattern: "^[a-f0-9]{64}$" }
+        bytes: { type: integer, minimum: 0 }
+        entries: { type: integer, minimum: 0 }
+        counts:
+          type: object
+          description: Expected resource counts in the uploaded bundle, grouped by type.
+          additionalProperties: { type: integer, minimum: 0 }
+        beforeCounts:
+          type: object
+          description: Target-wide current resource counts by importable type before mutation.
+          additionalProperties: { type: integer, minimum: 0 }
+        actualCounts:
+          type: object
+          description: Target-wide current resource counts by importable type after a target probe.
+          additionalProperties: { type: integer, minimum: 0 }
+        actualResourceCount: { type: integer, minimum: 0 }
+        hasHistory: { type: boolean }
+        verifiedCounts:
+          type: object
+          description: Post-load counts matching both the uploaded source and dataset tags, grouped by uploaded type.
+          additionalProperties: { type: integer, minimum: 0 }
+        diagnostics:
+          type: array
+          items: { type: string }
+    ManagedFhirServerInventory:
+      type: object
+      required: [servers, excludedSources]
+      properties:
+        servers:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/ManagedFhirServer"
+              - type: object
+                properties:
+                  lastOperation:
+                    oneOf:
+                      - $ref: "#/components/schemas/DataOperation"
+                      - type: "null"
+        excludedSources:
+          type: array
+          items:
+            type: object
+            required: [id, reason]
+            properties:
+              id: { type: string }
+              reason: { type: string }
+    ManagedFhirServerDataState:
+      type: object
+      required: [server, state, actualResourceCount, hasHistory, actualCounts]
+      properties:
+        server: { $ref: "#/components/schemas/ManagedFhirServer" }
+        state: { type: string, enum: [empty, unreconciled, loaded, queued, validating, resetting, loading, verifying] }
+        actualResourceCount: { type: integer, minimum: 0, description: Target-wide count of current resources over every allowed import type. }
+        hasHistory: { type: boolean, description: "Whether complete system history remains, including deleted-only versions; the private probe supplies an explicit earliest history instant." }
+        actualCounts:
+          type: object
+          description: Target-wide current counts by allowed import type, including zero-count types.
+          additionalProperties: { type: integer, minimum: 0 }
+        diagnostics:
+          type: object
+          description: Private exact totals (or the established ID-page fallback) and complete system history probes share a 175-second deadline and at most three concurrent resource types. The browser cancels at 180 seconds. Payload size is decoded JSON bytes, not wire bytes.
+          required: [requests, responseBytes, elapsedMs]
+          properties:
+            requests: { type: integer, minimum: 0 }
+            responseBytes: { type: integer, minimum: 0 }
+            elapsedMs: { type: integer, minimum: 0 }
+        bundle:
+          description: Latest verified import operation; its verifiedCounts are filtered by the uploaded source and dataset tags.
+          oneOf:
+            - $ref: "#/components/schemas/DataOperation"
+            - type: "null"
+        lastOperation:
+          oneOf:
+            - $ref: "#/components/schemas/DataOperation"
+            - type: "null"
+    AdminStatus:
+      type: object
+      properties:
+        teamId:
+          type: string
+        security:
+          type: object
+        config:
+          type: object
+        thumbprints:
+          type: object
+        deployment:
+          type: object
+          properties:
+            connectathonRepoUrl:
+              type: string
+              format: uri
+            endpoints:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  label:
+                    type: string
+                  audience:
+                    type: string
+                    enum: [public, internal]
+                  source:
+                    type: string
+                  url:
+                    type: string
+                  scheme:
+                    type: string
+                  host:
+                    type: string
+                  port:
+                    type: string
+                  enabled:
+                    type: boolean
+                  transport:
+                    type: string
+                    description: Effective configured HTTP, TLS or mTLS requirement; not an observed availability result.
+                  sourceId:
+                    type: string
+                    description: Exact configured custom source identity when applicable.
+                  diagnosticUrl:
+                    type: [string, "null"]
+                    description: Separate supported browser destination, preserving configured protocol bases. Disabled/internal rows have no live action.
+                  diagnosticLabel:
+                    type: [string, "null"]

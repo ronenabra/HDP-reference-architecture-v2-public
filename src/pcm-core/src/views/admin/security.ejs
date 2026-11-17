@@ -1,0 +1,83 @@
+<% const securitySources = securityModel.sources(config);
+const selectedSecuritySource = securitySources.find(source => source.id === state.source);
+const unknownSecuritySource = Boolean(req.query?.source && !selectedSecuritySource) || Boolean(options.adminError && req.body?.sourceId && !selectedSecuritySource);
+const securityId = selectedSecuritySource?.policyId;
+const savedOverrides = securityId && Object.hasOwn(config.securitySimulation?.perSource || {}, securityId) ? config.securitySimulation.perSource[securityId] : {};
+const savedEffective = securityId && Object.hasOwn(policy.simulation.perSource, securityId) ? policy.simulation.perSource[securityId] : simulationControls;
+const capabilityDraft = draft('/admin/config/own-token-introspection', 'allowServiceProviderOwnTokenIntrospection', config.security.pcmApi.allowServiceProviderOwnTokenIntrospection === undefined ? 'default' : String(config.security.pcmApi.allowServiceProviderOwnTokenIntrospection));
+const strictSecurity = config.conformance.preset === 'strict';
+const simulationPath = '/admin/config/simulation'; %>
+<p data-help-key="admin.simulation-effective">Saved preset: <strong><%= config.conformance.preset %></strong> · revision <%= config.runtime.revision || 0 %>. PCM policy below is derived from saved configuration. Source/listener adoption and runtime enforcement are not checked here.</p>
+<% if (req.query?.securitySaved === String(config.runtime.revision)) { %><p role="status" class="alert alert-info" data-help-key="admin.simulation-effective">Saved revision <%= req.query.securitySaved %>. New PCM requests read current configuration; source adoption pending operator checks. A save does not prove runtime enforcement.</p><% } %>
+<p class="alert alert-warning" data-help-key="admin.aws-isolation">Full non-AWS diagnostics are sensitive local developer artifacts. AWS credential isolation is always on.</p>
+<form method="get" action="<%= basePath %>/admin" class="admin-security-target">
+  <input type="hidden" name="section" value="security">
+  <label for="security-target" data-help-key="admin.simulation-overrides">Controls for</label>
+  <select id="security-target" name="source" data-help-key="admin.simulation-overrides"><option value="">Global controls</option><% securitySources.forEach(source => { %><option value="<%= source.id %>" <%- state.source === source.id ? 'selected' : '' %>><%= source.name %> · <%= source.id %></option><% }) %></select>
+  <button class="btn btn-outline-secondary" data-help-key="admin.simulation-overrides">Open controls</button>
+</form>
+<% if (!unknownSecuritySource) { %>
+<form method="post" action="<%= basePath %>/admin/config/simulation" class="mb-4" data-simulation-form data-saved-preset="<%= config.conformance.preset %>" data-saved-mode="<%= config.conformance.mode %>">
+  <input type="hidden" name="adminForm" value="simulation"><input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>"><input type="hidden" name="sourceId" value="<%= selectedSecuritySource?.id || '' %>">
+  <input type="hidden" name="resetDefaults" value="<%= draft(simulationPath, 'resetDefaults', 'false') %>">
+  <% if (!selectedSecuritySource) { %>
+  <script type="application/json" data-simulation-defaults><%- JSON.stringify(Object.fromEntries(PRESETS.map(name => [name, { controls: presetSimulationDefaults(name), perSource: presetSourceDefaults(name) }]))).replace(/</g, '\\u003c') %></script>
+  <script type="application/json" data-simulation-saved><%- JSON.stringify({ controls: Object.fromEntries(SIMULATION_CONTROLS.map(name => [name, simulationControls[name]])), perSource: config.securitySimulation?.perSource || {}, labels: securityModel.LABELS }).replace(/</g, '\\u003c') %></script>
+  <label for="simulation-preset" data-help-key="admin.simulation-preset">Security preset</label>
+  <select id="simulation-preset" name="preset" class="form-select mb-2" data-help-key="admin.simulation-preset"><% PRESETS.forEach(preset => { %><option value="<%= preset %>" <%- draft(simulationPath, 'preset', config.conformance.preset) === preset ? 'selected' : '' %>><%= preset %></option><% }) %></select>
+  <p data-preset-consequence role="status" data-help-key="admin.simulation-preset">Strict/connectathon transitions require controlled team recreation and are rejected here before any saved mutation. Managed listener ownership remains with the deployment operator.</p>
+  <button type="button" class="btn btn-outline-secondary" data-preset-defaults data-help-key="admin.simulation-defaults">Preview selected preset defaults</button>
+  <div data-preset-preview hidden class="mt-2" data-help-key="admin.simulation-defaults"><h3 class="h6">Preset replacement preview</h3><div data-preset-changes></div><p>Using these defaults replaces all global controls and removes every source override shown. Your saved configuration changes only on Save.</p><button type="button" class="btn btn-outline-secondary" data-preset-use data-help-key="admin.simulation-defaults">Use previewed defaults</button></div>
+  <% } else { %><input type="hidden" name="preset" value="<%= config.conformance.preset %>"><h3 class="h6"><%= selectedSecuritySource.name %> · <%= selectedSecuritySource.id %></h3><p class="small">Policy identity: <%= securityId %>. Inherit uses the saved global value.</p><% } %>
+  <p data-help-key="admin.simulation-native" class="small">Only the transport and authentication checks below are configurable. Strict locks all six checks.</p>
+  <div class="admin-security-controls">
+  <% SIMULATION_CONTROLS.forEach(name => { const label = securityModel.LABELS[name]; const sourceValue = Object.hasOwn(savedOverrides, name) ? String(savedOverrides[name]) : 'inherit'; %>
+    <div class="admin-security-control">
+    <% if (selectedSecuritySource) { %>
+      <label for="simulation-<%= name %>" data-help-key="simulation.<%= name %>"><%= label %></label>
+      <select id="simulation-<%= name %>" name="control.<%= name %>" data-help-key="simulation.<%= name %>" data-help-disabled-key="admin.simulation-locked" <%- options.adminError?.details?.field === `control.${name}` ? 'aria-invalid="true" aria-errormessage="admin-error-summary"' : '' %> <%- strictSecurity ? 'disabled' : '' %>><% for (const [value, text] of [['inherit', 'Inherit'], ['true', 'On'], ['false', 'Off']]) { %><option value="<%= value %>" <%- (strictSecurity ? 'inherit' : draft(simulationPath, `control.${name}`, sourceValue)) === value ? 'selected' : '' %>><%= text %></option><% } %></select>
+      <% if (strictSecurity) { %><input type="hidden" name="control.<%= name %>" value="inherit"><% } %>
+    <% } else { %>
+      <label for="simulation-<%= name %>" data-help-key="simulation.<%= name %>"><input type="checkbox" id="simulation-<%= name %>" name="control.<%= name %>" value="true" data-help-key="simulation.<%= name %>" data-help-disabled-key="admin.simulation-locked" <%- (strictSecurity ? simulationControls[name] : draftChecked(simulationPath, `control.${name}`, simulationControls[name])) ? 'checked' : '' %> <%- strictSecurity ? 'disabled' : '' %>> <%= label %></label>
+    <% } %>
+    <p class="small" data-help-key="admin.simulation-effective">Saved <%= selectedSecuritySource ? (sourceValue === 'inherit' ? 'Inherit' : savedOverrides[name] ? 'On' : 'Off') : simulationControls[name] ? 'On' : 'Off' %> · Effective <%= savedEffective[name] ? 'On' : 'Off' %> · <%= strictSecurity ? 'Strict lock' : selectedSecuritySource ? (sourceValue === 'inherit' ? 'Inherited global value' : 'Explicit source override') : Object.hasOwn(config.securitySimulation?.global || {}, name) ? 'Global override' : 'Preset default' %></p>
+    </div>
+  <% }) %>
+  </div>
+  <% if (selectedSecuritySource) { %><p data-help-key="admin.simulation-overrides"><a href="<%= shell.address(basePath, 'sources', selectedSecuritySource.id, 'trust') %>">Open this source’s HTTPS trust material</a>. Trusted CA/pin material is separate from Verify HTTPS server certificate above. This saved verification policy is <strong><%= savedEffective.serverCertificateVerification ? 'On' : 'Off' %></strong>.</p><% } %>
+  <p role="status" data-simulation-state data-help-key="admin.simulation-effective"><%= options.adminError && req.path === simulationPath ? 'Unsaved draft retained after the rejected save. Review against the current saved values.' : 'No unsaved changes. Saved values above do not change while editing.' %></p>
+  <button class="btn btn-primary" data-simulation-save data-help-key="admin.simulation-apply" <%- strictSecurity ? 'disabled data-help-disabled-key="admin.simulation-locked"' : '' %>>Save <%= selectedSecuritySource ? 'source' : 'global' %> controls</button>
+</form>
+<% } %>
+<h3 class="h6">Transport and required safeguards</h3>
+<dl tabindex="0" class="admin-facts" data-help-key="admin.security-invariants">
+  <div><dt>PCM API client authentication</dt><dd><%= config.security.pcmApi.clientAuth === 'mtls' ? 'mTLS' : 'TLS' %> · Fixed by preset; browser login/authorization uses HTTPS without a client certificate.</dd></div>
+  <div><dt>Global source gateway authentication</dt><dd><%= simulationControls.publicClientMtls ? 'mTLS' : 'TLS' %> · Derived from Require public client mTLS; source overrides can differ.</dd></div>
+  <div><dt>Private gateway to FHIR</dt><dd><%= config.security.dsGatewayToFhirServer.protocol.toUpperCase() %> · Deployment-owned listener. Verification follows the selected source policy.</dd></div>
+  <div><dt>Clinical authority</dt><dd>Always required: approved scopes, Patient/source context, current Consent/service authority and token expiry. Patient mapping grants no access. Legacy Node clinical access is unsupported.</dd></div>
+  <div><dt>AWS credential isolation</dt><dd>Always on · No sandbox control can disable it.</dd></div>
+</dl>
+<p data-help-key="demo.full-access">Every preset enforces the exact approved scope, Patient/source context and current authority. Create and explicitly approve a broader scope for broader sandbox access.</p>
+<hr>
+<form method="post" action="<%= basePath %>/admin/config/security" class="mb-4" data-token-duration-form>
+  <input type="hidden" name="adminForm" value="token-duration"><input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>">
+  <h3 class="h6">PCM access tokens</h3>
+  <label for="access-token-lifetime" data-help-key="admin.token-lifetime">Access token duration (seconds)</label>
+  <input class="form-control" id="access-token-lifetime" type="number" step="1" min="1" max="<%= require('../../../shared/pcm-environment').tokenMaximumSeconds(config) %>" required name="accessTokenExpiresInSeconds" value="<%= draft('/admin/config/security', 'accessTokenExpiresInSeconds', config.security.pcmApi.accessTokenExpiresInSeconds) %>" data-help-key="admin.token-lifetime" <%- options.adminError?.details?.field === 'accessTokenExpiresInSeconds' ? 'aria-invalid="true" aria-errormessage="admin-error-summary"' : '' %>>
+  <p class="small" data-help-key="admin.token-lifetime">Saved: <%= config.security.pcmApi.accessTokenExpiresInSeconds %> seconds. Contract environment: <%= config.contract.environment %> (deployment controlled). Production maximum: 30 seconds; test maximum: 86400 seconds. Applies to future issuance on current PCM requests, capped by earlier authorization deadlines. Existing tokens, approved grants and first-use clocks are unchanged.</p>
+  <p role="status" data-token-duration-state><%= options.adminError && req.path === '/admin/config/security' && req.body?.adminForm === 'token-duration' ? 'Unsaved duration draft retained after the rejected save.' : 'No unsaved duration changes.' %> Runtime enforcement not checked here.</p>
+  <button class="btn btn-primary" data-help-key="admin.security-save">Save token duration</button>
+</form>
+<form method="post" action="<%= basePath %>/admin/config/own-token-introspection" class="mb-3" data-own-token-capability>
+  <input type="hidden" name="adminForm" value="own-token-capability"><input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>">
+  <h3 class="h6">Sandbox capabilities</h3>
+  <label for="own-token-introspection" data-help-key="admin.own-token-introspection">Service Provider own-token introspection</label>
+  <select id="own-token-introspection" name="allowServiceProviderOwnTokenIntrospection" class="form-select mb-2" data-help-key="admin.own-token-introspection" aria-describedby="own-token-effective" data-help-disabled-key="admin.own-token-introspection" <%- strictSecurity ? 'disabled' : '' %>>
+    <option value="default" <%- capabilityDraft === 'default' ? 'selected' : '' %>>Preset default (<%= ownInspection.default ? 'enabled' : 'disabled' %>)</option><option value="true" <%- capabilityDraft === 'true' ? 'selected' : '' %>>Enabled override</option><option value="false" <%- capabilityDraft === 'false' ? 'selected' : '' %>>Disabled override</option>
+  </select>
+  <p id="own-token-effective" role="status">Effective: <%= ownInspection.enabled ? 'enabled' : 'disabled' %> · <%= ownInspection.origin %>. <%= strictSecurity ? 'Strict prohibits this optional sandbox diagnostic capability.' : 'Uses the SP’s own registered credentials without starting source access.' %></p>
+  <button class="btn btn-primary" data-help-key="admin.own-token-introspection" <%- strictSecurity ? 'disabled' : '' %>>Save own-token capability</button>
+</form>
+<p><a href="<%= shell.address(basePath, 'sources') %>">Source budgets and legacy mappings/upstream</a> · <a href="<%= shell.address(basePath, 'certificates') %>">Credential inventory</a></p>
+
+<% if (!selectedSecuritySource && !unknownSecuritySource) { %><hr><%- partial('test-workflows') %><% } %>

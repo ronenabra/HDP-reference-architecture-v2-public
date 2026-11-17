@@ -1,0 +1,497 @@
+{
+  "schemaVersion": "pcm-external-contract-inputs/2",
+  "purpose": "Public pinned contract-regression inputs, downloaded only into ignored local paths; no runtime dependency or canonical publishing toolchain.",
+  "activeRelease": "0.4.2",
+  "implementationProvenance": {
+    "release": "0.4.2",
+    "sourceCommit": "bd093a1764a56dd8ad76af365f33b74a735daee0",
+    "role": "Historical implementation provenance only; not a public retrieval prerequisite."
+  },
+  "swagger": {
+    "repository": "https://github.com/MohGovIL/Swagger",
+    "commit": "c048db3bb8ed4eca563c60849cefc780ce115924",
+    "release": "0.4.2"
+  },
+  "profiles": {
+    "project": "https://simplifier.net/pcm-il",
+    "release": "0.4.2",
+    "snapshotDate": "2026-11-17",
+    "pinPolicy": "Raw resource URL plus SHA-256/size. resourceVersionId records the observed project history revision. Download URLs are mutable; content changes fail closed. No versioned PCM-IL package is published and historical FHIR vread returned 501. Preserve verified cache bytes for offline use."
+  },
+  "comparison": {
+    "swagger": "All three specs byte-identical to the implemented 0.4.2 source.",
+    "json": "63 public raw resources compared: 46 equal as parsed JSON; 17 differ solely in equivalent dateTime timezone serialization. No downloaded JSON is byte-identical to the recorded source. Public bytes are installed unchanged.",
+    "validation": "Source/dependency discovery comparison only; no test, lint, profile validator or regression suite was run."
+  },
+  "packageDiscovery": {
+    "localCache": "FHIR R4/HDP/IL Core packages present; no PCM 0.4.2 package. Public setup does not read this cache.",
+    "pcmDemo": {
+      "name": "il.pcmdemo.fhir.r4",
+      "version": "0.1.10",
+      "registry": "https://packages.fhir.org/il.pcmdemo.fhir.r4",
+      "archiveSha256": "feaaa38918bdf1bb84bae951755a210b7f2301279eec2878b4a68306b16c442f",
+      "excludedReason": "Different pcmdemo.health.org.il canonical; required current authorization profiles absent. Not substituted for PCM-IL 0.4.2."
+    }
+  },
+  "files": [
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-catalog-update-live-inheritance-after.json",
+      "url": "https://simplifier.net/pcm-il/bundle-catalog-update-live-inheritance-after/$download?format=json",
+      "sha256": "26b61e205e7b108a8ea79cc785c83f46ab3e9530d7c69004db034c1ae091f4a5",
+      "bytes": 10928,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-catalog-update-live-inheritance-before.json",
+      "url": "https://simplifier.net/pcm-il/bundle-catalog-update-live-inheritance-before/$download?format=json",
+      "sha256": "63755eaadda7afb61e78669ae81bf6b285269938bb4b2bc1646dc130c832b9e5",
+      "bytes": 10839,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-consent-include-actors-endpoints.json",
+      "url": "https://simplifier.net/pcm-il/bundle-consent-include-actors-endpoints/$download?format=json",
+      "sha256": "77d448d0c0c3e83f2f400aaf72c889d9a39aa834d8d396f5c23c5ff489aa0451",
+      "bytes": 17878,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-contract-system-grants.json",
+      "url": "https://simplifier.net/pcm-il/bundle-contract-system-grants/$download?format=json",
+      "sha256": "6312b1b57a34e852baf488616a38ce5c0fca8f170156a64058c2eccb0e9073d4",
+      "bytes": 9504,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-endpoint-thumbprint-search.json",
+      "url": "https://simplifier.net/pcm-il/bundle-endpoint-thumbprint-search/$download?format=json",
+      "sha256": "632bfb483df9a38f0cf6fbab977ebd6dc0d11a1cc4111c16f5e04c0c249db032",
+      "bytes": 1908,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-healthcareservice-active-catalog.json",
+      "url": "https://simplifier.net/pcm-il/bundle-healthcareservice-active-catalog/$download?format=json",
+      "sha256": "772f34f02ab8ab60dd6d15445d8ca009948fda5ed79054eaf504ee2ae08f49e9",
+      "bytes": 5555,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Bundle-bundle-healthcareservice-pending-registration-registry.json",
+      "url": "https://simplifier.net/pcm-il/bundle-healthcareservice-pending-registration-registry/$download?format=json",
+      "sha256": "3e0f6c5ef9a08272b6a7285c2ab34486df699cafc77c864ba3c89e08a991dd33",
+      "bytes": 6319,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/CapabilityStatement-pcm-capabilitystatement.json",
+      "url": "https://simplifier.net/pcm-il/pcm-capabilitystatement/$download?format=json",
+      "sha256": "7ea2c0a57ec7f37a657cdbe31889159d08d973face2f8fccb17aa978362be904",
+      "bytes": 21598,
+      "resourceVersionId": "2"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/consent-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "c7047f1a363c2efb53560e692427cf2fa261bc4e22429061d990cdde7cf468bf",
+      "bytes": 3070,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-patient-narrowed-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/consent-patient-narrowed-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "2d7611b5006b23d05008343483d365b775ee5a83e1e50fb82ceafce5c6654cb7",
+      "bytes": 3100,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-permanently-inactive-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/consent-permanently-inactive-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "d24561b3a6857f85bd37eb4342957c17abb00bfeb3d4a30bb44075a38eaf78b1",
+      "bytes": 3135,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-rejected-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/consent-rejected-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "a157939ae3ae29119e57823f660f22935f161128731e71c3d8b832a7db2cdb13",
+      "bytes": 2624,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-request-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/consent-request-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "f7286b3e16590d8998b809e1bb8a01e91a23747143b91cef15910a573eeede85",
+      "bytes": 1237,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-temporarily-inactive-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/consent-temporarily-inactive-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "9c60509eed758d6a02bd8b626036600e8e853c7926b8e0519b1eb91a1e8da71f",
+      "bytes": 3135,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-test-patient-1-approved.json",
+      "url": "https://simplifier.net/pcm-il/consent-test-patient-1-approved/$download?format=json",
+      "sha256": "4385940abe05a0addce8a8c3d6e131365373e2299c9d30553a60fb16d0694e9b",
+      "bytes": 3246,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-test-patient-1-submit.json",
+      "url": "https://simplifier.net/pcm-il/consent-test-patient-1-submit/$download?format=json",
+      "sha256": "bca77c7b9ae702deca458a1a78251c35d00b7246daf2c5e2140dcb6566156ca0",
+      "bytes": 1135,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-test-patient-2-approved.json",
+      "url": "https://simplifier.net/pcm-il/consent-test-patient-2-approved/$download?format=json",
+      "sha256": "b555418d7d34396d331c688e1a2720fd584a6e7bb2283593be7a72b8a84d21f3",
+      "bytes": 3246,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Consent-consent-test-patient-2-submit.json",
+      "url": "https://simplifier.net/pcm-il/consent-test-patient-2-submit/$download?format=json",
+      "sha256": "208079695bfad7661e20618547dad12044ccf2af2fba2dbbf6e2a962b67e6fdf",
+      "bytes": 1135,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Contract-policy-dependent-discovery.json",
+      "url": "https://simplifier.net/pcm-il/contract-policy-dependent-discovery/$download?format=json",
+      "sha256": "3bebf6c5fe79143b5caa6ec15235ff56d0b9047d1237294a608ded6efe453a4c",
+      "bytes": 2528,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Contract-policy-patient-authentication.json",
+      "url": "https://simplifier.net/pcm-il/contract-policy-patient-authentication/$download?format=json",
+      "sha256": "fff625366f36bfc3de8196d5d14912016fafe4f81c2c02eb2f0b236933b430ee",
+      "bytes": 2275,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Contract-policy-presence-check.json",
+      "url": "https://simplifier.net/pcm-il/contract-policy-presence-check/$download?format=json",
+      "sha256": "45735ad7b76ee18c36590756450f5c58b76fc05279bf0840ecd22765c2466a81",
+      "bytes": 2184,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Endpoint-endpoint-hmo-b-old.json",
+      "url": "https://simplifier.net/pcm-il/endpoint-hmo-b-old/$download?format=json",
+      "sha256": "dee71456a65ddf13871b02d5f2e790db3cf31d5be693bfacd76946832b927ac7",
+      "bytes": 629,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Endpoint-endpoint-hmo-b-submit.json",
+      "url": "https://simplifier.net/pcm-il/endpoint-hmo-b-submit/$download?format=json",
+      "sha256": "83b0c9a6b30bfbc54089c883e56c586fb977a63ff90761313bed7bb0d7c7ad24",
+      "bytes": 631,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Endpoint-endpoint-hmo-b-update.json",
+      "url": "https://simplifier.net/pcm-il/endpoint-hmo-b-update/$download?format=json",
+      "sha256": "5791b78c4a944bef45777fef722dc69f3d13515752200673b0822ee73f124ff5",
+      "bytes": 637,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Endpoint-endpoint-hmo-b.json",
+      "url": "https://simplifier.net/pcm-il/endpoint-hmo-b/$download?format=json",
+      "sha256": "6f1ff9e71e5e643aaa31d78e22d7e4cd0ea2e19335035d6953a03e035412cd96",
+      "bytes": 1032,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Endpoint-endpoint-pcm-system.json",
+      "url": "https://simplifier.net/pcm-il/endpoint-pcm-system/$download?format=json",
+      "sha256": "283186a8e847ea0bc22e5d6293384599a6fa917036f8225f81b2661ace717c66",
+      "bytes": 1060,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-catalog-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/svc-catalog-cross-org-summary/$download?format=json",
+      "sha256": "e55138af8c915673e182b85a830be428501c7f14dc18f398fc2701a5771b664a",
+      "bytes": 4039,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-catalog-extended-medication-safety.json",
+      "url": "https://simplifier.net/pcm-il/svc-catalog-extended-medication-safety/$download?format=json",
+      "sha256": "18c04a7aa780126087450b5a1b24bf0033bc62e72018cabe9b2555d451d050fb",
+      "bytes": 3055,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-catalog-new-service-pending.json",
+      "url": "https://simplifier.net/pcm-il/svc-catalog-new-service-pending/$download?format=json",
+      "sha256": "7fd415d4a2eac50b17940a3d59f786d8b6e303e491b2ddade2b440936e2ff200",
+      "bytes": 4042,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-instance-hmo-b-extended-medication-safety-pending.json",
+      "url": "https://simplifier.net/pcm-il/svc-instance-hmo-b-extended-medication-safety-pending/$download?format=json",
+      "sha256": "a2eb05d355dd013e4848888282fb93575236d802970e273f3e76e2fbed56e156",
+      "bytes": 3626,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-instance-hosp-a-cross-org-summary-submit.json",
+      "url": "https://simplifier.net/pcm-il/svc-instance-hosp-a-cross-org-summary-submit/$download?format=json",
+      "sha256": "9ed9a8200cc0e939b28bac6b6bc46077ef71022063849c3558b17a5ea173f4b8",
+      "bytes": 508,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-instance-hosp-a-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/svc-instance-hosp-a-cross-org-summary/$download?format=json",
+      "sha256": "d89cede77732c83a21bf7cf8ea6043b972a0e20e66cb16c9fd3647b0ef2ba1c7",
+      "bytes": 4586,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-instance-hosp-a-new-service-pending.json",
+      "url": "https://simplifier.net/pcm-il/svc-instance-hosp-a-new-service-pending/$download?format=json",
+      "sha256": "b6f8aa0546faa2c4cdf407c8c7d8bd0769dabb9bc8a7a39453d2966e0902344d",
+      "bytes": 4591,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/HealthcareService-svc-instance-hosp-a-new-service-submit.json",
+      "url": "https://simplifier.net/pcm-il/svc-instance-hosp-a-new-service-submit/$download?format=json",
+      "sha256": "28bdf33067a410f20f1dc42e585aad6e71cc1536c4b92fb8eea7eaefb5a09b97",
+      "bytes": 3354,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-authorization-failure.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-authorization-failure/$download?format=json",
+      "sha256": "469f4f2cdd3d8db0ee67283d3b0b73c15e0d991abfd264f4b990d772cf4d768c",
+      "bytes": 469,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-duplicate-name-conflict.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-duplicate-name-conflict/$download?format=json",
+      "sha256": "db705843f83c5b55955e45a9d08093279a8e801c212b16433bd6a20322a6d6ff",
+      "bytes": 463,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-invalid-based-on.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-invalid-based-on/$download?format=json",
+      "sha256": "6fda49274c6e7b68b1826aeb1a94f8d09795c5e4f5d09db0a5f719308af89113",
+      "bytes": 490,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-material-catalog-update.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-material-catalog-update/$download?format=json",
+      "sha256": "820b05f553c202fd9cf9232211e1c96263e971fab4eaa154301675fe74154b47",
+      "bytes": 553,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-state-conflict.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-state-conflict/$download?format=json",
+      "sha256": "6d3de3a737310530a2ad08caf95ae95db33a2415eed5b461051412d26054ce36",
+      "bytes": 580,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-unsupported-change.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-unsupported-change/$download?format=json",
+      "sha256": "e0a260895cf709cad0d5269c82f3863f65ddf31b8fe3564693e9437b325658b5",
+      "bytes": 535,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-healthcareservice-validation-failure.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-healthcareservice-validation-failure/$download?format=json",
+      "sha256": "c67b74d06b3ca0b16a6a84d30858728326986aa7b3d58dcd7b4f6e210465f503",
+      "bytes": 455,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-organization-create-cross-parent.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-organization-create-cross-parent/$download?format=json",
+      "sha256": "6f17d26eca53030584ddf7be123a0faa213c8b95bbaa0efc636c2a1a09e2bdb0",
+      "bytes": 494,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-organization-create-unsupported-child.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-organization-create-unsupported-child/$download?format=json",
+      "sha256": "51c468f6d3143610ef3f92b4be06d00935f66fe43a9567e16f462984d9bc9b40",
+      "bytes": 523,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/OperationOutcome-outcome-organization-create-wrong-role.json",
+      "url": "https://simplifier.net/pcm-il/operationoutcome-outcome-organization-create-wrong-role/$download?format=json",
+      "sha256": "b349efb1cb75d3dcc79e88cf9dd43db3f4fda9bfb03bcce2fec0b573c41a7d3b",
+      "bytes": 471,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-ds-hmo-b-submit.json",
+      "url": "https://simplifier.net/pcm-il/org-ds-hmo-b-submit/$download?format=json",
+      "sha256": "06b7330382f6ed4e326173531efa50d728ee68a6f22f5241d4b25a476a7e07b4",
+      "bytes": 761,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-ds-hmo-b.json",
+      "url": "https://simplifier.net/pcm-il/org-ds-hmo-b/$download?format=json",
+      "sha256": "9f2040b86045ba1e98d4222b994cfcec07839926ec12528eed0bcd0bf628c30e",
+      "bytes": 1776,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-parent-hmo-b-update.json",
+      "url": "https://simplifier.net/pcm-il/org-parent-hmo-b-update/$download?format=json",
+      "sha256": "b008a722c8fa279f9221afa3f50752fa621f053477719b56e96f9e0e16b10ad9",
+      "bytes": 1491,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-parent-hmo-b.json",
+      "url": "https://simplifier.net/pcm-il/org-parent-hmo-b/$download?format=json",
+      "sha256": "a2ccf8976944aee76c482c0bf074b154ae6fb4abf74faeb5e566bc79815c550d",
+      "bytes": 2471,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-parent-hospital-a.json",
+      "url": "https://simplifier.net/pcm-il/org-parent-hospital-a/$download?format=json",
+      "sha256": "88bb313f59160e590906aadf8b0099680fa2f06d1c1b94200308676289d1c867",
+      "bytes": 2515,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-pcm-system.json",
+      "url": "https://simplifier.net/pcm-il/org-pcm-system/$download?format=json",
+      "sha256": "759904fa5a6faa3a1baefd80c7123b27c7cfa4b70a3548592f877f9ca0a894db",
+      "bytes": 1955,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-sp-hmo-b-long-duration.json",
+      "url": "https://simplifier.net/pcm-il/org-sp-hmo-b-long-duration/$download?format=json",
+      "sha256": "3d44551ae7d6c7baf97e1fe77907af21a85ed57c17ccad9ea9436ddd461a0c14",
+      "bytes": 1501,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-sp-hospital-a-submit.json",
+      "url": "https://simplifier.net/pcm-il/org-sp-hospital-a-submit/$download?format=json",
+      "sha256": "ed31d54bb1177cbfb2809eeeaa5307042de1c22776928a772f0c218ffc1650d9",
+      "bytes": 754,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-sp-hospital-a-update.json",
+      "url": "https://simplifier.net/pcm-il/org-sp-hospital-a-update/$download?format=json",
+      "sha256": "d8dfc5067c0968c692165e5044329eeb02153feaff49c617dc38d7716b843667",
+      "bytes": 754,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Organization-org-sp-hospital-a.json",
+      "url": "https://simplifier.net/pcm-il/org-sp-hospital-a/$download?format=json",
+      "sha256": "1f6082275562feac095b8ff5eabc9c6a45e791c665676cc3d783e4df371a0b57",
+      "bytes": 2066,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Parameters-parameters-consent-hosp-a-lifecycle.json",
+      "url": "https://simplifier.net/pcm-il/parameters-parameters-consent-hosp-a-lifecycle/$download?format=json",
+      "sha256": "ba11f60b69a39c9a1cfc288f2135116560c113a1ae2fdbb477843c8929ea72b5",
+      "bytes": 12248,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Parameters-parameters-contract-lifecycle.json",
+      "url": "https://simplifier.net/pcm-il/parameters-parameters-contract-lifecycle/$download?format=json",
+      "sha256": "8e7b7d32f6853987e0490b8e085435b3f840ab4c5e9d3705801bc1c8fa0ffb9c",
+      "bytes": 13723,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Parameters-parameters-healthcareservice-cross-org-summary-lifecycle.json",
+      "url": "https://simplifier.net/pcm-il/parameters-parameters-healthcareservice-cross-org-summary-lifecycle/$download?format=json",
+      "sha256": "561dedc095a107799be8caa5836eccfef2ff3a7e80dedda2dc555e71fa0de30d",
+      "bytes": 51977,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Parameters-parameters-healthcareservice-new-service-withdrawal-lifecycle.json",
+      "url": "https://simplifier.net/pcm-il/parameters-parameters-healthcareservice-new-service-withdrawal-lifecycle/$download?format=json",
+      "sha256": "42b127f0f1264f63ebe3a01d5a9c5ba9e1eed8815ba808ad33a79bea51110c93",
+      "bytes": 16979,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Parameters-parameters-request-catalog-update-cross-org-summary-accepted.json",
+      "url": "https://simplifier.net/pcm-il/parameters-parameters-request-catalog-update-cross-org-summary-accepted/$download?format=json",
+      "sha256": "ae9bcbc93023ba4453ba0d7636c39972c3da9d6cb2abae592239d5b12365db0b",
+      "bytes": 657,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": "docs/FHIR-examples/Parameters-parameters-request-catalog-update-cross-org-summary.json",
+      "url": "https://simplifier.net/pcm-il/parameters-parameters-request-catalog-update-cross-org-summary/$download?format=json",
+      "sha256": "9dfe461f3dd35d8d264c304db2f622c9840a3e3d4cb0b3aeb073e520ab7932ea",
+      "bytes": 5387,
+      "resourceVersionId": "1"
+    },
+    {
+      "path": ".contract-inputs/profiles/StructureDefinition-pcm-data-access-authorization-contract.json",
+      "url": "https://simplifier.net/pcm-il/pcmdataaccessauthorizationcontract/$download?format=json",
+      "sha256": "defa6d6dc078096e5c912195adf314415672a44a71d362568e7bcc74646fe7f5",
+      "bytes": 14832,
+      "resourceVersionId": "2"
+    },
+    {
+      "path": ".contract-inputs/profiles/StructureDefinition-pcm-system-authorization-contract.json",
+      "url": "https://simplifier.net/pcm-il/pcmsystemauthorizationcontract/$download?format=json",
+      "sha256": "a1080669bd6879d8d3da6cf5f85320e62aaea63b469823d531f984a2dd357c7e",
+      "bytes": 12724,
+      "resourceVersionId": "2"
+    },
+    {
+      "path": ".contract-inputs/profiles/ValueSet-pcm-authorization-status.json",
+      "url": "https://simplifier.net/pcm-il/pcm-authorization-status/$download?format=json",
+      "sha256": "9f9e8aed0090d558e782658d518d57f193e3b4c49c94a46d344cfab56df9f2dd",
+      "bytes": 974,
+      "resourceVersionId": "2"
+    },
+    {
+      "path": "docs/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/MohGovIL/Swagger/c048db3bb8ed4eca563c60849cefc780ce115924/docs/openapi.yaml",
+      "sha256": "08885182c41561f653e506b0c35a4336b81f7f137114c4ac544279116d6fd06a",
+      "bytes": 6484
+    },
+    {
+      "path": "docs/openapi-fhir.yaml",
+      "url": "https://raw.githubusercontent.com/MohGovIL/Swagger/c048db3bb8ed4eca563c60849cefc780ce115924/docs/openapi-fhir.yaml",
+      "sha256": "37e705c1857e7de587eb945f20bbcd8a5efc16c1cb06d965a973fee8ffbd26f5",
+      "bytes": 508519
+    },
+    {
+      "path": "docs/openapi-oauth.yaml",
+      "url": "https://raw.githubusercontent.com/MohGovIL/Swagger/c048db3bb8ed4eca563c60849cefc780ce115924/docs/openapi-oauth.yaml",
+      "sha256": "31ba879b36c6b26c230eb105736e680c6b23cf69f7051efafed389b88eda082c",
+      "bytes": 196758
+    }
+  ]
+}

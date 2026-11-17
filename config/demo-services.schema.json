@@ -1,0 +1,316 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "clinicalServices": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9.-]{1,64}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "canonicalIdentifier": {
+            "type": "string",
+            "minLength": 1
+          },
+          "accessMode": {
+            "enum": [
+              "continuous",
+              "one-time"
+            ]
+          },
+          "durationMonths": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "allowPatientBucketChange": {
+            "type": "boolean"
+          },
+          "buckets": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "historyYears": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "taggedDetails": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "system",
+                      "code"
+                    ],
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "code": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "display": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "code",
+                "historyYears"
+              ]
+            }
+          },
+          "queries": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "sandboxFullAccess": {
+            "type": "boolean"
+          },
+          "approvalScopeOptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "scope"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9.-]{1,64}$"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "scope": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "serviceGrant": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "purpose",
+          "canonicalIdentifier",
+          "accessMode",
+          "durationMonths",
+          "allowPatientBucketChange",
+          "buckets",
+          "queries",
+          "sandboxFullAccess"
+        ]
+      }
+    },
+    "systemPolicies": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "scenario": {
+            "enum": [
+              "presence-check",
+              "patient-authentication",
+              "dependent-discovery"
+            ]
+          },
+          "serviceId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9.-]{1,64}$"
+          },
+          "policyId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9.-]{1,64}$"
+          },
+          "serviceIdentifier": {
+            "type": "string",
+            "minLength": 1
+          },
+          "policyIdentifier": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "queries": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "validitySeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31536000
+          }
+        },
+        "required": [
+          "scenario",
+          "policyId",
+          "policyIdentifier",
+          "name",
+          "purpose",
+          "queries",
+          "validitySeconds"
+        ]
+      }
+    },
+    "sandboxSampler": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "const": "sandbox-patient-sample"
+        },
+        "serviceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policyId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "serviceIdentifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policyIdentifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validitySeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31536000
+        }
+      },
+      "required": [
+        "key",
+        "serviceId",
+        "policyId",
+        "serviceIdentifier",
+        "policyIdentifier",
+        "name",
+        "purpose",
+        "validitySeconds"
+      ]
+    },
+    "sandboxSampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "const": "sandbox-patient-sample"
+        },
+        "serviceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policyId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "serviceIdentifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policyIdentifier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "validitySeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31536000
+        }
+      },
+      "required": [
+        "key",
+        "serviceId",
+        "policyId",
+        "serviceIdentifier",
+        "policyIdentifier",
+        "name",
+        "purpose",
+        "validitySeconds"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "clinicalServices",
+    "systemPolicies"
+  ]
+}

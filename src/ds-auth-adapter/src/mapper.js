@@ -1,83 +1,114 @@
-/**
- * Identity mapping from PCM introspection to local DS tokens.
- */
-const jwt = require('jsonwebtoken');
+'use strict';
+
+/** Map the single normalized PCM authorization schema into a private DS JWT. */
+
 const crypto = require('crypto');
-const logger = require('./logger');
+const fs = require('fs');
+const path = require('path');
+const { NORMALIZED_SCHEMA } = require('./introspection-contract');
+const { readTeamConfig } = require('../../shared/team-config-validator');
+const { signLocalJwt } = require('./local-jwt');
+const { classifyRequestBinding } = require('./request-binding');
 
-// In real life, load keys from file
-const LOCAL_PRIVATE_KEY = 'local-secret-key-for-internal-usage'; // or load from certs/ds-adapter.key
-
-/**
- * Maps the Global Identity (PCM) to a Local Identity (Data Source).
- * 
- * Logic:
- * 1. Validates the token is active.
- * 2. Extracts the `patient` context (National ID).
- * 3. Hashes the National ID to create a secure, consistent Logical ID (`Patient/[Hash]`).
- * 4. Mints a short-lived local JWT with the new subject.
- * 
- * @param {Object} pcmIntrospectionResult - Response from PCM Introspection Endpoint
- * @returns {string} Signed Local JWT
- */
-function mapIdentity(pcmIntrospectionResult) {
-    if (!pcmIntrospectionResult.active) {
-        throw new Error('Token is not active');
+function loadIdentityMappingHelpers() {
+    const candidates = [
+        ...(process.env.SHARED_IDENTITY_MAPPING_DIR ? [path.join(process.env.SHARED_IDENTITY_MAPPING_DIR, 'identity-mapping')] : []),
+        path.join(__dirname, '..', '..', 'shared', 'identity-mapping'),
+        '/shared/identity-mapping'
+    ];
+    for (const candidate of candidates) {
+        try { return require(candidate); } catch (_error) { /* try the next deployment layout */ }
     }
-
-    // Logic: Map National ID (from PCM token) to Local ID
-
-    // 1. Check if 'patient' context is present in the Introspection Result
-    // (Added by pcm-core/auth.js logic)
-    // Format expected: "system|value" e.g. "http://fhir.health.gov.il/identifier/il-national-id|000000018"
-    const patientContext = pcmIntrospectionResult.patient;
-
-    if (!patientContext) {
-        // Logging context issues should be handled by the caller or a logger instance if passed
-        throw new Error('Missing mandatory patient context');
-    }
-
-    if (patientContext && patientContext.includes('|')) {
-        // Extract the value (after the pipe)
-        const parts = patientContext.split('|');
-        const value = parts[1];
-
-        // 2. Hash the numerical part (value) to create a Logical ID
-        // The Data Source stores data under "Patient/[HashedID]"
-
-        // Hashing Algo: SHA256 of the value
-        const hash = crypto.createHash('sha256').update(value).digest('hex');
-
-        // Construct the Local Subject (Logical ID)
-        // sub: "Patient/[hash]"
-        const localSubject = `Patient/${hash}`;
-
-        logger.info(`Mapped Business ID ${value} -> Logical ID ${localSubject}`, {
-            type: 'IDENTITY_MAPPED',
-            business_id: value,
-            logical_id: localSubject
-        });
-
-        const localPayload = {
-            // Keep sub as client_id for POC, and carry mapped patient separately.
-            sub: pcmIntrospectionResult.client_id,
-            scope: pcmIntrospectionResult.scope, // Pass-through scopes
-            iss: pcmIntrospectionResult.iss,
-            aud: pcmIntrospectionResult.aud,
-            jti: pcmIntrospectionResult.jti,
-            iat: pcmIntrospectionResult.iat,
-            client_id: pcmIntrospectionResult.client_id,
-            fhirContext: pcmIntrospectionResult.fhirContext,
-            cnf: pcmIntrospectionResult.cnf,
-
-            // Include mapped patient identity
-            patient: localSubject
-        };
-
-        return jwt.sign(localPayload, LOCAL_PRIVATE_KEY, { algorithm: 'HS256', expiresIn: '30s' });
-    }
-
-    throw new Error('Invalid patient identifier format');
+    throw new Error('Unable to load shared identity mapping helpers');
 }
 
-module.exports = { mapIdentity };
+const { DEFAULT_PATIENT_ID_SYSTEM, cleanLocalSubject, getEffectiveBusinessIdOverrides, toPatientContext } = loadIdentityMappingHelpers();
+
+function readIdentityOverrides() {
+    const configPath = process.env.TEAM_CONFIG_PATH || [
+        '/runtime/team-config.json',
+        path.join(process.cwd(), 'team-config.json')
+    ].filter(Boolean).find(filePath => {
+        try { return fs.existsSync(filePath) && fs.statSync(filePath).isFile(); } catch (_error) { return false; }
+    });
+    return getEffectiveBusinessIdOverrides(readTeamConfig(configPath, { env: process.env }));
+}
+
+/** Resolve a typed patient identifier inside one immutable HO namespace. */
+function mapPatient(identifier, hoId, overrides = readIdentityOverrides()) {
+    if (!identifier?.system || !identifier?.value || !hoId) throw new Error('Typed Patient context and HO namespace are required');
+    const context = `${identifier.system}|${identifier.value}`;
+    const configured = cleanLocalSubject(overrides[toPatientContext(context)] || (identifier.system === DEFAULT_PATIENT_ID_SYSTEM ? overrides[identifier.value] : ''));
+    if (configured) return configured;
+    const digest = crypto.createHash('sha256').update(`${hoId}\u0000${identifier.system}\u0000${identifier.value}`).digest('hex');
+    return `Patient/${digest}`;
+}
+
+/**
+ * Convert a validated PCM decision into a closed, short-lived private JWT.
+ * Raw introspection objects are deliberately rejected.
+ */
+function mapIdentity(context, options = {}) {
+    if (!context?.active || context.schema !== NORMALIZED_SCHEMA) {
+        throw new Error(`Authorization context must use ${NORMALIZED_SCHEMA}`);
+    }
+    const hoId = options.hoId || context.hoId;
+    if (!hoId || context.hoId !== hoId) throw new Error('Authorization context belongs to another HO');
+    if (!options.issuer || !options.audience) throw new Error('Private local JWT issuer and audience are required');
+
+    const requestBinding = options.requestBinding;
+    let requestRoute;
+    try { requestRoute = classifyRequestBinding(requestBinding).route; } catch (_error) {
+        throw new Error('A validated protected FHIR request binding is required');
+    }
+    const clinicalBinding = ['data-source-access', 'patient-authentication', 'dependent-discovery'].includes(context.kind)
+        && (['GET', 'HEAD'].includes(requestBinding?.method)
+            && ['clinical', 'continuation', 'patient-everything'].includes(requestRoute)
+            || requestBinding?.method === 'POST' && requestRoute === 'type-search');
+    const onlineBinding = context.kind === 'online-presence'
+        && (requestBinding?.method === 'GET' && requestBinding?.uri.startsWith('/fhir/Patient?')
+            || requestRoute === 'type-search' && /^\/fhir\/Patient\/_search(?:\?|$)/.test(requestBinding.uri));
+    const batchBinding = ['batch-presence', 'online-presence', 'dependent-discovery'].includes(context.kind)
+        && requestBinding?.method === 'POST' && ['/fhir', '/fhir/'].includes(requestBinding?.uri);
+    if (!requestBinding || typeof requestBinding.uri !== 'string'
+        || !(clinicalBinding || onlineBinding || batchBinding || context.kind === 'sandbox-patient-sample')) {
+        throw new Error('A validated protected FHIR request binding is required');
+    }
+    const samplingBinding = context.kind === 'sandbox-patient-sample';
+    if (samplingBinding) require('../../shared/sandbox-patients').assertSampleRequest(requestBinding);
+    const payload = {
+        schema: 'pcm-ds-local-token/5',
+        policy_stamp: options.policyStamp || 'test-policy',
+        authorization_schema: context.schema,
+        ho_id: hoId,
+        kind: context.kind,
+        sub: context.subject.clientId,
+        client_id: context.subject.clientId,
+        scope: context.grant.scope,
+        pcm_issuer: context.token.issuer,
+        pcm_audience: context.token.audience,
+        pcm_expires_at: context.token.expiresAt,
+        authentication: context.authentication,
+        request_binding: { method: requestBinding.method, uri: requestBinding.uri },
+        ...(context.subject.organization ? { organization: context.subject.organization } : {}),
+        ...(context.grant.patient ? { patient_identifier: context.grant.patient } : {}),
+        ...(context.grant.contract ? { contract_identifier: context.grant.contract } : {}),
+        ...(context.grant.representative ? { representative_identifier: context.grant.representative } : {}),
+        ...(context.grant.scenario ? { scenario: context.grant.scenario } : {}),
+        ...(context.grant.consent ? { consent_identifier: context.grant.consent } : {}),
+        ...(context.grant.healthcareService ? { healthcare_service_identifier: context.grant.healthcareService } : {}),
+        ...(context.grant.presenceIdentifiers ? { presence_identifiers: context.grant.presenceIdentifiers } : {})
+    };
+    return signLocalJwt(payload, {
+        issuer: options.issuer,
+        audience: options.audience,
+        sourceExpiresAt: context.token.expiresAt,
+        clock: options.clock,
+        maxPrivateAuthorizationBytes: options.queryLimits?.maxPrivateAuthorizationBytes
+    });
+}
+
+/** Retired contexts must never be minted, including by diagnostic callers. */
+function mapUnfilteredSimulation() { throw new Error('Unfiltered and anonymous clinical simulation is retired; an explicit approved scope is required'); }
+
+module.exports = { mapIdentity, mapPatient, mapUnfilteredSimulation };

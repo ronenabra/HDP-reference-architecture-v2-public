@@ -1,0 +1,399 @@
+{
+  "schemaVersion": "pcm-service-templates/1",
+  "templates": [
+    {
+      "key": "laboratory-follow-up",
+      "summary": "Laboratory results and trends for a planned follow-up.",
+      "dataDescription": "Observation. Recorded facts only; no diagnosis-specific or medication-name filter is inferred from this title.",
+      "definition": {
+        "name": "Laboratory result follow-up",
+        "purpose": "Review laboratory results and trends across approved sources to support a planned follow-up visit for the selected patient.",
+        "category": "35",
+        "accessMode": "continuous",
+        "duration": 3,
+        "durationUnit": "mo",
+        "allowChanges": true,
+        "buckets": [
+          {
+            "code": "laboratoryTests",
+            "history": 2,
+            "historyUnit": "a",
+            "sensitivity": []
+          }
+        ],
+        "permissions": [
+          {
+            "type": "Patient",
+            "actions": "rs"
+          },
+          {
+            "type": "Observation",
+            "actions": "rs"
+          }
+        ],
+        "confidentialityPolicy": {
+          "allowRestricted": false
+        },
+        "scopeOrigin": "generated"
+      },
+      "exampleQueries": [
+        {
+          "type": "Patient",
+          "query": "GET [FHIR BASE]/Patient?_count=10"
+        },
+        {
+          "type": "Observation",
+          "query": "GET [FHIR BASE]/Observation?_count=10"
+        }
+      ]
+    },
+    {
+      "key": "diabetes-follow-up",
+      "summary": "Recorded diagnoses and laboratory results, including HIV-tagged records within the selected histories; medication requests and allergies for follow-up.",
+      "dataDescription": "Patient, Condition (5 years; HIV permitted), Observation (2 years; HIV permitted), MedicationRequest (1 year), AllergyIntolerance (5 years). R and V remain excluded. The title adds no diagnosis or medication filter.",
+      "definition": {
+        "name": "Diabetes follow-up",
+        "purpose": "Review recorded diagnoses, laboratory trends, medication records and allergies across approved sources for the selected patient's diabetes follow-up.",
+        "category": "35",
+        "accessMode": "continuous",
+        "duration": 6,
+        "durationUnit": "mo",
+        "allowChanges": true,
+        "buckets": [
+          {
+            "code": "diagnoses",
+            "history": 5,
+            "historyUnit": "a",
+            "sensitivity": [
+              "http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV"
+            ]
+          },
+          {
+            "code": "laboratoryTests",
+            "history": 2,
+            "historyUnit": "a",
+            "sensitivity": [
+              "http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV"
+            ]
+          },
+          {
+            "code": "medications",
+            "history": 1,
+            "historyUnit": "a",
+            "sensitivity": []
+          },
+          {
+            "code": "allergiesAndIntolerances",
+            "history": 5,
+            "historyUnit": "a",
+            "sensitivity": []
+          }
+        ],
+        "permissions": [
+          {
+            "type": "Patient",
+            "actions": "rs"
+          },
+          {
+            "type": "Condition",
+            "actions": "rs"
+          },
+          {
+            "type": "Observation",
+            "actions": "rs"
+          },
+          {
+            "type": "MedicationRequest",
+            "actions": "rs"
+          },
+          {
+            "type": "AllergyIntolerance",
+            "actions": "rs"
+          }
+        ],
+        "confidentialityPolicy": {
+          "allowRestricted": false
+        },
+        "scopeOrigin": "generated"
+      },
+      "exampleQueries": [
+        {
+          "type": "Patient",
+          "query": "GET [FHIR BASE]/Patient?_count=10"
+        },
+        {
+          "type": "Condition",
+          "query": "GET [FHIR BASE]/Condition?_count=10"
+        },
+        {
+          "type": "Observation",
+          "query": "GET [FHIR BASE]/Observation?_count=10"
+        },
+        {
+          "type": "MedicationRequest",
+          "query": "GET [FHIR BASE]/MedicationRequest?_count=10"
+        },
+        {
+          "type": "AllergyIntolerance",
+          "query": "GET [FHIR BASE]/AllergyIntolerance?_count=10"
+        }
+      ]
+    },
+    {
+      "key": "cardiovascular-follow-up",
+      "summary": "Diagnoses and encounters with mental-health-tagged records permitted, plus results and medication requests before a follow-up visit.",
+      "dataDescription": "Patient, Condition (3 years; mental-health permitted), Encounter (6 months; mental-health permitted), Observation (1 year), MedicationRequest (1 year). R and V remain excluded. The title adds no diagnosis or medication filter.",
+      "definition": {
+        "name": "Cardiovascular follow-up",
+        "purpose": "Review diagnoses, recent encounters, laboratory results and medication records across approved sources before the selected patient's cardiovascular follow-up visit.",
+        "category": "35",
+        "accessMode": "continuous",
+        "duration": 6,
+        "durationUnit": "mo",
+        "allowChanges": true,
+        "buckets": [
+          {
+            "code": "diagnoses",
+            "history": 3,
+            "historyUnit": "a",
+            "sensitivity": [
+              "http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health"
+            ]
+          },
+          {
+            "code": "encounterInformation",
+            "history": 6,
+            "historyUnit": "mo",
+            "sensitivity": [
+              "http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health"
+            ]
+          },
+          {
+            "code": "laboratoryTests",
+            "history": 1,
+            "historyUnit": "a",
+            "sensitivity": []
+          },
+          {
+            "code": "medications",
+            "history": 1,
+            "historyUnit": "a",
+            "sensitivity": []
+          }
+        ],
+        "permissions": [
+          {
+            "type": "Patient",
+            "actions": "rs"
+          },
+          {
+            "type": "Condition",
+            "actions": "rs"
+          },
+          {
+            "type": "Encounter",
+            "actions": "rs"
+          },
+          {
+            "type": "Observation",
+            "actions": "rs"
+          },
+          {
+            "type": "MedicationRequest",
+            "actions": "rs"
+          }
+        ],
+        "confidentialityPolicy": {
+          "allowRestricted": false
+        },
+        "scopeOrigin": "generated"
+      },
+      "exampleQueries": [
+        {
+          "type": "Patient",
+          "query": "GET [FHIR BASE]/Patient?_count=10"
+        },
+        {
+          "type": "Condition",
+          "query": "GET [FHIR BASE]/Condition?_count=10"
+        },
+        {
+          "type": "Encounter",
+          "query": "GET [FHIR BASE]/Encounter?_count=10"
+        },
+        {
+          "type": "Observation",
+          "query": "GET [FHIR BASE]/Observation?_count=10"
+        },
+        {
+          "type": "MedicationRequest",
+          "query": "GET [FHIR BASE]/MedicationRequest?_count=10"
+        }
+      ]
+    },
+    {
+      "key": "post-discharge-review",
+      "summary": "Recent encounters and results with medication, diagnosis and allergy context.",
+      "dataDescription": "Patient, Encounter and Observation (3 months), Condition and MedicationRequest (1 year), AllergyIntolerance (5 years). R/V excluded. Organization and Practitioner permit direct known-ID reads only; no master search or includes. The title adds no diagnosis filter.",
+      "definition": {
+        "name": "Post-discharge medication and results review",
+        "purpose": "Review recent encounters and laboratory results alongside recorded diagnoses, medications and allergies to support follow-up after the selected patient's discharge.",
+        "category": "35",
+        "accessMode": "continuous",
+        "duration": 1,
+        "durationUnit": "mo",
+        "allowChanges": true,
+        "buckets": [
+          {
+            "code": "encounterInformation",
+            "history": 3,
+            "historyUnit": "mo",
+            "sensitivity": []
+          },
+          {
+            "code": "laboratoryTests",
+            "history": 3,
+            "historyUnit": "mo",
+            "sensitivity": []
+          },
+          {
+            "code": "diagnoses",
+            "history": 1,
+            "historyUnit": "a",
+            "sensitivity": []
+          },
+          {
+            "code": "medications",
+            "history": 1,
+            "historyUnit": "a",
+            "sensitivity": []
+          },
+          {
+            "code": "allergiesAndIntolerances",
+            "history": 5,
+            "historyUnit": "a",
+            "sensitivity": []
+          }
+        ],
+        "permissions": [
+          {
+            "type": "Patient",
+            "actions": "rs"
+          },
+          {
+            "type": "Encounter",
+            "actions": "rs"
+          },
+          {
+            "type": "Observation",
+            "actions": "rs"
+          },
+          {
+            "type": "Condition",
+            "actions": "rs"
+          },
+          {
+            "type": "MedicationRequest",
+            "actions": "rs"
+          },
+          {
+            "type": "AllergyIntolerance",
+            "actions": "rs"
+          }
+        ],
+        "confidentialityPolicy": {
+          "allowRestricted": false
+        },
+        "scopeOrigin": "generated",
+        "includeMasterData": true
+      },
+      "exampleQueries": [
+        {
+          "type": "Patient",
+          "query": "GET [FHIR BASE]/Patient?_count=10"
+        },
+        {
+          "type": "Encounter",
+          "query": "GET [FHIR BASE]/Encounter?_count=10"
+        },
+        {
+          "type": "Observation",
+          "query": "GET [FHIR BASE]/Observation?_count=10"
+        },
+        {
+          "type": "Condition",
+          "query": "GET [FHIR BASE]/Condition?_count=10"
+        },
+        {
+          "type": "MedicationRequest",
+          "query": "GET [FHIR BASE]/MedicationRequest?_count=10"
+        },
+        {
+          "type": "AllergyIntolerance",
+          "query": "GET [FHIR BASE]/AllergyIntolerance?_count=10"
+        }
+      ]
+    },
+    {
+      "key": "basic-patient-data",
+      "summary": "Basic Patient, Observation and Condition access: Restricted (R) allowed, Very Restricted (V) excluded.",
+      "dataDescription": "An exact manual final scope with no bucket, history or sensitivity predicates. Required laboratory/diagnosis metadata remains descriptive generator input; it does not constrain this override. Runtime Patient context always applies.",
+      "definition": {
+        "name": "Basic patient data",
+        "purpose": "Read and search Patient, Observation and Condition data for the authorized patient across approved sources, including R-labelled records and excluding V-labelled records.",
+        "category": "35",
+        "accessMode": "continuous",
+        "duration": 3,
+        "durationUnit": "mo",
+        "allowChanges": true,
+        "buckets": [
+          {
+            "code": "laboratoryTests",
+            "history": 2,
+            "historyUnit": "a",
+            "sensitivity": []
+          },
+          {
+            "code": "diagnoses",
+            "history": 5,
+            "historyUnit": "a",
+            "sensitivity": []
+          }
+        ],
+        "permissions": [
+          {
+            "type": "Patient",
+            "actions": "rs"
+          },
+          {
+            "type": "Observation",
+            "actions": "rs"
+          },
+          {
+            "type": "Condition",
+            "actions": "rs"
+          }
+        ],
+        "confidentialityPolicy": {
+          "allowRestricted": true
+        },
+        "scopeOrigin": "custom",
+        "approvalScope": "patient/Patient.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Observation.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Condition.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V"
+      },
+      "exampleQueries": [
+        {
+          "type": "Patient",
+          "query": "GET [FHIR BASE]/Patient?_count=10"
+        },
+        {
+          "type": "Observation",
+          "query": "GET [FHIR BASE]/Observation?_count=10"
+        },
+        {
+          "type": "Condition",
+          "query": "GET [FHIR BASE]/Condition?_count=10"
+        }
+      ]
+    }
+  ]
+}

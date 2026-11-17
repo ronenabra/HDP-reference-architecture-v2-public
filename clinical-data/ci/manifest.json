@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "pcm-ci-dataset/1",
+  "purpose": "CI-only three-HO authorization and browser qualification; never normal bootstrap",
+  "bundles": [
+    {
+      "serverId": "ho-a",
+      "file": "ho-a.source.transaction.json",
+      "source": "ho-a",
+      "sha256": "79c7f026ef58e297bddfe62a5f0a13052671e7529fc02b0a0ebabc6dcbb8a52f"
+    },
+    {
+      "serverId": "ho-b",
+      "file": "ho-b.source.transaction.json",
+      "source": "ho-b",
+      "sha256": "15e8e45b89e95f5b2ee1c4bac84a6bc3ea00b5243bd4d4ff773d29f56f3a3060"
+    },
+    {
+      "serverId": "ho-c",
+      "file": "ho-c.source.transaction.json",
+      "source": "ho-c",
+      "sha256": "4730e84c43bb80f73005a4b28120031aaa1eb0aed3566ae0ccc14b9e643c77cc"
+    }
+  ]
+}

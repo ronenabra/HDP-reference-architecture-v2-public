@@ -1,0 +1,573 @@
+{
+  "configVersion": "pcm-team-config/5",
+  "teamId": "team-a",
+  "conformance": {
+    "mode": "connectathon",
+    "preset": "connectathon-easy",
+    "policyVersion": "pcm-sandbox-policy/4",
+    "compatibilityAdapters": [
+      "legacy-jose-kid",
+      "legacy-introspection-token-audience"
+    ]
+  },
+  "contract": {
+    "pcmIgVersion": "0.4.2",
+    "pcmIgCommit": "bd093a1764a56dd8ad76af365f33b74a735daee0",
+    "canonicalBase": "http://pcm.fhir.health.gov.il",
+    "operational": {
+      "oauthBase": "https://pcm2mtest.health.gov.il/api/fhir-service/r4",
+      "fhirBase": "https://pcm2mtest.health.gov.il/api/fhir-service/r4"
+    },
+    "environment": "test",
+    "conformanceExceptions": [
+      "PCM-SANDBOX-FULL-DIAGNOSTICS"
+    ]
+  },
+  "security": {
+    "pcmApi": {
+      "clientAuth": "tls",
+      "allowAnyTokenResource": false,
+      "accessTokenExpiresInSeconds": 86400
+    },
+    "dataSourceGateway": {
+      "clientAuth": "tls"
+    },
+    "serviceProviderToDataSource": {
+      "verifyServerCertificate": false
+    },
+    "dsGatewayToFhirServer": {
+      "protocol": "https",
+      "verifyServerCertificate": false,
+      "customUrl": ""
+    },
+    "dsFhirServer": {
+      "enforceMappedPatients": true
+    }
+  },
+  "securitySimulation": {
+    "global": {},
+    "perSource": {},
+    "awsCredentialIsolation": true
+  },
+  "presence": {
+    "batch": {
+      "maxPatients": 100,
+      "maxPayloadBytes": 65536,
+      "timeoutMilliseconds": 5000
+    }
+  },
+  "runtime": {
+    "certsDir": "/runtime/certs",
+    "logsDir": "/runtime/logs",
+    "stateDir": "/runtime/state"
+  },
+  "publicBaseUrls": {
+    "spClient": "http://localhost:3100",
+    "pcmUi": "http://localhost:4100",
+    "pcmApi": "https://localhost:4101/api/fhir-service/r4",
+    "pcmMetadata": "https://localhost:4102/api/fhir-service/r4",
+    "referenceDataSource": "https://localhost:8180/fhir",
+    "dataSourceMetadata": "http://localhost:8184",
+    "healthOrganizations": {
+      "ho-a": "https://localhost:8180/fhir",
+      "ho-b": "https://localhost:8181/fhir",
+      "ho-c": "https://localhost:8182/fhir"
+    },
+    "teamDataSource": "https://team-a-ds.example.org/fhir"
+  },
+  "internalBaseUrls": {
+    "pcmAuth": "https://pcm-core:3000/api/fhir-service/r4",
+    "pcmUi": "http://pcm-core:3001",
+    "pcmFhir": "https://pcm-core:3000/api/fhir-service/r4",
+    "referenceDataSource": "https://ds-gateway:8080/fhir",
+    "healthOrganizations": {
+      "ho-a": "https://ho-a-gateway:8080/fhir",
+      "ho-b": "https://ho-b-gateway:8080/fhir",
+      "ho-c": "https://ho-c-gateway:8080/fhir"
+    },
+    "dsAuthAdapter": "http://ds-auth-adapter:3000",
+    "dsFhirServer": "http://ds-fhir-server:3000"
+  },
+  "healthOrganizations": [
+    {
+      "id": "ho-a",
+      "name": "Reference Health Organization A",
+      "parentOrganization": {
+        "id": "org-team-a-ho-a-parent",
+        "businessIdentifier": {
+          "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+          "value": "PCM-ORG-TEAM-A-A-PARENT"
+        }
+      },
+      "dataSourceOrganization": {
+        "id": "org-team-a-ho-a-source",
+        "businessIdentifier": {
+          "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+          "value": "PCM-ORG-TEAM-A-A-SOURCE"
+        }
+      },
+      "endpointId": "endpoint-team-a-ho-a",
+      "endpoint": "https://ho-a-gateway:8080/fhir",
+      "gatewayPort": 8180,
+      "clientId": "pcm-ds-team-a-ho-a-0001",
+      "adapterIssuer": "https://ho-a-adapter.internal/ho-a",
+      "adapterAudience": "urn:pcm:ho:a:fhir-server",
+      "database": {
+        "name": "pcm_team_a_ho_a",
+        "user": "pcm_team_a_a",
+        "passwordEnv": "PCM_A_DB_PASSWORD"
+      },
+      "certificates": {
+        "gatewayServerCert": "ho-a-gateway.crt",
+        "gatewayServerKey": "ho-a-gateway.key",
+        "gatewayMtlsCert": "ho-a-gateway-mtls.crt",
+        "gatewayMtlsKey": "ho-a-gateway-mtls.key",
+        "gatewayAssertionCert": "ho-a-gateway-assertion.crt",
+        "gatewayAssertionKey": "ho-a-gateway-assertion.key",
+        "hapiServerCert": "ho-a-hapi.crt",
+        "hapiServerKey": "ho-a-hapi.key"
+      },
+      "import": {
+        "credentialEnv": "PCM_A_IMPORT_CREDENTIAL",
+        "stateNamespace": "team-a-ho-a"
+      },
+      "clinicalData": {
+        "managed": true,
+        "serverId": "ho-a",
+        "privateFhirBaseUrl": "https://ho-a-hapi:8080/fhir",
+        "bundleRoot": "/runtime/bundles",
+        "bootstrap": {
+          "policy": "disabled",
+          "bundleReference": "",
+          "expectedSource": ""
+        },
+        "limits": {
+          "maxBytes": 805306368,
+          "maxEntries": 200000
+        }
+      },
+      "institutionType": "hmo"
+    },
+    {
+      "id": "ho-b",
+      "name": "Reference Health Organization B",
+      "parentOrganization": {
+        "id": "org-team-a-ho-b-parent",
+        "businessIdentifier": {
+          "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+          "value": "PCM-ORG-TEAM-A-B-PARENT"
+        }
+      },
+      "dataSourceOrganization": {
+        "id": "org-team-a-ho-b-source",
+        "businessIdentifier": {
+          "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+          "value": "PCM-ORG-TEAM-A-B-SOURCE"
+        }
+      },
+      "endpointId": "endpoint-team-a-ho-b",
+      "endpoint": "https://ho-b-gateway:8080/fhir",
+      "gatewayPort": 8181,
+      "clientId": "pcm-ds-team-a-ho-b-0001",
+      "adapterIssuer": "https://ho-b-adapter.internal/ho-b",
+      "adapterAudience": "urn:pcm:ho:b:fhir-server",
+      "database": {
+        "name": "pcm_team_a_ho_b",
+        "user": "pcm_team_a_b",
+        "passwordEnv": "PCM_B_DB_PASSWORD"
+      },
+      "certificates": {
+        "gatewayServerCert": "ho-b-gateway.crt",
+        "gatewayServerKey": "ho-b-gateway.key",
+        "gatewayMtlsCert": "ho-b-gateway-mtls.crt",
+        "gatewayMtlsKey": "ho-b-gateway-mtls.key",
+        "gatewayAssertionCert": "ho-b-gateway-assertion.crt",
+        "gatewayAssertionKey": "ho-b-gateway-assertion.key",
+        "hapiServerCert": "ho-b-hapi.crt",
+        "hapiServerKey": "ho-b-hapi.key"
+      },
+      "import": {
+        "credentialEnv": "PCM_B_IMPORT_CREDENTIAL",
+        "stateNamespace": "team-a-ho-b"
+      },
+      "clinicalData": {
+        "managed": true,
+        "serverId": "ho-b",
+        "privateFhirBaseUrl": "https://ho-b-hapi:8080/fhir",
+        "bundleRoot": "/runtime/bundles",
+        "bootstrap": {
+          "policy": "disabled",
+          "bundleReference": "",
+          "expectedSource": ""
+        },
+        "limits": {
+          "maxBytes": 805306368,
+          "maxEntries": 200000
+        }
+      },
+      "institutionType": "hmo"
+    },
+    {
+      "id": "ho-c",
+      "name": "Reference Health Organization C",
+      "parentOrganization": {
+        "id": "org-team-a-ho-c-parent",
+        "businessIdentifier": {
+          "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+          "value": "PCM-ORG-TEAM-A-C-PARENT"
+        }
+      },
+      "dataSourceOrganization": {
+        "id": "org-team-a-ho-c-source",
+        "businessIdentifier": {
+          "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+          "value": "PCM-ORG-TEAM-A-C-SOURCE"
+        }
+      },
+      "endpointId": "endpoint-team-a-ho-c",
+      "endpoint": "https://ho-c-gateway:8080/fhir",
+      "gatewayPort": 8182,
+      "clientId": "pcm-ds-team-a-ho-c-0001",
+      "adapterIssuer": "https://ho-c-adapter.internal/ho-c",
+      "adapterAudience": "urn:pcm:ho:c:fhir-server",
+      "database": {
+        "name": "pcm_team_a_ho_c",
+        "user": "pcm_team_a_c",
+        "passwordEnv": "PCM_C_DB_PASSWORD"
+      },
+      "certificates": {
+        "gatewayServerCert": "ho-c-gateway.crt",
+        "gatewayServerKey": "ho-c-gateway.key",
+        "gatewayMtlsCert": "ho-c-gateway-mtls.crt",
+        "gatewayMtlsKey": "ho-c-gateway-mtls.key",
+        "gatewayAssertionCert": "ho-c-gateway-assertion.crt",
+        "gatewayAssertionKey": "ho-c-gateway-assertion.key",
+        "hapiServerCert": "ho-c-hapi.crt",
+        "hapiServerKey": "ho-c-hapi.key"
+      },
+      "import": {
+        "credentialEnv": "PCM_C_IMPORT_CREDENTIAL",
+        "stateNamespace": "team-a-ho-c"
+      },
+      "clinicalData": {
+        "managed": true,
+        "serverId": "ho-c",
+        "privateFhirBaseUrl": "https://ho-c-hapi:8080/fhir",
+        "bundleRoot": "/runtime/bundles",
+        "bootstrap": {
+          "policy": "disabled",
+          "bundleReference": "",
+          "expectedSource": ""
+        },
+        "limits": {
+          "maxBytes": 805306368,
+          "maxEntries": 200000
+        }
+      },
+      "institutionType": "hmo"
+    }
+  ],
+  "legacyDataSource": {
+    "id": "legacy-ds",
+    "enabled": true,
+    "compatibilityOnly": true,
+    "managedHapi": false,
+    "publicFhirBaseUrl": "https://localhost:8183/fhir",
+    "internalFhirBaseUrl": "https://legacy-ds-gateway:8080/fhir",
+    "fixtureResetSupported": true,
+    "institutionType": "other"
+  },
+  "certificates": {
+    "rootCaCert": "rootCA.crt",
+    "pcm": {
+      "cert": "pcm-core.crt",
+      "key": "pcm-core.key"
+    },
+    "presenceOrchestrator": {
+      "cert": "presence-orchestrator.crt",
+      "key": "presence-orchestrator.key"
+    },
+    "serviceProvider": {
+      "cert": "sp-client-assertion.crt",
+      "key": "sp-client-assertion.key"
+    },
+    "referenceDataSource": {
+      "cert": "ds-gateway.crt",
+      "key": "ds-gateway.key"
+    },
+    "dsFhirServer": {
+      "cert": "ds-fhir-server.crt",
+      "key": "ds-fhir-server.key"
+    },
+    "untrustedClient": {
+      "cert": "untrusted-client.crt",
+      "key": "untrusted-client.key"
+    }
+  },
+  "certificateRoles": {
+    "pcm": {
+      "server": {
+        "cert": "pcm-core.crt",
+        "key": "pcm-core.key"
+      }
+    },
+    "presenceOrchestrator": {
+      "mtls": {
+        "cert": "presence-orchestrator.crt",
+        "key": "presence-orchestrator.key"
+      },
+      "assertion": {
+        "cert": "presence-orchestrator-assertion.crt",
+        "key": "presence-orchestrator-assertion.key"
+      }
+    },
+    "serviceProvider": {
+      "mtls": {
+        "cert": "sp-client-assertion.crt",
+        "key": "sp-client-assertion.key"
+      },
+      "assertion": {
+        "cert": "sp-client-assertion.crt",
+        "key": "sp-client-assertion.key"
+      }
+    },
+    "hospitalBServiceProvider": {
+      "mtls": {
+        "cert": "hospital-b-sp.crt",
+        "key": "hospital-b-sp.key"
+      },
+      "assertion": {
+        "cert": "hospital-b-sp-assertion.crt",
+        "key": "hospital-b-sp-assertion.key"
+      }
+    },
+    "referenceDataSource": {
+      "server": {
+        "cert": "ds-gateway.crt",
+        "key": "ds-gateway.key"
+      },
+      "mtls": {
+        "cert": "ds-gateway.crt",
+        "key": "ds-gateway.key"
+      },
+      "assertion": {
+        "cert": "ds-gateway-assertion.crt",
+        "key": "ds-gateway-assertion.key"
+      }
+    },
+    "dsFhirServer": {
+      "server": {
+        "cert": "ds-fhir-server.crt",
+        "key": "ds-fhir-server.key"
+      }
+    },
+    "untrustedClient": {
+      "mtls": {
+        "cert": "untrusted-client.crt",
+        "key": "untrusted-client.key"
+      },
+      "assertion": {
+        "cert": "untrusted-client-assertion.crt",
+        "key": "untrusted-client-assertion.key"
+      }
+    },
+    "authenticationOrchestrator": {
+      "mtls": {
+        "cert": "authentication-orchestrator.crt",
+        "key": "authentication-orchestrator.key"
+      },
+      "assertion": {
+        "cert": "authentication-orchestrator-assertion.crt",
+        "key": "authentication-orchestrator-assertion.key"
+      }
+    },
+    "discoveryOrchestrator": {
+      "mtls": {
+        "cert": "discovery-orchestrator.crt",
+        "key": "discovery-orchestrator.key"
+      },
+      "assertion": {
+        "cert": "discovery-orchestrator-assertion.crt",
+        "key": "discovery-orchestrator-assertion.key"
+      }
+    }
+  },
+  "organizations": {
+    "pcm": {
+      "id": "org-pcm-system",
+      "name": "Patient Consent Manager (PCM)",
+      "clientId": "pcm-system-local-0001",
+      "businessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-SYSTEM-0001"
+      }
+    },
+    "serviceProvider": {
+      "id": "org-sp",
+      "parentId": "org-hospital-a",
+      "parentName": "Hospital A",
+      "name": "Doctor App",
+      "clientId": "pcm-sp-local-0001",
+      "businessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-SP-0001"
+      },
+      "parentBusinessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-PARENT-0001"
+      },
+      "redirectUri": "http://localhost:3100/callback",
+      "redirectUris": [
+        "http://localhost:3100/callback"
+      ],
+      "smartScopes": [
+        "patient/*.rs",
+        "patient/Observation.rs"
+      ],
+      "scopes": [
+        "fhir/Consent.write",
+        "fhir/Patient.read",
+        "fhir/Observation.read",
+        "system/*.crus",
+        "patient/Observation.rs"
+      ]
+    },
+    "hospitalBServiceProvider": {
+      "id": "org-hospital-b-sp",
+      "parentId": "org-hospital-b-parent",
+      "parentName": "Hospital B",
+      "name": "Hospital B - Doctor's Portal",
+      "clientId": "pcm-sp-local-0002",
+      "businessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-SP-0002"
+      },
+      "parentBusinessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-PARENT-0002"
+      },
+      "scopes": [
+        "fhir/Consent.write",
+        "fhir/Patient.read",
+        "fhir/Observation.read"
+      ]
+    },
+    "referenceDataSource": {
+      "id": "org-vaccine-repo",
+      "parentId": "org-ministry-health",
+      "parentName": "Ministry of Health",
+      "name": "Vaccination Repository",
+      "clientId": "pcm-ds-local-0001",
+      "businessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-DS-0001"
+      },
+      "parentBusinessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-PARENT-0003"
+      },
+      "endpointId": "endpoint-vaccine-repo",
+      "endpoint": "https://ds-gateway:8080/fhir",
+      "scopes": [
+        "introspection"
+      ]
+    },
+    "teamDataSource": {
+      "id": "org-team-a-ds",
+      "parentId": "org-team-a-ds-parent",
+      "parentName": "Team A Data Source Org",
+      "name": "Team A Data Source",
+      "endpointId": "endpoint-team-a-ds",
+      "endpoint": "https://team-a-ds.example.org/fhir",
+      "clientId": "pcm-ds-team-a-0001",
+      "businessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-DS-TEAM-A-0001"
+      },
+      "parentBusinessIdentifier": {
+        "system": "http://pcm.fhir.health.gov.il/identifier/pcm-organization-id",
+        "value": "PCM-ORG-PARENT-TEAM-A-0001"
+      },
+      "certThumbprint": null,
+      "enabled": false
+    },
+    "dataSources": [],
+    "untrustedClient": {
+      "clientId": "pcm-negative-client-0001"
+    }
+  },
+  "oauthClients": {
+    "presenceOrchestrator": {
+      "clientId": "pcm-presence-orchestrator",
+      "name": "PCM Presence Orchestrator"
+    },
+    "authenticationOrchestrator": {
+      "clientId": "pcm-authentication-orchestrator",
+      "name": "PCM Authentication Orchestrator"
+    },
+    "discoveryOrchestrator": {
+      "clientId": "pcm-discovery-orchestrator",
+      "name": "PCM Discovery Orchestrator"
+    }
+  },
+  "service": {
+    "id": "service-1",
+    "name": "PCM Connectathon Clinical Data Access",
+    "accessMode": "continuous"
+  },
+  "patients": [
+    {
+      "idSystem": "http://fhir.health.gov.il/identifier/il-national-id",
+      "idValue": "000000018",
+      "display": "Test Patient 1"
+    },
+    {
+      "idSystem": "http://fhir.health.gov.il/identifier/il-national-id",
+      "idValue": "000000029",
+      "display": "Test Patient 2"
+    }
+  ],
+  "admin": {
+    "passwordEnvVar": "TEAM_ADMIN_PASSWORD"
+  },
+  "systemAuthorization": {
+    "configurationKind": "synthetic-local",
+    "clientEntitlements": {
+      "pcm-presence-orchestrator": [
+        "presence-check"
+      ],
+      "pcm-authentication-orchestrator": [
+        "patient-authentication"
+      ],
+      "pcm-discovery-orchestrator": [
+        "dependent-discovery"
+      ]
+    },
+    "participatingHmos": [],
+    "memberships": [],
+    "presenceEligiblePatients": [],
+    "otp": {
+      "transport": "local",
+      "channels": [
+        "sms"
+      ],
+      "expirySeconds": 300,
+      "resendSeconds": 30,
+      "maxAttempts": 5,
+      "maxResends": 3,
+      "contactMaxAgeSeconds": 2592000
+    },
+    "authentication": {
+      "flowLifetimeSeconds": 600,
+      "authenticatedLifetimeSeconds": 300,
+      "timeoutMilliseconds": 10000
+    },
+    "discovery": {
+      "timeoutMilliseconds": 30000,
+      "maxPagesPerSource": 20,
+      "maxRetries": 1,
+      "eligibleRelationships": []
+    }
+  },
+  "sandbox": {}
+}

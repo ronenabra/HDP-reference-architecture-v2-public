@@ -1,0 +1,5932 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:fa0e2bed-f6f5-545a-a92f-ca761d0000d3",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-ho-a-0001",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000018"
+          }
+        ],
+        "name": [
+          {
+            "text": "Fictional HO A Patient"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patient-ho-a-0001"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ecd353c2-cca8-5781-bea6-9178d9a159c6",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-ho-a-htest-1",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+            "value": "1"
+          }
+        ],
+        "name": [
+          {
+            "text": "Synthetic HTEST Patient 1"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patient-ho-a-htest-1"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c64cdc01-35eb-5473-af67-f71e942269fe",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-ho-a-htest-2",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+            "value": "2"
+          }
+        ],
+        "name": [
+          {
+            "text": "Synthetic HTEST Patient 2"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patient-ho-a-htest-2"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9c04ae27-6c3c-558b-8335-a6da0c611c78",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "practitioner-ho-a-0001",
+        "identifier": [
+          {
+            "system": "http://example.test/practitioner",
+            "value": "HO-A-CLINICIAN"
+          }
+        ],
+        "name": [
+          {
+            "text": "Fictional HO A Clinician"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/practitioner-ho-a-0001"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6afb9355-e087-5804-86a2-70ffaa24c0c8",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-a-0001",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional laboratory result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-0001"
+        },
+        "performer": [
+          {
+            "reference": "Practitioner/practitioner-ho-a-0001"
+          }
+        ],
+        "effectiveDateTime": "2026-01-01T00:00:00Z",
+        "valueString": "A"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-a-0001"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:44531d89-7cf7-542a-9789-4f2a60ae68ff",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-a-0002",
+        "status": "preliminary",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional paging result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-0001"
+        },
+        "effectiveDateTime": "2026-01-02T00:00:00Z",
+        "valueString": "A2"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-a-0002"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:94e40ed2-093d-5a51-94c2-8ee2bfac5030",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-a-0003",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "procedures"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional differently classified result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-0001"
+        },
+        "effectiveDateTime": "2026-01-03T00:00:00Z",
+        "valueString": "A3"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-a-0003"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:40310008-01b1-500b-a3a9-8e9e02eb18f2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-a-0004",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+              "code": "V"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional restricted result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-0001"
+        },
+        "effectiveDateTime": "2026-01-04T00:00:00Z",
+        "valueString": "A4"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-a-0004"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:2f25110e-907d-56f6-8598-72504fd0b93b",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "demo-ho-a-diagnosticreport",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "final",
+        "code": {
+          "text": "Synthetic report"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "effectiveDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "DiagnosticReport/demo-ho-a-diagnosticreport"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e29b906b-fde3-56c8-bb7d-0a62770acc1a",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-ho-a-medicationrequest",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "authoredOn": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationRequest/demo-ho-a-medicationrequest"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d2c1b05d-6517-546b-bf40-6623871c3fbd",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "demo-ho-a-medicationstatement",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "effectiveDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationStatement/demo-ho-a-medicationstatement"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4f4e41cd-5f72-5c9f-beea-372cf4b431af",
+      "resource": {
+        "resourceType": "MedicationDispense",
+        "id": "demo-ho-a-medicationdispense",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "whenHandedOver": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationDispense/demo-ho-a-medicationdispense"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:99cf05b8-df89-5955-9de7-0f9780cc5aed",
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "demo-ho-a-medicationadministration",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "effectiveDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationAdministration/demo-ho-a-medicationadministration"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:121ecf5b-d2d4-513e-9e32-0a1b280b1093",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-ho-a-condition",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "diagnoses"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "code": {
+          "text": "Synthetic condition"
+        },
+        "recordedDate": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/demo-ho-a-condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:bbee1daa-2044-5bcd-8155-6415884fc82b",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "demo-ho-a-allergyintolerance",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "allergiesAndIntolerances"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "code": {
+          "text": "Synthetic allergy"
+        },
+        "recordedDate": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "AllergyIntolerance/demo-ho-a-allergyintolerance"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9271f906-9c4e-5e0b-8ae1-45e4ba316715",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-ho-a-encounter",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "encounterInformation"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "period": {
+          "start": "2026-10-05T12:00:00Z",
+          "end": "2026-10-05T13:00:00Z"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Encounter/demo-ho-a-encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:27b8313f-e622-5c5f-b7ca-6f9891077400",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "demo-ho-a-procedure",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "procedures"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "code": {
+          "text": "Synthetic procedure"
+        },
+        "performedDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Procedure/demo-ho-a-procedure"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d617320f-a013-529a-9baf-7db3a11eef9f",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-ho-a-immunization",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "immunizations"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "status": "completed",
+        "patient": {
+          "reference": "Patient/patient-ho-a-htest-1"
+        },
+        "vaccineCode": {
+          "text": "Synthetic vaccine"
+        },
+        "occurrenceDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Immunization/demo-ho-a-immunization"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000001",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-1",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000001"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 1"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-1"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000002",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-2",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000002"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 2"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-2"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000003",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-3",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000003"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 3"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-3"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000004",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-4",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000004"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 4"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-4"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000005",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-5",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000005"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 5"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-5"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000006",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-6",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000006"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 6"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-6"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000007",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-7",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000007"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 7"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-7"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000008",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-8",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000008"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 8"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-8"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000009",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-9",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000009"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 9"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-9"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000010",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-10",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000010"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 10"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-10"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000011",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-11",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000011"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 11"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-11"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000012",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-12",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000012"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 12"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-12"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000013",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-13",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000013"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 13"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-13"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000014",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-14",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000014"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 14"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-14"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000015",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-15",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000015"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 15"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-15"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000016",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-16",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000016"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 16"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-16"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000017",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-17",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000017"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 17"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-17"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000018",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-18",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000018"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 18"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-18"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000019",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-19",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000019"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 19"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-19"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000020",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-20",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000020"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 20"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-20"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000021",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-21",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000021"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 21"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-21"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000022",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-22",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000022"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 22"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-22"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000023",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-23",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000023"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 23"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-23"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000024",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-24",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000024"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 24"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-24"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000025",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-25",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000025"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 25"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-25"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000026",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-26",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000026"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 26"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-26"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000027",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-27",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000027"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 27"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-27"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000028",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-28",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000028"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 28"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-28"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000029",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-29",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000029"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 29"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-29"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000030",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-30",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000030"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 30"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-30"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000031",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-31",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000031"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 31"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-31"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000032",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-32",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000032"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 32"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-32"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000033",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-33",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000033"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 33"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-33"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000034",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-34",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000034"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 34"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-34"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000035",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-35",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000035"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 35"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-35"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000036",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-36",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000036"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 36"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-36"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000037",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-37",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000037"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 37"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-37"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000038",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-38",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000038"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 38"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-38"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000039",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-39",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000039"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 39"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-39"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000040",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-40",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000040"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 40"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-40"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000041",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-41",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000041"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 41"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-41"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000042",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-42",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000042"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 42"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-42"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000043",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-43",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000043"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 43"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-43"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000044",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-44",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000044"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 44"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-44"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000045",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-45",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000045"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 45"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-45"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000046",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-46",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000046"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 46"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-46"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000047",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-47",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000047"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 47"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-47"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000048",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-48",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000048"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 48"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-48"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000049",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-49",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000049"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 49"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-49"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000050",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-50",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000050"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 50"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-50"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000051",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-51",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000051"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 51"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-51"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000052",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-52",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000052"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 52"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-52"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000053",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-53",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000053"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 53"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-53"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000054",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-54",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000054"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 54"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-54"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000055",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-55",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000055"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 55"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-55"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000056",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-56",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000056"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 56"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-56"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000057",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-57",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000057"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 57"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-57"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000058",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-58",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000058"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 58"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-58"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000059",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-59",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000059"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 59"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-59"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000060",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-60",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000060"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 60"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-60"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000061",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-61",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000061"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 61"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-61"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000062",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-62",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000062"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 62"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-62"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000063",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-63",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000063"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 63"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-63"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000064",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-64",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000064"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 64"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-64"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000065",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-65",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000065"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 65"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-65"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000066",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-66",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000066"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 66"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-66"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000067",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-67",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000067"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 67"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-67"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000068",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-68",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000068"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 68"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-68"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000069",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-69",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000069"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 69"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-69"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000070",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-70",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000070"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 70"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-70"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000071",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-71",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000071"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 71"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-71"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000072",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-72",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000072"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 72"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-72"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000073",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-73",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000073"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 73"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-73"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000074",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-74",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000074"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 74"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-74"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000075",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-75",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000075"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 75"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-75"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000076",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-76",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000076"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 76"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-76"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000077",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-77",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000077"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 77"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-77"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000078",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-78",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000078"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 78"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-78"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000079",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-79",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000079"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 79"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-79"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000080",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-80",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000080"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 80"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-80"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000081",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-81",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000081"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 81"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-81"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000082",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-82",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000082"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 82"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-82"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000083",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-83",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000083"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 83"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-83"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000084",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-84",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000084"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 84"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-84"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000085",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-85",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000085"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 85"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-85"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000086",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-86",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000086"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 86"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-86"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000087",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-87",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000087"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 87"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-87"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000088",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-88",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000088"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 88"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-88"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000089",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-89",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000089"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 89"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-89"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000090",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-90",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000090"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 90"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-90"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000091",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-91",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000091"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 91"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-91"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000092",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-92",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000092"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 92"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-92"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000093",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-93",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000093"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 93"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-93"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000094",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-94",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000094"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 94"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-94"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000095",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-95",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000095"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 95"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-95"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000096",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-96",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000096"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 96"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-96"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000097",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-97",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000097"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 97"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-97"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000098",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-98",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000098"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 98"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-98"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000099",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-99",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000099"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 99"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-99"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ab123456-1234-5678-9012-000000000100",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "sample-100",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-sandbox-synthetic-id",
+            "value": "Ab123456-1234-5678-9012-000000000100"
+          }
+        ],
+        "name": [
+          {
+            "text": "Sandbox Person 100"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "patientDemographics"
+            }
+          ]
+        },
+        "birthDate": "1990-01-01",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "qualification-only"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/sample-100"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:bb123456-1234-5678-9012-000000000001",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "sample-observation-1",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional laboratory result"
+        },
+        "subject": {
+          "reference": "urn:uuid:ab123456-1234-5678-9012-000000000001"
+        },
+        "effectiveDateTime": "2026-01-01T00:00:00Z",
+        "valueString": "A"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/sample-observation-1"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4e5a10a5-0000-4000-8000-000000000001",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "qualification-ho-a-condition-national",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "diagnoses"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-a"
+            }
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-a-0001"
+        },
+        "code": {
+          "text": "Synthetic condition"
+        },
+        "recordedDate": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/qualification-ho-a-condition-national"
+      }
+    }
+  ]
+}

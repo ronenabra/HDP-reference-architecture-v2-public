@@ -1,0 +1,12 @@
+region              = "il-central-1"
+baseline_state_path = "../baseline/terraform.tfstate"
+service_prefix      = "hdp-pcm-connectathon"
+team_id             = "team-a"
+
+team_admin_password = "change-me-team-a"
+
+sp_ui_public_port       = 3100
+pcm_ui_public_port      = 4100
+pcm_api_public_port     = 4101
+pcm_metadata_public_port = 4102
+ds_gateway_public_port  = 8180

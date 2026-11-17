@@ -1,176 +1,320 @@
+<% const basePath = typeof browserBase === 'string' ? browserBase : ''; %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Doctor's Portal (SP Client)</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Doctor · Synthetic service provider</title>
+    <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+    <script defer src="<%= basePath %>/assets/connectathon.js"></script>
+    <script defer src="<%= basePath %>/assets/doctor-selection.js"></script>
+    <script defer src="<%= basePath %>/assets/doctor-tools.js"></script>
+    <script defer src="<%= basePath %>/assets/doctor-cards.js"></script>
+<script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script></head>
 
-<body class="container mt-5">
-    <div class="header mb-4 d-flex justify-content-between align-items-center">
-        <div>
-            <h1>Doctor's Portal <small class="text-muted">Simulated Service Provider</small></h1>
+<body data-browser-base="<%= basePath %>" class="container py-3 doctor-page" data-help-team="<%= typeof teamId !== "undefined" ? teamId : "local" %>">
+    <main><header class="header sandbox-header doctor-shell-header mb-2">
+        <div class="sandbox-heading">
+            <h1 data-help-key="doctor.page"><span class="badge bg-dark align-middle" data-help-key="common.team"><%= teamId %></span> Doctor <small class="text-muted">Synthetic service provider</small></h1>
 
-            <form action="/" method="GET" class="d-inline-block ms-3">
-                <label class="fw-bold me-2">Identity:</label>
-                <select name="identity" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-                    <% identities.forEach(function(id) { %>
-                        <option value="<%= id %>" <%=id===currentIdentity ? 'selected' : '' %>><%= id %>
+            <form action="<%= basePath %>/" method="GET" class="d-inline-block ms-3">
+                <label class="fw-bold me-2" for="doctor-identity" data-help-key="doctor.identity">Requesting application:</label>
+                <select id="doctor-identity" name="identity" data-help-options="all" class="form-select d-inline-block w-auto" data-help-key="doctor.identity">
+                    <% identities.forEach(function(identity) { %>
+                        <option data-help-key="<%= identity.helpKey || 'doctor.identity-registered' %>" value="<%= identity.id %>" <%=identity.id===currentIdentity ? 'selected' : '' %>>
+                            <%= identity.label %>
                         </option>
                         <% }); %>
                 </select>
+                <div class="form-text ms-1">
+                    Local test clients; data sources are discovered from PCM after consent approval.
+                </div>
             </form>
         </div>
 
-        <div class="btn-group">
-            <a href="/manage?identity=<%= currentIdentity %>" class="btn btn-sm btn-outline-primary">Manage Org</a>
-            <a href="http://localhost:4000/logs-view" class="btn btn-sm btn-outline-dark" target="_blank">System
-                Logs</a>
-            <form action="/reset" method="POST" class="d-inline">
-                <button class="btn btn-sm btn-outline-danger ms-2">Reset All</button>
-            </form>
-        </div>
-    </div>
+        <nav aria-label="Sandbox pages" class="doctor-navigation sandbox-navigation">
+            <a href="<%= basePath %>/?identity=<%= encodeURIComponent(currentIdentity) %>" aria-current="page" class="btn btn-sm btn-outline-secondary" data-help-key="common.nav-doctor">Doctor</a>
+            <a href="<%= publicBaseUrls.pcmUi %>/ui" class="btn btn-sm btn-outline-secondary" data-help-key="common.nav-consents">Consents</a>
+            <a href="<%= publicBaseUrls.pcmUi %>/logs-view" class="btn btn-sm btn-outline-dark" data-help-key="common.nav-logs">Logs</a>
+            <div class="doctor-tools">
+                <button type="button" id="doctor-tools-button" class="btn btn-sm btn-outline-secondary" aria-expanded="false" aria-controls="doctor-tools-panel" data-help-key="doctor.tools">Tools</button>
+                <div id="doctor-tools-panel" hidden role="region" aria-label="Doctor tools">
+                    <a class="btn btn-outline-primary" href="<%= basePath %>/smart/start?identity=<%= encodeURIComponent(currentIdentity) %>&scope=<%= encodeURIComponent('patient/*.rs') %>" data-help-key="doctor.smart-start" data-help-proxy>Test SMART application launch</a>
+                    <% if (typeof manageServicesUrl !== 'undefined' && manageServicesUrl) { %><a class="btn btn-outline-secondary" href="<%= manageServicesUrl %>" data-service-help data-help-proxy data-help-key="doctor.services-manage">Manage services in PCM</a><% } %>
+                    <a class="btn btn-outline-secondary" href="#manual-testing" data-manual-open data-help-key="doctor.manual" data-help-proxy>Manual request testing</a>
+                    <form action="<%= basePath %>/reset" method="POST" data-confirm="Reset Doctor state for all requesting applications and shared Doctor token caches? This affects other users of this Doctor application and clears this tab’s saved request drafts. PCM Consent records and clinical data are not deleted."><button class="btn btn-outline-danger" data-help-key="doctor.reset" data-help-proxy>Reset Doctor state</button></form>
+                    <button type="button" data-tools-close data-help-key="doctor.tools" data-help-proxy class="btn btn-outline-secondary">Close tools</button>
+                </div>
+            </div>
+            <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox"> Explain this page</label>
+        </nav>
+    </header>
 
     <% if (flash) { %>
         <div
-            class="alert alert-<%= flash.type === 'error' ? 'danger' : (flash.type === 'success' ? 'success' : 'info') %>">
-            <%= flash.message %>
+            class="alert alert-<%= flash.type === 'error' ? 'danger' : (flash.type === 'success' ? 'success' : 'info') %>" data-help-key="common.feedback">
+            <% if (flash.smart) { %><p data-smart-message><%= flash.message %></p><% } else { %><%= flash.message %><% } %>
+            <% if (flash.smart) { %><p data-help-key="smart.completion"><%= flash.explanation %></p>
+              <a class="btn btn-outline-primary" data-help-key="smart.restart" data-help-proxy href="<%= basePath %>/smart/start?identity=<%= encodeURIComponent(currentIdentity) %>">Start a fresh SMART test</a>
+              <% if (flash.scope) { %><details><summary data-help-key="smart.technical">Technical result</summary><p>Granted scope: <code><%= flash.scope %></code></p></details><% } %>
+            <% } %>
+            <% if (flash.canonicalStartUrl) { %><a class="btn btn-outline-primary" href="<%= flash.canonicalStartUrl %>" data-help-key="smart.canonical-start" data-help-proxy>Open configured Doctor address</a><% } %>
         </div>
         <% } %>
 
+            <%- include('sandbox-notice', { conformance, sandboxNotice: typeof sandboxNotice !== 'undefined' ? sandboxNotice : null }) %>
             <div class="row">
                 <!-- CREATE REQUEST -->
                 <div class="col-md-4">
                     <div class="card mb-3">
-                        <div class="card-header bg-primary text-white">Create Request</div>
-                        <div class="card-body">
-                            <form action="/create-consent" method="POST">
+                        <h2 class="card-header h5 bg-primary text-white" data-help-key="doctor.create-section">New consent request</h2>
+                        <div class="card-body doctor-request-composer">
+                            <% const loadedServices = typeof services !== 'undefined' ? services : []; const chosenServiceId = typeof selectedServiceId === 'string' ? selectedServiceId : ''; const currentServiceList = typeof serviceList !== 'undefined' ? serviceList : { complete: false, warnings: [], services: loadedServices }; %>
+                            <form id="refresh-services" action="<%= basePath %>/services/refresh" method="POST"><input type="hidden" name="identity" value="<%= currentIdentity %>"></form>
+                            <% if (currentServiceList.continuation) { %><form id="next-services" action="<%= basePath %>/services/next" method="POST"><input type="hidden" name="identity" value="<%= currentIdentity %>"><input type="hidden" name="continuation" value="<%= currentServiceList.continuation %>"></form><% } %>
+                            <form action="<%= basePath %>/create-consent" method="POST">
                                 <input type="hidden" name="identity" value="<%= currentIdentity %>">
+                                <fieldset class="mb-3" data-patient-section>
+                                    <legend class="h5 patient-section-heading"><span data-help-key="doctor.patient">Patient</span><a href="<%= basePath %>/patients?identity=<%= encodeURIComponent(currentIdentity) %>" data-patient-library data-help-key="demo.patient-library" data-help-proxy>Patient library</a></legend>
+                                    <p class="form-text patient-entry-hint">Choose a listed patient or enter an identifier.</p>
+                                    <div class="patient-modes" role="tablist" aria-label="Patient entry mode">
+                                        <button type="button" class="btn btn-outline-secondary" id="patient-choose-tab" role="tab" data-patient-mode="choose" aria-selected="true" aria-controls="patient-choices" data-help-key="doctor.patient-picker">Choose patient</button>
+                                        <button type="button" class="btn btn-outline-secondary" id="patient-manual-tab" role="tab" data-patient-mode="manual" aria-selected="false" tabindex="-1" aria-controls="patient-manual" data-help-key="doctor.patient">Enter identifier</button>
+                                    </div>
+                                    <div class="doctor-tab-content">
+                                    <div id="patient-choices" role="tabpanel" aria-labelledby="patient-choose-tab" data-patient-choices>
+                                        <label for="configured-patient" class="form-label" data-help-key="doctor.patient-picker">Available patients</label>
+                                        <select id="configured-patient" class="form-select" data-help-key="doctor.patient-picker" data-help-proxy>
+                                            <option value="">Choose a synthetic identity</option>
+                                            <% patients.forEach(patient => { %><option value="<%= patient.idSystem %>|<%= patient.idValue %>" data-patient-name="<%= patient.display %>"><%= patient.display %> — <%= patient.idValue %><%= patient.standardTest ? ' (standard test)' : patient.idValue === '000000018' ? ' (national identifier)' : ' (sandbox GUID)' %></option><% }); %>
+                                        </select>
+                                    </div>
+                                    <p id="patient-name" class="patient-selection-name form-text" role="status">Name unknown until a named choice is selected.</p>
+                                    <div id="patient-manual" role="tabpanel" aria-labelledby="patient-manual-tab" data-patient-manual>
+                                        <% const patientToken = selectedPatientId || ''; const splitAt = patientToken.indexOf('|'); const patientSystem = splitAt < 0 ? 'http://fhir.health.gov.il/identifier/il-national-id' : patientToken.slice(0, splitAt); const patientValue = splitAt < 0 ? patientToken : patientToken.slice(splitAt + 1); const types = typeof identifierTypes !== 'undefined' ? identifierTypes : [{ system: patientSystem, label: 'Identifier type' }]; %>
+                                        <label for="patient-system" class="form-label" data-help-key="doctor.patient">Identifier type</label>
+                                        <select id="patient-system" class="form-select mb-2" data-help-key="doctor.patient">
+                                            <option value="__manual__" <%= !types.some(type => type.system === patientSystem) ? 'selected' : '' %>>Enter system URI manually…</option>
+                                            <% types.forEach(type => { %><option value="<%= type.system %>" <%= type.system === patientSystem ? 'selected' : '' %>><%= type.label %></option><% }); %>
+                                        </select>
+                                        <div data-manual-system <%= types.some(type => type.system === patientSystem) ? 'hidden' : '' %>>
+                                            <label for="patient-system-uri" class="form-label" data-help-key="doctor.patient-system">System URI</label>
+                                            <input id="patient-system-uri" name="patientSystem" type="text" class="form-control mb-2" value="<%= patientSystem %>" autocomplete="off" spellcheck="false" aria-describedby="patient-system-feedback" data-help-key="doctor.patient-system">
+                                        </div>
+                                        <p id="patient-system-feedback" class="form-text" role="status"></p>
+                                        <label for="patient-id" class="form-label" data-help-key="doctor.patient">Identifier value</label>
+                                        <input id="patient-id" type="text" name="patientId" class="form-control" value="<%= patientValue %>" required autocomplete="off" aria-describedby="patient-feedback" data-help-key="doctor.patient">
+                                        <p id="patient-resolved" class="form-text text-break" role="status"></p>
+                                        <p class="form-text">Keep leading zeros. Advanced: paste a full system|value; its system takes precedence.</p>
+                                    </div>
+                                    </div>
+                                    <div class="patient-library-navigation">
+                                        <% if (!patients.some(patient => !patient.standardTest && patient.idValue !== '000000018')) { %><p class="form-text" data-help-key="doctor.patient-empty">No sandbox GUID patients loaded. The library can load up to 10 when the current profile permits it.</p><% } %>
+                                    </div>
+                                    <p id="patient-feedback" class="form-text" role="status" aria-live="polite" data-help-key="doctor.patient-sources">Selecting a patient does not approve consent or fetch records. Ordinary identifiers require review in PCM.</p>
+                                </fieldset>
                                 <div class="mb-3">
-                                    <label class="form-label">Patient National ID</label>
-                                    <input type="text" name="patientId" class="form-control" value="123456789" required>
+                                    <h3 class="h5" data-help-key="demo.service">Clinical service</h3>
+                                    <label for="service-id" data-help-key="demo.service" class="form-label">Services connected to <%= identities.find(identity => identity.id === currentIdentity)?.label || currentIdentity %></label>
+                                    <select id="service-id" aria-describedby="service-list-status service-selection-status" data-service-help data-help-proxy data-help-key="demo.service" name="serviceId" class="form-select" required>
+                                        <option value="" <%= !chosenServiceId ? 'selected' : '' %>>Choose a clinical service</option>
+                                        <% if (chosenServiceId && !loadedServices.some(service => service.id === chosenServiceId)) { %><option value="<%= chosenServiceId %>" selected disabled>Selected service not in loaded pages — refresh or load more</option><% } %>
+                                        <% loadedServices.forEach(function(service) { %>
+                                        <option data-service-summary="<%= JSON.stringify(service.summary || {}) %>" data-service-stamp="<%= service.signature %>" value="<%= service.id %>" <%= chosenServiceId === service.id ? 'selected' : '' %> <%= service.available && !currentServiceList.stale ? '' : 'disabled' %>><%= service.name %><%= service.available && !currentServiceList.stale ? '' : ' — ' + (currentServiceList.stale ? 'Refresh failed; readiness unknown' : service.readiness) %></option>
+                                        <% }); %>
+                                    </select>
+                                    <input type="hidden" name="serviceStamp" value="<%= loadedServices.find(service => service.id === chosenServiceId)?.signature || '' %>">
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        <button form="refresh-services" type="submit" class="btn btn-sm btn-outline-primary" data-service-refresh data-service-help data-help-proxy data-help-key="doctor.services-refresh">Refresh</button>
+                                        <% if (currentServiceList.continuation) { %><button form="next-services" type="submit" class="btn btn-sm btn-outline-primary" data-service-help data-help-proxy data-help-key="doctor.services-pages">Load more services</button><% } %>
+                                    </div>
+                                    <p id="service-list-status" class="form-text" role="status" data-help-key="doctor.services-pages"><%= loadedServices.length %> services loaded. <%= currentServiceList.stale ? 'Stale — refresh failed; readiness unknown.' : currentServiceList.complete ? 'Complete — all advertised pages loaded.' : 'Partial or unavailable — absence does not mean removal.' %><% if (currentServiceList.refreshedAt) { %> Last checked: <time><%= currentServiceList.refreshedAt %></time>.<% } %></p>
+                                    <% if (!loadedServices.length) { %><p data-help-key="doctor.services-empty">No connected services loaded. Refresh or load more; check this provider’s registration and activation in PCM.</p><% } %>
+                                    <% if (typeof serviceError !== 'undefined' && serviceError) { %><p role="alert" data-help-key="doctor.services-empty"><%= serviceError %></p><% } %>
+                                    <% (currentServiceList.warnings || []).forEach(warning => { %><p role="status" data-help-key="doctor.services-pages"><%= warning %></p><% }); %>
+                                    <% const selectedService = loadedServices.find(service => service.id === chosenServiceId); const facts = selectedService?.summary || {}; %>
+                                    <p id="service-selection-status" role="status"><%= currentServiceList.stale ? 'Refresh successfully before creating a request.' : selectedService ? selectedService.readiness : 'Choose a connected service and review its details.' %></p>
+                                    <section data-selected-service-summary aria-label="Selected clinical service" <%= selectedService ? '' : 'hidden' %>>
+                                        <h4 class="h6" data-service-fact="name"><%= facts.name || selectedService?.name %></h4>
+                                        <dl class="doctor-service-facts">
+                                            <% for (const [key, label] of [['purpose','Purpose'], ['data','Data'], ['duration','Maximum consent period']]) { %>
+                                            <dt><%= label %></dt><dd data-service-fact="<%= key %>"><%= facts[key] || 'Not provided by PCM' %></dd>
+                                            <% } %>
+                                        </dl>
+                                        <details data-service-details data-help-key="doctor.service-details">
+                                            <summary>Service details</summary>
+                                            <dl class="doctor-service-facts">
+                                                <% for (const [key, label] of [['fullPurpose','Full purpose'], ['history','Record history'], ['access','Access'], ['restrictions','Restrictions'], ['registration','Public registration'], ['definition','Public service definition'], ['identifiers','Public business identifiers'], ['versions','Resource versions'], ['sensitivity','Sensitive-data settings'], ['patientChanges','Patient changes'], ['intent','App operations (advisory)'], ['grant','Granted permissions']]) { %>
+                                                <dt><%= label %></dt><dd data-service-fact="<%= key %>"><%= facts[key] || 'Not provided by PCM' %></dd>
+                                                <% } %>
+                                            </dl>
+                                        </details>
+                                    </section>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100">Request Consent</button>
+                                <p class="form-text">Creates a request in PCM. Does not fetch clinical records.</p>
+                                <button type="submit" class="btn btn-primary w-100" data-help-key="doctor.request" data-help-proxy data-request-consent data-service-help <%= !currentServiceList.stale && loadedServices.some(service => service.available && service.id === chosenServiceId) ? '' : 'disabled' %>>Create consent request</button>
                             </form>
+
                         </div>
                     </div>
                 </div>
 
                 <!-- LIST CONSENTS -->
                 <div class="col-md-8">
-                    <h4 class="mb-3">Active Consents (<%= consents.length %>)</h4>
+                    <h2 data-help-key="doctor.consents" class="h5 mb-3">Stored PCM Consents (<%= consents.length %>)</h2>
 
                     <% if (consents.length===0) { %>
-                        <div class="alert alert-info">No local consents found. Use the manual sandbox below or create a
-                            request.</div>
+                        <div class="alert alert-info" data-help-key="doctor.consents-empty">No stored requests for this provider. Choose the patient and clinical service, then Create consent request. Open Consents to review an ordinary request.</div>
                         <% } %>
 
-                            <% consents.forEach(function(item) { %>
-                                <div class="card mb-3">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <span><strong>Stored Consent</strong></span>
-                                        <span
-                                            class="badge bg-<%= item.consent && item.consent.status === 'active' ? 'success' : (item.consent && item.consent.status === 'rejected' ? 'danger' : 'warning') %>">
-                                            <%= item.consent ? item.consent.status : 'unknown' %>
-                                        </span>
-                                    </div>
+                            <% consents.forEach(function(item, index) {
+                                const consent = item.consent || {}, approval = item.approval || {}, grant = approval.grant;
+                                const endpoints = consent.discoveredEndpoints || (consent.discoveredEndpoint ? [{ name: 'Discovered data source', url: consent.discoveredEndpoint }] : []);
+                                const currentEndpoint = item.selectedEndpoint || consent.discoveredEndpoint || '';
+                                const patient = patients.find(patient => patient.idSystem === consent.patient?.identifier?.system && patient.idValue === consent.patient?.identifier?.value);
+                                const inspection = typeof tokenInspection === 'undefined' ? { enabled: false, message: 'Introspection disabled' } : tokenInspection;
+                                const allowed = item.service?.available && approval.usable && consent.status === 'active' && !item.authorityBlocked;
+                            %>
+                                <% /* Reset disclosure defaults on each render; keep the last stored Consent open. */ %>
+                                <details class="card mb-3 doctor-consent-card" data-consent-card="<%= item.id %>" data-source-membership="<%= item.sourceMembership || '' %>" data-token-expiry="<%= grant?.expiresAt || '' %>" <%= index === consents.length - 1 ? 'open' : '' %>>
+                                    <summary class="card-header doctor-card-heading">
+                                        <strong data-help-key="doctor.consent-card"><%= patient?.display || consent.patient?.display || 'Name unknown' %> — <%= consent.patient?.identifier?.value || 'Identity unavailable' %></strong>
+                                        <span class="badge bg-<%= consent.status === 'active' ? 'success' : consent.status === 'rejected' ? 'danger' : 'warning' %>" data-help-key="doctor.consent-status">Recorded: <%= consent.status || 'unknown' %></span>
+                                    </summary>
                                     <div class="card-body">
-                                        <% if (item.validationError) { %>
-                                            <div class="alert alert-danger py-1 px-2 mb-2">
-                                                <small><strong>Error:</strong>
-                                                    <%= item.validationError %>
-                                                </small>
+                                        <p data-help-key="doctor.service-state"><strong><%= item.service?.name || 'Service name unavailable' %></strong><% if (!item.service?.available) { %> — <%= item.service?.readiness || 'Service unavailable' %><% } %></p>
+                                        <div class="doctor-consent-id"><span>Consent ID: <code data-consent-id><%= item.id %></code></span><button type="button" class="btn btn-sm btn-outline-secondary" data-copy-consent data-help-key="doctor.copy-consent" data-help-proxy>Copy Consent ID</button><span role="status" aria-live="polite" data-copy-feedback></span></div>
+                                        <p data-help-key="doctor.access-period"><%= approval.accessMode || 'Access mode unavailable' %> · Expires: <%= consent.provision?.period?.end || 'Unavailable' %></p>
+                                        <% if (item.testAutoApproved) { %><p class="doctor-test-notice" data-help-key="consent.test-approved">Test auto-approved · <%= consent.patient.identifier.system %>|<%= consent.patient.identifier.value %>; no explicit patient decision.</p><% } else if (item.testIdentity) { %><p class="doctor-test-notice">Synthetic test identity · <%= consent.patient.identifier.system %>|<%= consent.patient.identifier.value %>; recorded status does not prove an explicit patient decision.</p><% } %>
+                                        <% if (item.fhirGetRequest) { %><p class="doctor-retrieval-summary" data-help-key="doctor.fhir-get">Custom GET: <code><%= item.fhirGetRequest %></code> · Source authorization applies.</p><% } else { %>
+                                        <p class="doctor-retrieval-summary" data-help-key="doctor.saved-scope"><%= grant ? 'Token-validated selection:' : 'Intended selection; granted permissions not yet obtained:' %> <span data-query-summary><%= approval.plan?.searches?.length || 0 %> searchable types</span> · Up to 10/type, first page.</p><% } %>
+                                        <% if (item.validationError) { %><p role="alert" class="alert alert-danger py-1"><strong><%= item.fetchOutcome || 'Request failed' %>:</strong> <%= item.validationError %>. No clinical absence can be inferred.</p><% } %>
+                                        <form method="POST" data-source-consent-id="<%= item.id %>">
+                                            <input type="hidden" name="identity" value="<%= currentIdentity %>">
+                                            <div class="doctor-card-actions">
+                                                <div class="doctor-source-field"><label for="source-<%= item.id %>" data-help-key="doctor.discovered-sources">Data source</label>
+                                                <select id="source-<%= item.id %>" class="form-select" data-source-choice data-help-key="doctor.source-button">
+                                                    <option value="" <%= !currentEndpoint ? 'selected' : '' %>>Choose a discovered data source</option>
+                                                    <% if (currentEndpoint && !endpoints.some(endpoint => endpoint.url === currentEndpoint)) { %><option value="<%= currentEndpoint %>" data-custom-source-target selected>Advanced target (not a discovered source)</option><% } %>
+                                                    <% endpoints.forEach((endpoint, index) => { %><option value="<%= endpoint.url %>" <%= currentEndpoint === endpoint.url ? 'selected' : '' %>><%= endpoint.name || ('Data source ' + (index + 1)) %></option><% }); %>
+                                                </select></div>
+                                                <button type="submit" formaction="<%= basePath %>/discover" class="btn btn-info" data-doctor-request="Checking / Discovering…" data-help-key="doctor.discover" data-help-proxy><span data-request-label>Check / Discover</span></button>
+                                                <button type="submit" formaction="<%= basePath %>/fetch-data" class="btn btn-success" data-doctor-request="Fetching data…" data-help-key="doctor.fetch" data-help-proxy data-service-help <%= allowed ? '' : 'disabled' %>><span data-request-label>Fetch data</span></button>
                                             </div>
-                                            <% } %>
-
-                                                <% if (item.data) { %>
-                                                    <!-- Data View Mode -->
-                                                    <div class="bg-light p-2 border rounded mb-2"
-                                                        style="max-height: 200px; overflow: auto;">
-                                                        <pre
-                                                            class="m-0 small"><%= JSON.stringify(item.data, null, 2) %></pre>
-                                                    </div>
-                                                    <div class="text-success small fw-bold">Data Fetched Successfully
-                                                    </div>
-                                                    <!-- Reset Button to go back to edit mode? For now, just show data or allow fetch again -->
-                                                    <hr>
-                                                    <% } %>
-
-                                                        <!-- Unified Form -->
-                                                        <form method="POST">
-                                                            <input type="hidden" name="identity"
-                                                                value="<%= currentIdentity %>">
-
-                                                            <div class="mb-2">
-                                                                <label class="form-label small fw-bold">Consent ID
-                                                                    (Editable):</label>
-                                                                <input type="text" name="consentId"
-                                                                    class="form-control form-control-sm"
-                                                                    value="<%= item.id %>">
-                                                            </div>
-
-                                                            <div class="mb-2">
-                                                                <label class="form-label small fw-bold">Target Endpoint
-                                                                    (Editable):</label>
-                                                                <input type="text" name="endpointUrl"
-                                                                    class="form-control form-control-sm"
-                                                                    placeholder="Resolved endpoint will appear here..."
-                                                                    value="<%= item.consent?.discoveredEndpoint || '' %>">
-                                                            </div>
-
-                                                            <div class="d-flex gap-2">
-                                                                <button type="submit" formaction="/discover"
-                                                                    class="btn btn-sm btn-info text-white flex-grow-1">
-                                                                    1. Check Status / Discover
-                                                                </button>
-                                                                <button type="submit" formaction="/fetch-data"
-                                                                    class="btn btn-sm btn-success flex-grow-1">
-                                                                    2. Fetch Data
-                                                                </button>
-                                                            </div>
-                                                        </form>
+                                            <div class="doctor-card-details">
+                                            <details data-card-disclosure><summary data-help-key="doctor.saved-scope">Approval details</summary>
+                                                <section aria-label="Consent and service"><h3 class="h6">Consent and service</h3>
+                                                    <dl class="doctor-approval-facts">
+                                                        <dt>Patient</dt><dd><%= patient?.display || consent.patient?.display || 'Name unknown' %> · <%= consent.patient?.identifier?.value || 'Unavailable' %></dd>
+                                                        <dt>Provider</dt><dd><%= item.service?.providerName || (consent.organization || []).find(organization => organization.display)?.display || 'Name unavailable' %></dd>
+                                                        <dt>Service</dt><dd><%= item.service?.name || 'Name unavailable' %></dd>
+                                                        <dt>Consent status</dt><dd><%= consent.status || 'Unavailable' %><%= approval.businessStatus && approval.businessStatus !== consent.status ? ' · ' + approval.businessStatus : '' %></dd>
+                                                        <dt>Approval starts</dt><dd><%= consent.provision?.period?.start || 'Unavailable' %></dd>
+                                                        <dt>Approval ends</dt><dd><%= consent.provision?.period?.end || 'Unavailable' %></dd>
+                                                        <dt>Access mode</dt><dd><%= approval.accessMode || 'Unavailable' %></dd>
+                                                        <dt>Recorded sources</dt><dd><%= (consent.provision?.actor || []).filter(actor => actor.role?.coding?.some(code => code.code === 'CST')).map(actor => actor.reference?.display || endpoints.find(endpoint => actor.reference?.reference === 'Organization/' + endpoint.organizationId)?.name || 'Source name unavailable').join(', ') || 'Unavailable' %></dd>
+                                                        <dt>Discovered sources</dt><dd><%= endpoints.map(endpoint => endpoint.name || 'Source name unavailable').join(', ') || 'Not discovered' %></dd>
+                                                    </dl>
+                                                    <p>Saved approval access details are unavailable in Doctor. Service settings describe the requested access; permissions returned with a token appear separately below.</p>
+                                                    <details><summary>Identifiers and service settings</summary>
+                                                        <dl class="doctor-approval-facts">
+                                                            <dt>Patient identifier</dt><dd><code><%= consent.patient?.identifier?.system || 'Unavailable' %>|<%= consent.patient?.identifier?.value || 'Unavailable' %></code></dd>
+                                                            <dt>Consent</dt><dd><code>Consent/<%= item.id %></code></dd>
+                                                            <dt>Business identifiers</dt><dd><%= (consent.identifier || []).map(identifier => identifier.system + '|' + identifier.value).join('; ') || 'Unavailable' %></dd>
+                                                            <dt>Provider association</dt><dd><%= (consent.organization || []).map(value => value.reference || value.identifier?.value || 'Unavailable').join(', ') || (consent.provision?.actor || []).filter(actor => actor.role?.coding?.some(code => code.code === 'IRCP')).map(actor => actor.reference?.reference).join(', ') || 'Unavailable' %></dd>
+                                                            <dt>Recorded source references</dt><dd><%= (consent.provision?.actor || []).filter(actor => actor.role?.coding?.some(code => code.code === 'CST')).map(actor => actor.reference?.reference).join(', ') || 'Unavailable' %></dd>
+                                                            <dt>Service registration</dt><dd><code><%= item.service?.id ? 'HealthcareService/' + item.service.id : 'Unavailable' %></code></dd>
+                                                            <% for (const [key, label] of [['fullPurpose','Purpose'], ['data','Requested data'], ['history','Record history'], ['duration','Maximum consent period'], ['access','Default access'], ['sensitivity','Sensitive-data settings'], ['patientChanges','Patient changes']]) { %>
+                                                            <dt><%= label %> (service setting)</dt><dd><%= item.service?.summary?.[key] || 'Not provided by PCM' %></dd>
+                                                            <% } %>
+                                                            <% endpoints.forEach(endpoint => { %><dt><%= endpoint.name || 'Source address' %></dt><dd><code><%= endpoint.url %></code></dd><% }); %>
+                                                        </dl>
+                                                    </details>
+                                                    <a href="<%= publicBaseUrls.pcmUi %>/ui/approve/<%= encodeURIComponent(item.id) %>" data-help-key="common.nav-consents">Open this Consent in PCM Consents</a>
+                                                </section>
+                                                <section aria-label="Token response" data-token-details><h3 class="h6">Token response</h3>
+                                                    <% if (grant) { %><p>Validated token-response grant. Acquired: <%= new Date(grant.acquiredAt).toISOString() %>; original expiry: <%= new Date(grant.expiresAt).toISOString() %>.</p>
+                                                        <p>Audience/source: <%= grant.audience %>; requesting application: <%= grant.clientId %>.</p>
+                                                        <p>Granted actions: <%= grant.summary?.actions.map(action => action.type + ': ' + action.description).join('; ') %>.</p>
+                                                        <p>Restrictions (literal token scope): <%= grant.summary?.clauses.flatMap(clause => clause.filters.map(filter => clause.type + ': ' + filter)).join('; ') || 'None returned' %>. Service history inputs are separate from these returned cutoffs.</p>
+                                                        <details><summary>Exact scope and authorization_details</summary><code data-effective-scope><%= grant.scope %></code><pre><%= JSON.stringify(grant.authorization_details, null, 2) %></pre></details>
+                                                    <% } else { %><p>Granted permissions not yet obtained<%= approval.expired ? ' — previous token expired' : '' %></p><% } %>
+                                                </section>
+                                                <section aria-label="Token status (optional introspection)" data-token-status><h3 class="h6">Token status (optional introspection)</h3>
+                                                    <p role="status"><%= approval.tokenStatus?.message || 'Token status not checked' %><%= approval.tokenStatus?.checkedAt ? ' at ' + approval.tokenStatus.checkedAt : '' %>.</p>
+                                                    <% if (approval.tokenStatus?.previousCheckedAt) { %><p>Previous check (historical): <%= approval.tokenStatus.previousCheckedAt %>.</p><% } %>
+                                                    <% if (approval.tokenStatus?.scope) { %><p>Introspection scope observed: <code><%= approval.tokenStatus.scope %></code>. Observed expiry: <%= approval.tokenStatus.observedExpiry %>.</p><pre><%= JSON.stringify(approval.tokenStatus.authorization_details, null, 2) %></pre><% } %>
+                                                    <p><%= inspection.message %>. Data Source enforcement remains authoritative.</p>
+                                                    <button type="submit" form="status-<%= item.id %>" class="btn btn-outline-secondary" data-help-key="doctor.token-status" data-help-proxy <%= grant && inspection.enabled ? '' : 'disabled' %>>Check token status</button>
+                                                </section>
+                                            </details>
+                                            <details data-card-disclosure><summary data-help-key="doctor.request-overrides">Request overrides</summary>
+                                                <label for="consent-<%= item.id %>-id">Consent ID (editable)</label><input id="consent-<%= item.id %>-id" name="consentId" class="form-control" value="<%= item.id %>" data-help-key="doctor.consent-id">
+                                                <label for="endpoint-<%= item.id %>">Exact target address (editable)</label><input id="endpoint-<%= item.id %>" name="endpointUrl" class="form-control" value="<%= currentEndpoint %>" data-help-key="doctor.endpoint">
+                                                <label for="fhir-get-<%= item.id %>">FHIR GET request override (optional)</label><input type="text" id="fhir-get-<%= item.id %>" name="fhirGetRequest" class="form-control" value="<%= item.fhirGetRequest || '' %>" placeholder="/Patient or /Observation?_summary=count" pattern="/.*" aria-describedby="fhir-get-help-<%= item.id %>" data-help-key="doctor.fhir-get">
+                                                <p id="fhir-get-help-<%= item.id %>">Start with /. Appended to Exact target address and sent as one GET, replacing predefined queries. Leave empty to use the intended query selection.</p>
+                                                <label for="scope-<%= item.id %>">Requested SMART scope — intended query selection</label><input id="scope-<%= item.id %>" name="requestedScope" class="form-control" value="<%= approval.queryScope || 'patient/Patient.rs' %>" data-help-key="demo.ceilings">
+                                                <p>Finite app intent, never approval authority. Predefined queries use obtained search permissions. A GET override uses the same token; the source enforces access.</p>
+                                            </details>
+                                            <details data-card-disclosure><summary data-help-key="doctor.requests">View FHIR requests</summary>
+                                                <p><%= item.data ? 'Sent' : 'Planned from intended operations; not yet authorized' %> · source: <%= currentEndpoint || 'Unavailable' %></p>
+                                                <ul><% (item.data?.preview?.actions || (item.fhirGetRequest ? [{ path: item.fhirGetRequest }] : approval.plan?.searches) || []).forEach(action => { %><li><code>GET <%= action.path || (action.type + '?' + new URLSearchParams({ _count: '10', ...(action.type === 'Patient' && consent.patient?.identifier ? { identifier: consent.patient.identifier.system + '|' + consent.patient.identifier.value } : {}) }).toString()) %></code></li><% }); %></ul>
+                                            </details>
+                                            </div>
+                                        </form>
+                                        <form id="status-<%= item.id %>" action="<%= basePath %>/token-status" method="POST"><input type="hidden" name="identity" value="<%= currentIdentity %>"><input type="hidden" name="statusConsentId" value="<%= item.id %>"><input type="hidden" name="generation" value="<%= grant?.generation || '' %>"></form>
+                                        <% if (item.data) { const preview = item.data.preview; %>
+                                            <section class="clinical-preview" aria-label="Fetched FHIR data" data-help-key="doctor.result">
+                                                <% if (preview?.requestOverride) { %>
+                                                <p>Custom FHIR GET response · Last fetched: <%= item.fetchedAt || 'Unavailable' %>. Resource: <%= item.data.resourceType %><%= Number.isSafeInteger(item.data.total) ? ' · reported total: ' + item.data.total : '' %>. No continuation is requested automatically.</p>
+                                                <% } else { %>
+                                                <p>First-page preview · Last fetched: <%= item.fetchedAt || 'Unavailable' %>. <%= item.data.entry?.length || 0 %> records shown. Up to 10 matching records per resource type; not a complete clinical collection.</p>
+                                                <p role="status"><%= ({ partial: 'Partial retrieval: one or more type queries failed.', empty: 'Successful empty first page: no matching records returned. This does not mean no clinical data exists.', bounded: 'More results are indicated; only the first page is shown.', complete: 'Known completed queries: reported totals match these queries only.', unknown: 'Additional results unknown: source completion not established.' })[preview?.outcome] || 'Completion unknown' %></p>
+                                                <ul><% (preview?.types || []).forEach(type => { %><li><%= type.type %>: <%= type.count %> shown · <%= type.boundary %><%= type.total !== null ? ' · reported total ' + type.total : '' %></li><% }); %><% (preview?.skipped || []).forEach(skip => { %><li><%= skip.type %> — <%= skip.message %></li><% }); %><% (preview?.failures || []).forEach(failure => { %><li><%= failure.type %> — <%= failure.outcome %>: <%= failure.message %></li><% }); %></ul>
+                                                <% } %>
+                                                <details><summary>FHIR technical details</summary><pre tabindex="0"><%= JSON.stringify(item.data, null, 2) %></pre></details>
+                                            </section>
+                                        <% } %>
                                     </div>
-                                </div>
-                                <% }); %>
+                                </details>
+                            <% }); %>
 
                                     <!-- MANUAL SANDBOX CARD -->
-                                    <div class="card border-warning mb-3">
-                                        <div class="card-header bg-warning text-dark">
-                                            <strong>Manual Sandbox</strong> (Test Arbitrary IDs)
-                                        </div>
+                                    <details id="manual-testing" class="card border-warning mb-3"><summary class="card-header" data-help-key="doctor.manual">Manual request testing · advanced</summary><div>
                                         <div class="card-body">
+                                            <p data-help-key="doctor.manual">Refresh status and sources for an exact Consent ID. The target address is a local test override; it cannot change approved sources, scope or patient authority.</p>
+                                            <p data-help-key="doctor.service-state">For clinical requests, use the resolved Consent card’s query actions. Intended operations and sent FHIR requests appear on that card; the actual token response remains separate from requested scope.</p>
                                             <form method="POST">
                                                 <input type="hidden" name="identity" value="<%= currentIdentity %>">
 
                                                 <div class="mb-2">
-                                                    <label class="form-label small fw-bold">Consent ID:</label>
-                                                    <input type="text" name="consentId"
-                                                        class="form-control form-control-sm" placeholder="e.g. uuid...">
+                                                    <label class="form-label small fw-bold" for="manual-consent-id" data-help-key="pcm.consent-id">Consent ID:</label>
+                                                    <input id="manual-consent-id" type="text" name="consentId"
+                                                        class="form-control form-control-sm" placeholder="e.g. uuid..." data-help-key="doctor.consent-id">
                                                 </div>
 
                                                 <div class="mb-2">
-                                                    <label class="form-label small fw-bold">Target Endpoint:</label>
-                                                    <input type="text" name="endpointUrl"
-                                                        class="form-control form-control-sm" placeholder="https://...">
+                                                    <label class="form-label small fw-bold" for="manual-endpoint-url" data-help-key="doctor.endpoint">Exact target address:</label>
+                                                    <input id="manual-endpoint-url" type="text" name="endpointUrl"
+                                                        class="form-control form-control-sm" placeholder="https://..." data-help-key="doctor.endpoint">
                                                 </div>
 
-                                                <div class="d-flex gap-2">
-                                                    <button type="submit" formaction="/discover"
-                                                        class="btn btn-sm btn-info text-white flex-grow-1">
-                                                        Check / Discover
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    <button type="submit" formaction="<%= basePath %>/discover"
+                                                        class="btn btn-sm btn-info text-white flex-grow-1" data-help-key="doctor.discover" data-help-proxy>
+                                                        Refresh status and sources
                                                     </button>
-                                                    <button type="submit" formaction="/fetch-data"
-                                                        class="btn btn-sm btn-success flex-grow-1">
-                                                        Fetch Data
+                                                    <button type="submit" formaction="<%= basePath %>/fetch-data"
+                                                        class="btn btn-sm btn-success flex-grow-1" disabled data-service-help data-help-key="doctor.service-state">
+                                                        Fetch data
                                                     </button>
                                                 </div>
                                             </form>
                                         </div>
-                                    </div>
+                                    </div></details>
                 </div>
             </div>
-</body>
+</main></body>
 
 </html>

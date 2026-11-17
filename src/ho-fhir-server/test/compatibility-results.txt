@@ -1,0 +1,10 @@
+PASS create/read
+PASS conjunctive search
+PASS include/revinclude
+PASS history/vread
+PASS native paging/external base URLs
+PASS count-only search
+PASS request validation
+PASS PostgreSQL persistence across application restart
+PASS custom distribution default deny
+STRICT FOUNDATION MATRIX PASS

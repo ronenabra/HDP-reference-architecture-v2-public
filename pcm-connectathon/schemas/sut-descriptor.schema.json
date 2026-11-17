@@ -1,0 +1,298 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pcm.example/schemas/sut-descriptor-4.0.json",
+  "title": "PCM system-under-test descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "pcmIg",
+    "target",
+    "healthOrganizations",
+    "legacyDataSource",
+    "runtime"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "4.0"
+    },
+    "pcmIg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "commit"
+      ],
+      "properties": {
+        "version": {
+          "const": "0.4.0"
+        },
+        "commit": {
+          "const": "a19378fd0978ef8e998ffee71ec8e782cf329c2a"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "preset",
+        "simulationControls",
+        "perSourceSimulation",
+        "awsCredentialIsolation",
+        "pcmOAuthBaseUrl",
+        "pcmFhirBaseUrl",
+        "contractEnvironment",
+        "logicalIssuer",
+        "tokenMaximumSeconds",
+        "conformanceExceptions"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "strict",
+            "connectathon"
+          ]
+        },
+        "preset": {
+          "enum": [
+            "connectathon-easy",
+            "connectathon-balanced",
+            "connectathon-mtls",
+            "strict"
+          ]
+        },
+        "simulationControls": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "perSourceSimulation": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          }
+        },
+        "awsCredentialIsolation": {
+          "const": true
+        },
+        "pcmOAuthBaseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "pcmFhirBaseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "contractEnvironment": {
+          "enum": [
+            "production",
+            "test"
+          ]
+        },
+        "logicalIssuer": {
+          "enum": [
+            "https://pcm2m.health.gov.il/api/fhir-service/r4",
+            "https://pcm2mtest.health.gov.il/api/fhir-service/r4"
+          ]
+        },
+        "tokenMaximumSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "conformanceExceptions": {
+          "type": "array",
+          "items": {
+            "const": "PCM-SANDBOX-FULL-DIAGNOSTICS"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        }
+      }
+    },
+    "healthOrganizations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "baseUrl",
+          "audience",
+          "organizationId",
+          "endpointId",
+          "clinicalData",
+          "capabilities"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "audience": {
+            "type": "string",
+            "format": "uri"
+          },
+          "organizationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "endpointId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "clinicalData": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "managed",
+              "serverId",
+              "bootstrapPolicy",
+              "expectedSource",
+              "limits"
+            ],
+            "properties": {
+              "managed": {
+                "const": true
+              },
+              "serverId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "bootstrapPolicy": {
+                "enum": [
+                  "disabled",
+                  "if-empty",
+                  "replace"
+                ]
+              },
+              "expectedSource": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "limits": {
+                "type": "object",
+                "required": [
+                  "maxBytes",
+                  "maxEntries"
+                ],
+                "properties": {
+                  "maxBytes": {
+                    "type": "integer"
+                  },
+                  "maxEntries": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "legacyDataSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "enabled",
+        "compatibilityOnly",
+        "managedHapi",
+        "baseUrl",
+        "capabilities"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "compatibilityOnly": {
+          "const": true
+        },
+        "managedHapi": {
+          "const": false
+        },
+        "baseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositoryCommit",
+        "sandboxRelease",
+        "images"
+      ],
+      "properties": {
+        "repositoryCommit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "sandboxRelease": {
+          "type": "string",
+          "minLength": 1
+        },
+        "images": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "configured",
+              "immutable"
+            ],
+            "properties": {
+              "configured": {
+                "type": "string",
+                "minLength": 1
+              },
+              "immutable": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

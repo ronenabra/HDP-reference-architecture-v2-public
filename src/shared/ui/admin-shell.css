@@ -1,0 +1,137 @@
+/* Admin-only shell; shared consumers retain their scoped presentation. */
+/* Bound the shell to the viewport so only the selected area's content scrolls. */
+.admin-workspace { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; margin: 0; padding: 0 24px 24px; }
+.admin-workspace > header, .admin-workspace > p { flex-shrink: 0; }
+.admin-workspace .sandbox-header { margin-bottom: 0; align-items: center; }
+.admin-workspace .sandbox-heading { flex: 0 1 auto; }
+.admin-workspace .sandbox-heading h1 { margin: 0; font-size: clamp(1.4rem, 4vw, 2rem); }
+.admin-workspace .sandbox-navigation { margin-left: auto; }
+.admin-workspace .sandbox-navigation > a, .admin-sections a, .admin-source-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px; border-radius: 6px; }
+.admin-layout { display: grid; grid-template-columns: 208px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); flex: 1 1 auto; min-height: 0; overflow: hidden; gap: 24px; }
+.admin-sections { align-self: start; min-width: 0; max-height: 100%; overflow-x: hidden; overflow-y: auto; display: grid; gap: 8px; }
+.admin-layout > main, .admin-workspace > main { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.admin-workspace > main { flex: 1 1 auto; }
+.admin-sections [aria-current], .admin-source-links [aria-current] { background: #e0f2fe; color: var(--pcm-blue); font-weight: 650; border: 1px solid var(--pcm-blue); }
+.admin-workspace main, .admin-workspace .card, .admin-workspace .card-body { min-width: 0; }
+.admin-workspace .card { margin-block: 16px; }
+.admin-workspace p, .admin-workspace code, .admin-workspace pre, .admin-workspace td { overflow-wrap: anywhere; word-break: normal; }
+.admin-workspace pre { white-space: pre-wrap; }
+.admin-workspace .card-header { font-size: 1rem; }
+.admin-workspace .btn, .admin-workspace input, .admin-workspace select { min-height: 44px; }
+.admin-workspace input[type=checkbox] { min-height: 0; }
+.admin-toolbar, .admin-source-links, .admin-endpoint-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.admin-toolbar { justify-content: space-between; }
+.admin-endpoints { display: grid; gap: 0; }
+.admin-endpoint { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(0, 1.4fr) minmax(150px, .8fr); gap: 16px; border-bottom: 1px solid var(--pcm-border); padding-block: 16px; min-width: 0; }
+.admin-endpoint > div { min-width: 0; }
+.admin-endpoint:last-child { border-bottom: 0; }
+.admin-endpoint h4 { margin: 0; }
+.admin-endpoint code { display: block; user-select: text; }
+.admin-endpoint p { margin-block: 8px; }
+.admin-workspace form { max-width: 100%; }
+.admin-workspace .table { table-layout: fixed; }
+.admin-workspace .table-responsive { max-width: 100%; }
+.admin-workspace .alert { margin-block: 16px; }
+/* Keep shell rows adjacent; an empty live status must not reserve blank space. */
+.admin-workspace > .alert { margin-block: 2px; }
+.admin-workspace > [data-admin-navigation-status] { margin: 0; }
+.admin-workspace .form-text { margin-block: 8px; }
+@media (max-width: 800px) {
+ .admin-workspace { padding: 0 8px 16px; }
+ .admin-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+ .admin-sections { position: static; display: flex; flex-wrap: wrap; gap: 4px; }
+ .admin-workspace .input-group { flex-wrap: wrap; }
+ .admin-workspace .input-group > * { max-width: 100%; }
+ .admin-endpoint { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+ .admin-workspace .source-record { padding: 8px !important; }
+}
+
+.admin-workspace .admin-login { max-width: 420px; }
+
+/* Source groups lead to one workspace; exact identifiers wrap at every width. */
+.source-directory-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 16px; padding: 16px 8px; border-bottom: 1px solid var(--pcm-border); text-decoration: none; min-height: 44px; overflow-wrap: anywhere; }
+.source-directory-row:last-child { border-bottom: 0; }
+.source-directory-row strong, .source-directory-row code { grid-column: 1 / -1; }
+.source-directory-row code { color: var(--pcm-text); }
+.admin-source-links { margin-block: 16px; }
+@media (max-width: 600px) {
+ .source-directory-row { grid-template-columns: minmax(0, 1fr); }
+ .identity-mappings thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+ .identity-mappings, .identity-mappings tbody, .identity-mappings tr, .identity-mappings td { display: block; width: 100%; }
+ .identity-mappings tr { padding-block: 8px; border-bottom: 1px solid var(--pcm-border); }
+ .identity-mappings td { border: 0; text-align: left !important; white-space: normal; }
+ .identity-mappings td[data-label]::before { content: attr(data-label); display: block; font: 600 14px system-ui; margin-bottom: 4px; }
+}
+
+/* Keep source credential export actions fully inside the scrollable workspace. */
+.admin-source-exports { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 24px; }
+
+/* Data tasks retain one exact managed target while separating independent actions. */
+.admin-data-task { margin-block: 1rem; padding-block-start: 1rem; border-top: 1px solid var(--pcm-border); }
+.admin-data-delete { border-inline-start: 3px solid var(--pcm-danger); padding-inline-start: 1rem; }
+[data-managed-fhir-server] pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+[data-managed-fhir-server] input, [data-managed-fhir-server] select { min-width: 0; }
+[data-recovery-controls] form { margin-block: 1rem; }
+[data-recovery-controls] label.form-check { display: block; margin-block: .5rem; min-height: 44px; }
+[data-recovery-controls] form > button { display: block; margin-block-start: .5rem; }
+
+/* Saved origins and exact unit-labelled limits stay readable on narrow screens. */
+.admin-limit-heading { font-size: 1.25rem; font-weight: 700; background: #e2e8f0; padding: 8px; }
+.admin-limit-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 8px 16px; padding-block: 16px; border-top: 1px solid var(--pcm-border); }
+.admin-limit-row > * { min-width: 0; }
+.admin-limit-row input { width: 100%; }
+.admin-limit-row label > span { display: block; margin-block: 8px; }
+.admin-limit-row details { grid-column: 1 / -1; }
+.admin-limits-adoption { margin-block: 16px; padding: 16px; border: 1px solid var(--pcm-border); border-radius: var(--pcm-radius, 8px); }
+@media (max-width: 600px) { .admin-limit-row { grid-template-columns: minmax(0, 1fr); } }
+
+/* Security forms keep draft inputs adjacent to their saved policy facts. */
+.admin-security-target { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-block:16px; }
+.admin-security-target select { flex:1 1 240px; min-width:0; }
+.admin-security-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:16px; margin-block:16px; }
+.admin-security-control { padding:8px; border:1px solid var(--ct-border, #d7dee8); border-radius:8px; min-width:0; }
+.admin-security-control label { display:flex; align-items:center; gap:8px; min-height:44px; }
+.admin-security-control p { margin:8px 0 0; }
+.admin-security-control select { width:100%; }
+.admin-security-control input[type=checkbox] { width:20px; height:20px; flex:none; }
+[data-preset-changes] li { overflow-wrap:anywhere; }
+
+/* Local workflow clocks reuse existing field surfaces without browser fieldset chrome. */
+.admin-workspace [data-test-workflows] fieldset { border: 0; padding: 0; margin: 24px 0; min-inline-size: 0; }
+.admin-workspace [data-test-workflows] legend { margin-bottom: 8px; }
+
+/* Role facts wrap independently so fingerprints remain secondary at narrow widths. */
+.admin-certificate-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+.admin-certificate-facts > div { min-width: 0; }
+.admin-certificate-facts dt { font-weight: 650; }
+.admin-certificate-facts dd { margin: 8px 0; overflow-wrap: anywhere; }
+[data-credential-row] h3 { font-size: 1rem; }
+[data-credential-row] summary { min-height: 44px; padding-block: 12px; }
+[data-credential-row] [data-endpoint] { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+[data-credential-row] [data-exact-address] { max-width: 100%; overflow-wrap: anywhere; }
+
+/* Maintenance alternatives and exact recovery links remain contained on narrow screens. */
+[data-maintenance-restore] input[type=file], [data-maintenance-restore] textarea { max-width: 100%; min-width: 0; }
+.admin-maintenance-links { padding-inline-start: 24px; }
+.admin-maintenance-links li { margin-block: 8px; overflow-wrap: anywhere; }
+.admin-maintenance-links a { display: inline-block; min-height: 44px; padding-block: 8px; }
+
+/* The first level joins the workspace on the left; only source views form top tabs. */
+.admin-layout { gap: 0; margin-block-start: 0; }
+.admin-sections { gap: 4px; padding-block: 8px; z-index: 1; }
+.admin-sections a { border: 1px solid transparent; border-radius: 7px 0 0 7px; padding: 12px 14px; }
+.admin-sections [aria-current] { background: white; border-color: var(--pcm-border); border-right-color: white; box-shadow: inset 3px 0 var(--pcm-blue); }
+.admin-layout > main { background: white; border: 1px solid var(--pcm-border); border-radius: 8px; padding: 16px; }
+.admin-layout > main > h2:first-child { margin-top: 0; }
+.admin-source-links { gap: 3px; margin-bottom: 0; border-bottom: 1px solid var(--pcm-border); }
+.admin-source-links a { border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; position: relative; top: 1px; }
+.admin-source-links [aria-current] { border-color: var(--pcm-border); background: white; box-shadow: inset 0 3px var(--pcm-blue); }
+.admin-source-panel { border: 1px solid var(--pcm-border); border-top: 0; padding: 16px; border-radius: 0 0 8px 8px; }
+.admin-addresses th:first-child { width: 23%; }
+.admin-addresses th:last-child { width: 28%; }
+.admin-addresses td { vertical-align: top; padding: 8px; }
+.admin-workspace dt { color: var(--pcm-text-muted, #526174); }
+.admin-workspace dd { overflow-wrap: anywhere; }
+@media (min-width: 451px) and (max-width: 800px) { .admin-layout { grid-template-columns: 148px minmax(0, 1fr); } .admin-sections { display: grid; } .admin-sections a { padding: 10px 8px; } }
+@media (max-width: 600px) { .admin-addresses thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } .admin-addresses, .admin-addresses tbody, .admin-addresses tr, .admin-addresses td { display: block; width: 100%; } .admin-addresses td { border: 0; } .admin-addresses tr { border-bottom: 1px solid var(--pcm-border); padding-block: 8px; } .admin-addresses td[data-label]::before { content: attr(data-label) ': '; font-weight: 600; } }
+@media (max-width: 450px) { .admin-layout { grid-template-rows: auto minmax(0, 1fr); } .admin-sections { display: flex; flex-wrap: wrap; max-height: 25dvh; padding-bottom: 12px; } .admin-sections a { border-radius: 5px; } .admin-sections [aria-current] { border-right-color: var(--pcm-border); margin: 0; } .admin-layout > main, .admin-source-panel { padding: 12px; } }

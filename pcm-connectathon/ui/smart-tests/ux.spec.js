@@ -1,0 +1,51 @@
+'use strict';
+/** Real SMART main/optional permissions, actionable failures, completion and popup accessibility. */
+const { test, expect } = require('@playwright/test');
+const doctor = process.env.PCM_UI_SP_URL;
+test('advanced SMART wording, exact scope defaults, narrowing failure and honest completion @smoke', async ({ browser, page }, info) => {
+    const touch = info.project.name === 'chromium-mobile';
+    const context = touch ? await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 }, ignoreHTTPSErrors: true }) : null;
+    if (context) page = await context.newPage();
+    const explain = async (target, text) => {
+        await page.getByRole('checkbox', { name: 'Explain this page' }).check();
+        if (await target.getAttribute('data-help-key') === 'doctor.smart-start' && !await target.isVisible()) await page.getByRole('button', { name: 'Tools', exact: true }).click();
+        if (await target.getAttribute('data-help-proxy') !== null) { const proxy = target.locator('xpath=following-sibling::button[@data-help-for][1]'); if (touch) await proxy.tap(); else await proxy.focus(); }
+        else if (touch) await target.tap(); else await target.focus();
+        await expect(page.getByRole('tooltip')).toContainText(text); await page.keyboard.press('Escape');
+        await page.getByRole('checkbox', { name: 'Explain this page' }).uncheck();
+    };
+    await page.goto(doctor); await expect(page.getByRole('heading', { name: 'New consent request', exact: true })).toBeVisible();
+    const start = page.getByRole('link', { name: 'Test SMART application launch', exact: true }); await expect(start).toBeHidden();
+    await page.getByRole('button', { name: 'Tools', exact: true }).click(); await explain(start, 'optional browser application-launch'); await start.click();
+    const api = new URL(page.url());
+    await expect(page.getByRole('heading', { name: /Test SMART application launch/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Requested application permissions', exact: true })).toBeVisible();
+    await expect(page.getByText('read and search all FHIR resource types for the selected patient.', { exact: true })).toBeVisible();
+    expect(await page.content()).not.toContain('Approved scope');
+    await explain(page.locator('[data-help-key="smart.application"]'), 'registered name');
+    await explain(page.locator('[data-help-key="smart.permissions"]'), 'broad wildcard');
+    await explain(page.locator('[data-help-key="smart.hmo-signin"]'), 'does not approve');
+    const approve = page.locator('[data-smart-approve]'); await expect(approve).toBeDisabled(); await explain(approve, 'Verify your own');
+    const technical = page.locator('details').filter({ has: page.getByText('Protocol testing and technical details', { exact: true }) });
+    if (!await technical.evaluate(node => node.open)) await technical.locator('summary').click();
+    await explain(technical.locator('summary'), 'non-secret');
+    if (!await technical.evaluate(node => node.open)) await technical.locator('summary').click();
+    await expect(page.locator('[name="approved_scope"]')).toBeChecked();
+    await explain(page.locator('[name="approved_scope"]'), 'At least one');
+    await page.locator('[value="configured-patient-1"]').check(); await expect(approve).toBeEnabled(); await explain(approve, 'Explicitly authorize');
+    await page.locator('[name="approved_scope"]').uncheck(); await technical.locator('summary').click(); await approve.click();
+    await expect(page.getByText('SMART permissions were not accepted.', { exact: true })).toBeVisible();
+    await page.getByRole('link', { name: 'Start a fresh SMART test', exact: true }).click();
+    await page.getByText('Protocol testing and technical details', { exact: true }).click(); await page.locator('[value="configured-patient-1"]').check();
+    await page.locator('[data-smart-approve]').click();
+    await expect(page.getByText('SMART code exchange completed', { exact: true })).toBeVisible();
+    await expect(page.getByText('This test created no clinical Consent', { exact: false })).toBeVisible();
+    await explain(page.locator('[data-help-key="smart.completion"]'), 'only that the confidential code exchange');
+    expect(await page.content()).not.toMatch(/access_token|code_verifier|PRIVATE KEY/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    const invalid = new URL(api.origin + api.pathname); invalid.searchParams.set('client_id', 'unregistered'); invalid.searchParams.set('redirect_uri', 'https://unsafe-return.test/callback');
+    const response = await page.goto(invalid.toString()); expect(response.status()).toBe(400);
+    await expect(page.getByRole('heading', { name: 'SMART test could not continue', exact: true })).toBeVisible();
+    expect(await page.locator('a[href*="unsafe-return"]').count()).toBe(0); await explain(page.locator('[data-help-key="smart.error"]'), 'fresh test');
+    await context?.close();
+});

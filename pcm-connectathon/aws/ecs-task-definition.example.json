@@ -1,0 +1,25 @@
+{
+  "family": "pcm-connectathon-team-a",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "containerDefinitions": [
+    {
+      "name": "pcm-core",
+      "image": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/pcm-core:0.1.2",
+      "portMappings": [
+        { "containerPort": 3000, "protocol": "tcp" },
+        { "containerPort": 3001, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "TEAM_ID", "value": "team-a" },
+        { "name": "PCM_CONFORMANCE_MODE", "value": "connectathon" },
+        { "name": "TEAM_CONFIG_PATH", "value": "/runtime/team-config.json" },
+        { "name": "CERTS_DIR", "value": "/runtime/certs" },
+        { "name": "LOG_DIR", "value": "/runtime/logs/pcm-core" },
+        { "name": "PCM_API_CLIENT_AUTH_MODE", "value": "mtls" }
+      ]
+    }
+  ]
+}

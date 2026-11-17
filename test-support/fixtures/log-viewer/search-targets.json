@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "logs-search-targets/1",
+  "establishedBeforeImplementation": true,
+  "startingRevision": "467ea6ef538c0cfe8e3cd66fc2b67697fbf1bf11",
+  "scope": "Disposable approximately 733 MiB configured text-log corpus; same host, no retained deployment mutation or host cache drop",
+  "targets": {
+    "sparseFirstResultApiAndRenderMilliseconds": 3000,
+    "singleTerminalApiAndRenderMilliseconds": 8000,
+    "twoConcurrentTerminalMillisecondsEach": 16000,
+    "incrementalProcessRssBytesTwoWorkers": 167772160,
+    "browseApiP95MillisecondsDuringSearch": 250,
+    "cancelAcknowledgementMilliseconds": 500,
+    "workerStopMilliseconds": 500
+  },
+  "bounds": {
+    "activeWorkers": 2,
+    "retainedJobs": 8,
+    "retainedSummariesPerJob": 1000,
+    "resultPageRows": 200,
+    "lineBytes": 262144,
+    "chunkBytes": 262144,
+    "deadlineMilliseconds": 30000,
+    "jobLifetimeMilliseconds": 300000
+  },
+  "interpretation": "Terminal means complete within captured configured browse retention or explicitly partial due to result/line/source/deadline bounds. Dense searches may stop at the result cap and must never claim a complete count. First sparse target includes a late-inventory match. CPU and file-read bytes are measured and reported, with at most two workers and one captured-corpus read per uncapped query; no additional arbitrary CPU threshold is invented after measurement.",
+  "coldEquivalent": "A new independent corpus copy plus POSIX_FADV_DONTNEED on only owned disposable files where supported; report actual /proc I/O evidence, never assert host caches were globally cold."
+}

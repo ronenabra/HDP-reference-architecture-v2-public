@@ -1,0 +1,4 @@
+<configuration>
+  <!-- Tests explicitly construct the appender under an owned temporary directory. -->
+  <root level="OFF" />
+</configuration>

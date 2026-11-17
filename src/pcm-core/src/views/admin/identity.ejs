@@ -1,0 +1,19 @@
+        <h2 class="h6" data-help-key="admin.mapping-section">Identity mapping overrides</h2>
+        <p class="form-text" data-help-key="admin.mapping-section">Legacy mappings create no Patient or access authority. Managed HAPI resolves its own Patient data.</p>
+        <div class="table-responsive" role="region" aria-label="Legacy identity mappings" tabindex="0"><table class="table table-sm align-middle identity-mappings">
+          <thead><tr><th data-help-key="admin.mapping-system">Naming system</th><th data-help-key="admin.mapping-business">Business value</th><th data-help-key="admin.mapping-internal">Local identifier</th><th></th></tr></thead>
+          <tbody><%- identityMappingRows %></tbody>
+        </table></div>
+        <form method="post" action="<%- escapeHtml(basePath) %>/admin/config/identity-mapping/add" class="row g-2"><input type="hidden" name="adminForm" value="legacy-mapping"><input type="hidden" name="expectedRevision" value="<%= Number(config.runtime.revision) || 0 %>">
+          <div class="col-md-4">
+            <label class="form-label" for="mapping-business-id" data-help-key="admin.mapping-business">Business identifier (bare value or system|value)</label>
+            <input class="form-control" id="mapping-business-id" name="businessId" value="<%= draft('/admin/config/identity-mapping/add', 'businessId') %>" placeholder="123456789" title="Use either a bare identifier, such as 123456789, or FHIR system|value, such as http://fhir.health.gov.il/identifier/il-national-id|123456789. Bare identifiers are resolved as http://fhir.health.gov.il/identifier/il-national-id." data-help-key="admin.mapping-business">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="mapping-internal-id" data-help-key="admin.mapping-internal">Internal identifier</label>
+            <input class="form-control" id="mapping-internal-id" name="internalId" value="<%= draft('/admin/config/identity-mapping/add', 'internalId') %>" placeholder="Patient/local-123" title="Use the local identifier exactly as this data source expects it. Bare values are preserved as entered." data-help-key="admin.mapping-internal">
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button data-help-key="admin.mapping-add" class="btn btn-primary w-100" title="Save this mapping override to team-config.json.">Add</button>
+          </div>
+        </form>

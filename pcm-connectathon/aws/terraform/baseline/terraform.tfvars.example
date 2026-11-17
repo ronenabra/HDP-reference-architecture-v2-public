@@ -1,0 +1,7 @@
+region       = "il-central-1"
+project_name = "hdp-pcm-connectathon"
+
+vpc_cidr            = "10.70.0.0/16"
+public_subnet_cidrs = ["10.70.0.0/20", "10.70.16.0/20", "10.70.32.0/20"]
+
+image_tag = "0.1.2"

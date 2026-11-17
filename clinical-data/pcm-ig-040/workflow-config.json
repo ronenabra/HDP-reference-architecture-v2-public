@@ -1,0 +1,36 @@
+{
+  "participatingHmos": [
+    "ho-a",
+    "ho-b",
+    "ho-c"
+  ],
+  "memberships": [
+    {
+      "identifier": {
+        "system": "http://fhir.health.gov.il/identifier/il-national-id",
+        "value": "000000018"
+      },
+      "homeHmoId": "ho-a"
+    }
+  ],
+  "presenceEligiblePatients": [
+    {
+      "system": "http://fhir.health.gov.il/identifier/il-national-id",
+      "value": "000000018"
+    },
+    {
+      "system": "http://fhir.health.gov.il/identifier/il-national-id",
+      "value": "000000026"
+    },
+    {
+      "system": "http://fhir.health.gov.il/identifier/il-national-id",
+      "value": "000000034"
+    }
+  ],
+  "eligibleRelationships": [
+    {
+      "system": "http://pcm.fhir.health.gov.il/sandbox/CodeSystem/representative-relationship",
+      "code": "parent"
+    }
+  ]
+}

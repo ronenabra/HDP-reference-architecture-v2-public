@@ -1,11 +1,21 @@
 {
   "name": "hdp-reference-architecture-poc",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "workspaces": [
     "src/*"
   ],
   "scripts": {
-    "test": "npm test --workspaces"
+    "check:pcm-ig": "node scripts/install-contract-inputs.js --check",
+    "test": "node scripts/run-source-tests.js",
+    "verify:fast": "node pcm-connectathon/scripts/verify-local.js",
+    "verify:full": "node pcm-connectathon/scripts/run-full-verification.js",
+    "verify:ui": "node pcm-connectathon/ui/run-playwright.js",
+    "verify:ui:supplemental": "node pcm-connectathon/ui/run-supplemental.js",
+    "verify:ui:walkthrough": "node pcm-connectathon/ui/run-ui-walkthrough.js",
+    "prepare:contracts": "node scripts/install-contract-inputs.js"
+  },
+  "devDependencies": {
+    "@redocly/cli": "2.49.0"
   }
 }

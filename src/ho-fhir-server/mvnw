@@ -1,0 +1,38 @@
+#!/bin/sh
+# Minimal, checksum-verifying Maven wrapper for the pinned sandbox toolchain.
+set -eu
+
+MAVEN_VERSION=3.9.16
+MAVEN_SHA512=831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6
+MAVEN_URL=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+WRAPPER_ROOT=${MAVEN_WRAPPER_CACHE:-/tmp/pcm-maven-wrapper}
+MAVEN_HOME_DIR=${WRAPPER_ROOT}/apache-maven-${MAVEN_VERSION}
+ARCHIVE=${WRAPPER_ROOT}/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+PROJECT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+# The repository development host intentionally has no JVM. Keep the exact
+# wrapper command usable there through the equally pinned builder image.
+if ! command -v java >/dev/null 2>&1; then
+  # Keep the dependency cache outside target: `mvn clean` removes target while
+  # the container is using this bind mount and would otherwise invalidate the
+  # repository in the middle of a normal clean/verify lifecycle.
+  CONTAINER_REPOSITORY=${MAVEN_CONTAINER_REPOSITORY:-${WRAPPER_ROOT}/repository}
+  mkdir -p "${CONTAINER_REPOSITORY}"
+  exec docker run --rm \
+    --user "$(id -u):$(id -g)" \
+    --volume "${PROJECT_DIR}:/workspace" \
+    --volume "${CONTAINER_REPOSITORY}:/tmp/m2" \
+    --workdir /workspace \
+    --entrypoint mvn \
+    maven:3.9.16-eclipse-temurin-21-alpine@sha256:d5134611660b880f0e2244c7ffd3d29c2776f547b06775265c3999fa41bf4e4a \
+    -Dmaven.repo.local=/tmp/m2 "$@"
+fi
+
+if [ ! -x "${MAVEN_HOME_DIR}/bin/mvn" ]; then
+  mkdir -p "${WRAPPER_ROOT}"
+  curl --fail --location --silent --show-error "${MAVEN_URL}" --output "${ARCHIVE}"
+  printf '%s  %s\n' "${MAVEN_SHA512}" "${ARCHIVE}" | sha512sum --check --status
+  tar -xzf "${ARCHIVE}" -C "${WRAPPER_ROOT}"
+fi
+
+exec "${MAVEN_HOME_DIR}/bin/mvn" "$@"

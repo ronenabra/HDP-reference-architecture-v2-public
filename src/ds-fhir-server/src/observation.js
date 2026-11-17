@@ -1,7 +1,7 @@
 /**
  * Observation helpers for the DS FHIR server mock.
  */
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID: uuidv4 } = require('crypto');
 
 /**
  * Build a minimal Observation searchset bundle for a given patient reference.

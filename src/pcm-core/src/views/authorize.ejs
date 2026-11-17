@@ -1,0 +1,48 @@
+<% const basePath = typeof browserBase === 'string' ? browserBase : ''; const self = patients.find(patient => patient.subject === 'authenticated-self'); const fixtures = patients.filter(patient => patient.subject !== 'authenticated-self'); %>
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test SMART application launch</title>
+  <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+  <script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script>
+  <script defer src="<%= basePath %>/assets/smart-authorization.js"></script>
+</head><body class="container portal-page smart-authorization-page" data-browser-base="<%= basePath %>" data-help-team="<%= teamId %>"><main>
+  <header class="sandbox-header mb-3">
+    <div class="sandbox-heading">
+    <h1 data-help-key="smart.page"><span class="badge bg-dark" data-help-key="common.team"><%= teamId %></span> Test SMART application launch</h1>
+    </div>
+    <nav aria-label="Page controls" class="sandbox-navigation"><label class="explain-toggle" data-help-key="common.explain"><input type="checkbox" data-help-key="common.explain"> Explain this page</label></nav>
+  </header>
+  <p class="alert alert-info">Optional protocol test using synthetic identities. HMO sign-in verifies test identity; this page separately authorizes an application. Neither action creates a clinical Consent or retrieves clinical data.</p>
+  <section class="card mb-3"><div class="card-body"><h2 class="h5" data-help-key="smart.application">Requesting application</h2><p><strong><%= clientName %></strong></p></div></section>
+  <% if (selfChanged) { %><p class="alert alert-danger" role="alert" data-help-key="smart.error">Verified identity changed. Restart this test from Doctor.</p><% } %>
+  <form method="post" action="<%= basePath %>/api/fhir-service/r4/authorize/decision" data-smart-decision aria-describedby="smart-submission">
+    <input type="hidden" name="transaction_id" value="<%= transactionId %>">
+    <section class="card mb-3"><div class="card-body"><fieldset><legend class="h5" data-help-key="smart.patient">Test identity</legend>
+      <% if (self) { %><label><input type="radio" name="patient" value="authenticated-self" checked data-help-key="smart.patient"> <%= self.display %></label>
+      <% } else { %><p>No verified self identity is available in this browser.</p><% } %>
+      <p><a class="btn btn-outline-primary" data-help-key="smart.hmo-signin" data-help-proxy href="<%= basePath %>/sandbox/authentication?smart=<%= encodeURIComponent(transactionId) %>">Test sign-in through an HMO</a></p>
+      <p class="small">A selected dependent does not authorize that person's app launch. HTEST workflow fixtures are not verified person login.</p>
+    </fieldset></div></section>
+    <section class="card mb-3"><div class="card-body"><h2 class="h5" data-help-key="smart.permissions">Requested application permissions</h2>
+      <ul><% permissions.forEach(function(permission) { %><li><%= permission.label %></li><% }); %></ul>
+      <p>These are the application's exact requested permissions, including any broad wildcard. They are separate from a service's clinical Consent and do not establish source access.</p>
+      <details><summary data-help-key="smart.technical">Protocol testing and technical details</summary>
+        <dl><dt>Client</dt><dd><code><%= technical.clientId %></code></dd><dt>Registered callback</dt><dd><code><%= technical.callback %></code></dd><dt>Audience</dt><dd><code><%= technical.audience %></code></dd><dt>PKCE method</dt><dd>S256</dd></dl>
+        <fieldset><legend class="h6" data-help-key="smart.scopes">Optional scope narrowing</legend>
+          <p>Uncheck complete requested permissions to narrow this test. At least one must remain; PCM enforces the subset. Hidden controls retain the displayed request by default.</p>
+          <% scopes.forEach(function(scope) { %><label class="d-block"><input type="checkbox" name="approved_scope" value="<%= scope %>" checked data-help-key="smart.scopes"> <code><%= scope %></code></label><% }); %>
+        </fieldset>
+        <% if (fixtures.length) { %><fieldset><legend class="h6" data-help-key="smart.fixture">Synthetic protocol fixtures</legend><p>Explicit protocol fixtures bypass person verification. No fixture is selected automatically.</p>
+          <% fixtures.forEach(function(patient) { %><label class="d-block"><input type="radio" name="patient" value="<%= patient.subject %>" data-help-key="smart.fixture"> Synthetic protocol fixture — <%= patient.display %></label><% }); %>
+        </fieldset><% } %>
+        <button class="btn btn-outline-danger mt-2" type="submit" name="decision" value="deny" data-help-key="smart.deny" data-help-proxy>Deny test launch</button>
+      </details>
+    </div></section>
+    <p id="smart-submission" role="status" hidden data-smart-busy data-help-key="smart.busy">Submitting this decision. Wait for the registered Doctor return.</p>
+    <div class="portal-actions">
+      <button class="btn btn-primary" type="submit" name="decision" value="approve" data-smart-approve data-help-key="smart.approve" data-help-disabled-key="smart.identity-required" data-help-proxy <%= self ? '' : 'disabled' %>>Authorize test launch</button>
+      <button class="btn btn-outline-secondary" type="submit" name="decision" value="cancel" data-help-key="smart.cancel" data-help-proxy>Cancel and return to Doctor</button>
+    </div>
+  </form>
+</main></body></html>

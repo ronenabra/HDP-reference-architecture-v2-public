@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test patient sign-in and dependents</title>
+  <link rel="stylesheet" href="<%= assetBase %>/assets/connectathon.css">
+  <script defer src="<%= assetBase %>/assets/help-copy.js"></script><script defer src="<%= assetBase %>/assets/help.js"></script>
+  <script defer src="<%= assetBase %>/assets/system-authentication.js"></script>
+</head>
+<body class="container portal-page workflow-page" data-help-team="<%= teamId %>">
+<main>
+  <header class="sandbox-header mb-3">
+    <div class="sandbox-heading"><h1 data-help-key="workflow.start"><span class="badge bg-dark" data-help-key="common.team"><%= teamId %></span> Test patient sign-in and dependents</h1></div>
+    <nav aria-label="Sandbox pages" class="sandbox-navigation">
+      <a class="btn btn-outline-secondary" data-help-key="workflow.doctor" href="<%= doctorUrl %>">Doctor</a>
+      <a class="btn btn-outline-secondary" data-help-key="workflow.consent" href="<%= consentUrl %>">Consents</a>
+      <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox" data-help-key="common.explain"> Explain this page</label>
+    </nav>
+  </header>
+  <% if (typeof smart === 'string' && smart) { %><div class="alert alert-info" data-help-key="smart.hmo-return">This sign-in belongs to a pending SMART test. It does not approve the application.
+    <a class="btn btn-outline-primary" data-help-key="smart.hmo-return" data-help-proxy href="<%= resumeUrl %>"><%= verified ? 'Return to SMART request' : 'Return without signing in' %></a></div><% } %>
+  <p class="alert alert-info" data-help-key="workflow.notice">Test environment. Codes are shown here; no SMS or email is sent.</p>
+  <ol class="workflow-steps" aria-label="Sign-in progress" data-help-key="workflow.progress">
+    <li <%- stage === 'start' ? 'aria-current="step"' : '' %>>1. Choose patient</li>
+    <li <%- stage === 'authenticating' ? 'aria-current="step"' : '' %>>2. Verify code</li>
+    <li <%- verified ? 'aria-current="step"' : '' %>>3. Find dependents</li>
+  </ol>
+  <p role="status" data-help-key="workflow.stage"><strong><%= stage === 'start' ? 'Ready to choose a test patient' : stage === 'authenticating' ? 'Waiting for verification code' : 'Test patient verified' %></strong></p>
+  <% if (notice) { %><div id="workflow-feedback" class="alert alert-danger" role="alert" tabindex="-1" data-workflow-feedback data-help-key="workflow.error">
+    <p><%= notice.message %></p>
+    <% if (notice.field) { %><a data-help-key="workflow.error" href="#<%= notice.field === 'homeHmoId' ? 'home-hmo' : notice.field %>">Review this field</a><% } %>
+  </div><% } %>
+  <p hidden data-workflow-busy role="status" data-help-key="workflow.busy">Working on this sign-in. Wait for this step to finish.</p>
+  <% if (homeHmo) { %><p data-help-key="workflow.hmo">Home HMO for this test: <strong><%= homeHmo %></strong></p><% } %>
+  <% if (stage === 'start') { %>
+  <section class="card p-3 mb-3">
+    <h2 data-help-key="workflow.progress">Choose patient</h2>
+    <p>Choose a registered HMO and enter an identifier and date of birth that match its test data. This declares a test target; it does not prove real HMO membership.</p>
+    <% if (!canStart) { %><div class="alert alert-warning" data-help-key="workflow.no-hmo" role="status">No HMO is ready for a test lookup. Ask the sandbox operator to make an HMO available, then reload this page.</div><% } %>
+    <form method="post" action="<%= base %>/start" data-workflow-start><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %>
+      <input type="hidden" name="csrf" value="<%= csrfToken %>">
+      <div class="mb-3"><label class="form-label" for="home-hmo" data-help-key="workflow.hmo">Home HMO for this test</label>
+        <select id="home-hmo" name="homeHmoId" class="form-select" data-help-key="workflow.hmo" data-help-disabled-key="workflow.no-hmo" <%= canStart ? '' : 'disabled' %> required <%- notice?.field === 'homeHmoId' ? 'aria-invalid="true" aria-describedby="workflow-feedback"' : '' %>>
+          <option value="" data-help-key="workflow.hmo-choice">Choose an HMO</option>
+          <% hmoChoices.forEach(choice => { %><option data-help-key="workflow.hmo-choice" value="<%= choice.id %>" <%= input.homeHmoId === choice.id ? 'selected' : '' %> <%= choice.available ? '' : 'disabled' %>><%= choice.name %><%= choice.available ? '' : ' — unavailable' %></option><% }); %>
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label" for="configured-patient" data-help-key="workflow.picker">Configured test identifier</label>
+        <select id="configured-patient" class="form-select" data-workflow-patient-choice data-help-key="workflow.picker" data-help-disabled-key="workflow.picker-empty" <%= patientChoices.length ? '' : 'disabled' %>>
+          <option value="" data-help-key="workflow.picker-empty">Enter another identifier below</option>
+          <% patientChoices.forEach((patient, index) => { %><option data-help-key="workflow.picker-choice" value="<%= index %>" data-system="<%= patient.system %>" data-identifier="<%= patient.value %>"><%= patient.label %></option><% }); %>
+        </select>
+        <p class="form-text">Manual entry works without a configured patient list. A listed identifier proves neither authentication nor source presence.</p>
+      </div>
+      <div class="mb-3"><label class="form-label" for="system" data-help-key="workflow.identity-type">Identifier type</label>
+        <select id="system" name="system" class="form-select" data-help-key="workflow.identity-type" required>
+          <% identifierTypes.forEach(type => { %><option data-help-key="<%= type.helpKey %>" value="<%= type.value %>" <%= input.system === type.value ? 'selected' : '' %>><%= type.label %></option><% }); %>
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label" for="identifier" data-help-key="workflow.identity">Patient identifier</label>
+        <input data-help-key="workflow.identity" class="form-control" id="identifier" name="identifier" maxlength="160" value="<%= input.identifier %>" autocomplete="off" required <%- notice?.field === 'identifier' ? 'aria-invalid="true" aria-describedby="workflow-feedback"' : '' %>>
+        <p class="form-text">Keep leading zeros. Surrounding pasted spaces are removed. Foreign passports require trusted eligibility facts; Israeli nationals must use their national ID.</p>
+      </div>
+      <div class="mb-3"><label class="form-label" for="birthDate" data-help-key="workflow.dob">Full date of birth</label>
+        <input data-help-key="workflow.dob" class="form-control" id="birthDate" name="birthDate" value="<%= input.birthDate %>" type="date" required <%- notice?.field === 'birthDate' ? 'aria-invalid="true" aria-describedby="workflow-feedback"' : '' %>>
+      </div>
+      <details class="mb-3"><summary data-help-key="workflow.identity-details">Identifier details</summary><p>Identifier system: <code class="text-break" data-workflow-system><%= input.system %></code></p><p>Advanced input also accepts an exact system|value identifier.</p></details>
+      <button data-help-proxy data-help-key="workflow.send" data-help-disabled-key="workflow.no-hmo" class="btn btn-primary" type="submit" <%= canStart ? '' : 'disabled' %>>Check HMO and show verification step</button>
+    </form>
+  </section>
+  <% if (ssoChoices.length) { %><details class="card p-3 mb-3"><summary data-help-key="workflow.sso">Local trusted SSO simulation</summary>
+    <p>This separate configured simulation uses fabricated provider facts. It does not send or repeat a verification code.</p>
+    <form method="post" action="<%= base %>/local-sso"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>">
+      <label class="form-label" for="ssoSubject" data-help-key="workflow.sso-choice">Fabricated SSO identity</label><select class="form-select mb-2" id="ssoSubject" name="subject" data-help-key="workflow.sso-choice"><% ssoChoices.forEach(choice => { %><option data-help-key="workflow.sso-choice" value="<%= choice.subject %>"><%= choice.display %></option><% }); %></select>
+      <button data-help-proxy class="btn btn-outline-primary" data-help-key="workflow.sso" type="submit">Sign in with local SSO simulation</button></form></details><% } %>
+  <% if (fixtureChoices.length) { %><details class="card p-3 mb-3"><summary data-help-key="workflow.fixture">HTEST lookup fixture simulation</summary>
+    <p>These explicitly enrolled synthetic fixtures test lookup and discovery. They do not establish a person login or Consent approval authority.</p>
+    <form method="post" action="<%= base %>/fixture-start"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>">
+      <label class="form-label" for="fixtureSubject" data-help-key="workflow.fixture-choice">HTEST fixture</label><select class="form-select mb-2" id="fixtureSubject" name="subject" data-help-key="workflow.fixture-choice"><% fixtureChoices.forEach(member => { %><option data-help-key="workflow.fixture-choice" value="<%= member.identifier.value %>">HTEST <%= member.identifier.value %></option><% }); %></select>
+      <button data-help-proxy class="btn btn-outline-primary" data-help-key="workflow.fixture" type="submit">Start HTEST fixture OTP</button></form></details><% } %>
+  <% } else if (stage === 'authenticating') { %>
+  <section class="card p-3 mb-3">
+    <h2 data-help-key="workflow.otp-status">Verify code</h2>
+    <p>No patient demographics are shown until verification succeeds.</p>
+    <p data-code-status role="status" aria-live="polite" data-help-key="<%= otp.attemptsRemaining <= 0 ? 'workflow.attempts' : otp.expiresAt <= now ? 'workflow.code-expired' : 'workflow.otp-status' %>"><%= otp.attemptsRemaining <= 0 ? "No attempts remain. End this sign-in and start again." : otp.expiresAt <= now ? "This code expired. Request a new code if available, or end this sign-in and start again." : "Enter the current code to continue." %></p>
+    <p data-help-key="workflow.otp-status">Code expires <time datetime="<%= new Date(otp.expiresAt * 1000).toISOString() %>"><%= time(otp.expiresAt) %></time>. <%= otp.attemptsRemaining %> attempt(s) remaining.</p>
+    <form method="post" action="<%= base %>/verify"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %>
+      <input type="hidden" name="csrf" value="<%= csrfToken %>">
+      <label class="form-label" for="code" data-help-key="workflow.otp">Six-digit code</label><input data-help-key="workflow.otp" class="form-control mb-2" id="code" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required <%- notice?.field === 'code' ? 'aria-invalid="true" aria-describedby="workflow-feedback"' : '' %>>
+      <button data-help-proxy data-help-key="workflow.verify" data-help-disabled-key="<%= otp.attemptsRemaining ? 'workflow.code-expired' : 'workflow.attempts' %>" data-code-verify data-attempts-remaining="<%= otp.attemptsRemaining %>" data-expires-at="<%= otp.expiresAt %>" class="btn btn-primary" type="submit" <%= otp.expiresAt > now && otp.attemptsRemaining > 0 ? '' : 'disabled' %>>Verify code</button>
+    </form>
+    <form method="post" action="<%= base %>/resend" class="mt-3"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>"><button data-help-proxy data-help-key="workflow.resend" data-help-disabled-key="workflow.resend-wait" data-code-resend data-resend-at="<%= otp.resendAt %>" data-permanently-disabled="<%= otp.resendsRemaining <= 0 %>" type="submit" class="btn btn-outline-secondary" <%= otp.resendsRemaining > 0 && otp.resendAt <= now ? '' : 'disabled' %>>Request a new code</button>
+      <p data-help-key="workflow.resend-wait" data-resend-status><%= otp.resendsRemaining > 0 ? `New code available after ${time(otp.resendAt)}.` : 'No more codes can be requested. Start again.' %></p></form>
+    <details class="mt-3" <%= localCode ? 'open' : '' %>><summary data-help-key="workflow.show">Show the local test code</summary>
+      <p>Display the current code. No message was sent.</p>
+      <form method="post" action="<%= base %>/local-code"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>"><button data-help-proxy class="btn btn-outline-primary" data-help-key="workflow.show" type="submit">Show local code</button></form>
+      <% if (localCode) { %><p role="status" data-local-code data-help-key="workflow.show">Local code: <strong><%= localCode %></strong></p><% } %>
+    </details>
+  </section>
+  <% } else if (verified) { %>
+  <section class="card p-3 mb-3">
+    <h2 data-help-key="workflow.verified">Verified test patient</h2>
+    <p><%= verified.name.map(name => name.text || [...(name.given || []), name.family].filter(Boolean).join(' ')).join('; ') %></p>
+    <p data-help-key="workflow.identity">Patient identifier: <strong><%= verified.identifier.value %></strong></p>
+    <p data-help-key="workflow.expiry">This test sign-in expires <time datetime="<%= new Date(verified.expiresAt * 1000).toISOString() %>"><%= time(verified.expiresAt) %></time>.</p>
+    <details><summary data-help-key="workflow.technical">Sign-in details</summary><p>Authentication method: <%= authenticationMethod %></p><p class="text-break"><%= verified.identifier.system %> | <%= verified.identifier.value %></p></details>
+  </section>
+  <section class="card p-3 mb-3">
+    <h2 data-help-key="workflow.discover">Find dependents</h2>
+    <p>PCM checks eligible registered HMOs independently. Missing or unavailable checks do not mean there are no dependents.</p>
+    <form method="post" action="<%= base %>/discover"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>"><button data-help-proxy data-help-key="workflow.discover" type="submit" class="btn btn-primary">Find or refresh dependents</button></form>
+    <% if (discovery) { %>
+      <h3 data-help-key="workflow.source-result"><%= discovery.status === 'partial' ? 'Some HMOs could not be checked' : 'Dependent checks complete' %></h3>
+      <ul data-discovery-sources><% discovery.sources.forEach(source => { %><li data-help-key="workflow.source-result"><strong><%= sourceLabels.get(source.sourceId) || source.sourceId %></strong>: <%= source.state === 'complete' ? `${source.count || 0} eligible dependent(s) found; all pages checked` : 'Could not check — retry or review source readiness' %>. Last check: <%= time(Date.parse(source.checkedAt) / 1000) %>.</li><% }); %></ul>
+      <% if (!discovery.dependents.length) { %><p data-help-key="workflow.empty"><%= discovery.status === 'partial' ? 'No dependents confirmed yet; some HMOs remain unknown.' : 'No eligible dependents found in the completed checks.' %></p><% } %>
+      <% discovery.dependents.forEach(dependent => { %><article class="border rounded p-3 mb-2" data-dependent-card>
+        <h3 data-help-key="workflow.dependent"><%= dependent.name.map(name => name.text || [...(name.given || []), name.family].filter(Boolean).join(' ')).join('; ') || 'Verified dependent' %></h3>
+        <p data-help-key="workflow.dependent">Identifier: <%= dependent.identifier.value %></p>
+        <p data-help-key="workflow.evidence">Verified at: <%= dependent.sources.map(source => sourceLabels.get(source.sourceId) || source.sourceId).join(', ') %></p>
+        <form method="post" action="<%= base %>/select"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>"><input type="hidden" name="patient" value="<%= dependent.identifier.system %>|<%= dependent.identifier.value %>"><button data-help-proxy data-help-key="workflow.select" type="submit" class="btn btn-outline-primary">Recheck relationship and select</button></form>
+        <details><summary data-help-key="workflow.evidence">Relationship evidence</summary><pre><%= JSON.stringify(dependent.sources, null, 2) %></pre></details>
+      </article><% }); %>
+    <% } %>
+    <% if (selected) { %><p role="status" data-help-key="workflow.selection">Selected for this PCM test: <strong><%= selected.value %></strong></p><% } %>
+    <p data-help-key="workflow.selection">Selection stays in this PCM test. It does not select a patient in Doctor, approve Consent or grant clinical access.</p>
+  </section>
+  <section class="card p-3 mb-3">
+    <h2 data-help-key="workflow.presence">Where does this patient have records?</h2>
+    <p data-help-key="workflow.presence">Source-list eligibility is checked independently for each patient, including dependents. Failed or ineligible checks stay unknown. Presence does not grant clinical access.</p>
+    <% for (const [action, label, help] of [['presence', 'Check my source presence', 'workflow.presence-self'], ['presence-dependents', 'Check source presence for me and verified dependents', 'workflow.presence-all']]) { %>
+    <form method="post" action="<%= base %>/<%= action %>" class="mb-2"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>"><button data-help-proxy data-help-key="<%= help %>" type="submit" class="btn btn-outline-primary"><%= label %></button></form><% } %>
+    <% if (presence) { %><h3 data-help-key="workflow.presence-result">Record location checks: <%= presence.status === 'partial' ? 'some could not be completed' : 'complete' %></h3>
+      <ul data-presence-results><% presence.results.forEach(result => { %><li data-help-key="workflow.presence-result"><%= result.identifier.value %> · <%= sourceLabels.get(result.sourceId) || result.sourceId %>: <%= result.state === 'present' ? 'Records found' : result.state === 'absent' ? 'No matching record found' : 'Could not check' %><% if (result.reason) { %> · independent source-list eligibility is missing<% } %><% if (result.state === 'unknown' && result.previouslyKnown) { %> · Previously known: <%= typeof result.previouslyKnown === 'string' ? result.previouslyKnown : result.previouslyKnown.state %><% } %><% if (result.checkedAt) { %> · <%= time(typeof result.checkedAt === 'number' ? result.checkedAt : Date.parse(result.checkedAt) / 1000) %><% } %></li><% }); %></ul><% } %>
+  </section>
+  <% } %>
+  <% if (stage !== 'start') { %><form method="post" action="<%= base %>/cancel" class="mb-3"><% if (typeof smart === 'string' && smart) { %><input type="hidden" name="smart" value="<%= smart %>"><% } %><input type="hidden" name="csrf" value="<%= csrfToken %>"><button data-help-proxy data-help-key="workflow.clear" type="submit" class="btn btn-outline-danger">End this test sign-in</button></form><% } %>
+</main>
+</body>
+</html>

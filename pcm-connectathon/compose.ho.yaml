@@ -1,0 +1,424 @@
+x-adapter-common: &adapter-common
+  user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+  image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:${VERSION:-0.2.0}
+  build:
+    context: ./src/ds-auth-adapter
+  networks: [pcm-ho-private, pcm-net]
+  volumes:
+    - ./src/shared:/shared:ro
+    - ./pcm-connectathon/team-config.schema.json:/workspace/pcm-connectathon/team-config.schema.json:ro
+    - ./config/demo-services.schema.json:/workspace/config/demo-services.schema.json:ro
+    - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+    - ${TEAM_RUNTIME_DIR:-./teams/team-a}/state:/runtime/state
+    - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+    - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+  environment: &adapter-environment
+    TEAM_CONFIG_PATH: /runtime/team-config.json
+    CERTS_DIR: /runtime/certs
+    PCM_CONFORMANCE_MODE: ${PCM_CONFORMANCE_MODE:-strict}
+    PCM_AUTH_URL: https://pcm-core:3000/api/fhir-service/r4
+    PCM_FHIR_URL: https://pcm-core:3000/api/fhir-service/r4
+    # Direct private_key_jwt avoids coupling the private adapter hop to a
+    # second 30-second bearer credential while preserving the independently
+    # tested bearer branch in PCM and adapter unit suites.
+    PCM_INTROSPECTION_AUTH_MODE: direct
+    DS_ROOT_CA_PATH: /runtime/certs/rootCA.crt
+
+x-hapi-common: &hapi-common
+  image: pcm-ho-fhir:${PCM_HAPI_VERSION:-0.2.0}
+  build: ./src/ho-fhir-server
+  user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+  networks: [pcm-ho-private]
+  volumes:
+    - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+    - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+    - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+  environment: &hapi-environment
+    TEAM_CONFIG_PATH: /runtime/team-config.json
+    HO_FHIR_TLS_ENABLED: ${FHIR_SERVER_TLS:-true}
+    MANAGEMENT_SERVER_PORT: 8081
+  depends_on:
+    ho-postgres:
+      condition: service_healthy
+  healthcheck:
+    test: [CMD, java, -cp, /app, HealthCheck]
+    interval: 3s
+    timeout: 3s
+    retries: 40
+    start_period: ${PCM_HAPI_HEALTH_START_PERIOD:-90s}
+
+x-gateway-common: &gateway-common
+  image: ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:${VERSION:-0.2.0}
+  build: ./src/ds-gateway
+  networks: [pcm-ho-private, pcm-net]
+  volumes:
+    - ./pcm-connectathon/nginx/nginx.conf.template:/etc/nginx/templates/pcm-connectathon.conf.template:ro
+    - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+    - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs:/runtime/logs
+    - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+    - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+  command: [/bin/sh, /usr/local/bin/runtime-reload.sh]
+  environment: &gateway-environment
+    DS_GATEWAY_LOG_OWNER: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    TEAM_CONFIG_PATH: /runtime/team-config.json
+    PCM_CONFORMANCE_MODE: ${PCM_CONFORMANCE_MODE:-strict}
+    DS_GATEWAY_CLIENT_AUTH_MODE: ${DS_GATEWAY_CLIENT_AUTH_MODE:-mtls}
+    DS_FHIR_UPSTREAM_PROTOCOL: ${DS_FHIR_UPSTREAM_PROTOCOL:-https}
+    DS_FHIR_UPSTREAM_VERIFY_SERVER_CERTIFICATE: ${DS_FHIR_UPSTREAM_VERIFY_SERVER_CERTIFICATE:-true}
+    DS_GATEWAY_PORT: 8080
+    DS_GATEWAY_HTTP_PORT: 8081
+    ROOT_CA_CERT: /runtime/certs/rootCA.crt
+
+services:
+  ds-gateway:
+    environment:
+      DS_GATEWAY_LOG_OWNER: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    networks:
+      pcm-net:
+        aliases: [legacy-ds-gateway]
+  ds-auth-adapter:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    environment:
+      HO_ID: legacy-ds
+      DS_EXPECTED_AUDIENCE: https://legacy-ds-gateway:8080/fhir
+      PCM_INTROSPECTION_AUTH_MODE: direct
+      LOCAL_JWT_ISSUER: https://ds-auth-adapter.internal/legacy-ds
+      LOCAL_JWT_AUDIENCE: urn:pcm:ho:legacy-ds:fhir-server
+  ds-fhir-server:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    environment:
+      HO_ID: legacy-ds
+      LOCAL_JWT_ISSUER: https://ds-auth-adapter.internal/legacy-ds
+      LOCAL_JWT_AUDIENCE: urn:pcm:ho:legacy-ds:fhir-server
+  sp-client:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+  pcm-core:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    # Scratch space for validated config writes; nested team binds retain persistent data.
+    tmpfs:
+      - /runtime:mode=1777,size=1048576
+    networks: [pcm-net, pcm-ho-private]
+    environment:
+      NODE_EXTRA_CA_CERTS: /runtime/certs/rootCA.crt
+      PCM_A_IMPORT_CREDENTIAL: ${PCM_A_IMPORT_CREDENTIAL:-}
+      PCM_B_IMPORT_CREDENTIAL: ${PCM_B_IMPORT_CREDENTIAL:-}
+      PCM_C_IMPORT_CREDENTIAL: ${PCM_C_IMPORT_CREDENTIAL:-}
+
+  ho-postgres:
+    image: postgres:17-alpine@sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    networks: [pcm-ho-private]
+    environment:
+      POSTGRES_USER: pcm_cluster_admin
+      POSTGRES_PASSWORD: ${PCM_POSTGRES_ADMIN_PASSWORD:-local-only-postgres-admin}
+      PCM_A_DB_NAME: ${PCM_A_DB_NAME:-pcm_team_a_ho_a}
+      PCM_A_DB_USER: ${PCM_A_DB_USER:-pcm_team_a_a}
+      PCM_A_DB_PASSWORD: ${PCM_A_DB_PASSWORD:-local-only-team-a-ho-a-db}
+      PCM_B_DB_NAME: ${PCM_B_DB_NAME:-pcm_team_a_ho_b}
+      PCM_B_DB_USER: ${PCM_B_DB_USER:-pcm_team_a_b}
+      PCM_B_DB_PASSWORD: ${PCM_B_DB_PASSWORD:-local-only-team-a-ho-b-db}
+      PCM_C_DB_NAME: ${PCM_C_DB_NAME:-pcm_team_a_ho_c}
+      PCM_C_DB_USER: ${PCM_C_DB_USER:-pcm_team_a_c}
+      PCM_C_DB_PASSWORD: ${PCM_C_DB_PASSWORD:-local-only-team-a-ho-c-db}
+    volumes:
+      - ho-postgres-data:/var/lib/postgresql/data
+      - ./clinical-data/postgres-init.sh:/docker-entrypoint-initdb.d/10-create-ho-databases.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U pcm_cluster_admin -d postgres]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  ho-a-adapter:
+    <<: *adapter-common
+    volumes:
+      - ./src/shared:/shared:ro
+      - ./pcm-connectathon/team-config.schema.json:/workspace/pcm-connectathon/team-config.schema.json:ro
+      - ./config/demo-services.schema.json:/workspace/config/demo-services.schema.json:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/state/ho-a-adapter:/runtime/state
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-a-adapter:/runtime/logs/ds-auth-adapter
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+    environment:
+      <<: *adapter-environment
+      HO_ID: ho-a
+      DS_EXPECTED_AUDIENCE: https://ho-a-gateway:8080/fhir
+      LOCAL_JWT_ISSUER: https://ho-a-adapter.internal/ho-a
+      LOCAL_JWT_AUDIENCE: urn:pcm:ho:a:fhir-server
+      LOCAL_JWT_SIGNING_KEY_PATH: /runtime/certs/ho-a-gateway.key
+      DS_ASSERTION_KEY_PATH: /runtime/certs/ho-a-gateway-assertion.key
+      DS_MTLS_CERT_PATH: /runtime/certs/ho-a-gateway-mtls.crt
+      DS_MTLS_KEY_PATH: /runtime/certs/ho-a-gateway-mtls.key
+      LOG_DIR: /runtime/logs/ds-auth-adapter
+      STATE_DIR: /runtime/state
+
+  ho-b-adapter:
+    <<: *adapter-common
+    volumes:
+      - ./src/shared:/shared:ro
+      - ./pcm-connectathon/team-config.schema.json:/workspace/pcm-connectathon/team-config.schema.json:ro
+      - ./config/demo-services.schema.json:/workspace/config/demo-services.schema.json:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/state/ho-b-adapter:/runtime/state
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-b-adapter:/runtime/logs/ds-auth-adapter
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+    environment:
+      <<: *adapter-environment
+      HO_ID: ho-b
+      DS_EXPECTED_AUDIENCE: https://ho-b-gateway:8080/fhir
+      LOCAL_JWT_ISSUER: https://ho-b-adapter.internal/ho-b
+      LOCAL_JWT_AUDIENCE: urn:pcm:ho:b:fhir-server
+      LOCAL_JWT_SIGNING_KEY_PATH: /runtime/certs/ho-b-gateway.key
+      DS_ASSERTION_KEY_PATH: /runtime/certs/ho-b-gateway-assertion.key
+      DS_MTLS_CERT_PATH: /runtime/certs/ho-b-gateway-mtls.crt
+      DS_MTLS_KEY_PATH: /runtime/certs/ho-b-gateway-mtls.key
+      LOG_DIR: /runtime/logs/ds-auth-adapter
+      STATE_DIR: /runtime/state
+
+  ho-c-adapter:
+    <<: *adapter-common
+    volumes:
+      - ./src/shared:/shared:ro
+      - ./pcm-connectathon/team-config.schema.json:/workspace/pcm-connectathon/team-config.schema.json:ro
+      - ./config/demo-services.schema.json:/workspace/config/demo-services.schema.json:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/state/ho-c-adapter:/runtime/state
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-c-adapter:/runtime/logs/ds-auth-adapter
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+    environment:
+      <<: *adapter-environment
+      HO_ID: ho-c
+      DS_EXPECTED_AUDIENCE: https://ho-c-gateway:8080/fhir
+      LOCAL_JWT_ISSUER: https://ho-c-adapter.internal/ho-c
+      LOCAL_JWT_AUDIENCE: urn:pcm:ho:c:fhir-server
+      LOCAL_JWT_SIGNING_KEY_PATH: /runtime/certs/ho-c-gateway.key
+      DS_ASSERTION_KEY_PATH: /runtime/certs/ho-c-gateway-assertion.key
+      DS_MTLS_CERT_PATH: /runtime/certs/ho-c-gateway-mtls.crt
+      DS_MTLS_KEY_PATH: /runtime/certs/ho-c-gateway-mtls.key
+      LOG_DIR: /runtime/logs/ds-auth-adapter
+      STATE_DIR: /runtime/state
+
+  ho-a-hapi:
+    <<: *hapi-common
+    volumes:
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-a-hapi:/runtime/logs/hapi
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-a-hapi-runtime:/runtime/logs/hapi-runtime
+    environment:
+      <<: *hapi-environment
+      HO_ID: ho-a
+      PCM_HAPI_DETAIL_STARTED_AT: ${HO_A_HAPI_DETAIL_STARTED_AT:-}
+      PCM_HAPI_DETAIL_EXPIRES_AT: ${HO_A_HAPI_DETAIL_EXPIRES_AT:-}
+      HO_FHIR_DATABASE_URL: jdbc:postgresql://ho-postgres:5432/${PCM_A_DB_NAME:-pcm_team_a_ho_a}
+      # Large atomic imports require an explicitly sized, target-specific heap.
+      JAVA_TOOL_OPTIONS: ${PCM_A_HAPI_JAVA_TOOL_OPTIONS:-}
+      HO_FHIR_DATABASE_USER: ${PCM_A_DB_USER:-pcm_team_a_a}
+      HO_FHIR_DATABASE_PASSWORD: ${PCM_A_DB_PASSWORD:-local-only-team-a-ho-a-db}
+      HO_FHIR_EXTERNAL_BASE: https://ho-a-gateway:8080/fhir
+      HO_FHIR_TLS_CERTIFICATE: /runtime/certs/ho-a-hapi.crt
+      HO_FHIR_TLS_PRIVATE_KEY: /runtime/certs/ho-a-hapi.key
+      PCM_LOCAL_JWT_ISSUER: https://ho-a-adapter.internal/ho-a
+      PCM_LOCAL_JWT_AUDIENCE: urn:pcm:ho:a:fhir-server
+      PCM_LOCAL_JWT_CERTIFICATE: /runtime/certs/ho-a-gateway.crt
+      PCM_IMPORT_CREDENTIAL: ${PCM_A_IMPORT_CREDENTIAL:-}
+
+  ho-b-hapi:
+    <<: *hapi-common
+    volumes:
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-b-hapi:/runtime/logs/hapi
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-b-hapi-runtime:/runtime/logs/hapi-runtime
+    environment:
+      <<: *hapi-environment
+      HO_ID: ho-b
+      PCM_HAPI_DETAIL_STARTED_AT: ${HO_B_HAPI_DETAIL_STARTED_AT:-}
+      PCM_HAPI_DETAIL_EXPIRES_AT: ${HO_B_HAPI_DETAIL_EXPIRES_AT:-}
+      HO_FHIR_DATABASE_URL: jdbc:postgresql://ho-postgres:5432/${PCM_B_DB_NAME:-pcm_team_a_ho_b}
+      JAVA_TOOL_OPTIONS: ${PCM_B_HAPI_JAVA_TOOL_OPTIONS:-}
+      HO_FHIR_DATABASE_USER: ${PCM_B_DB_USER:-pcm_team_a_b}
+      HO_FHIR_DATABASE_PASSWORD: ${PCM_B_DB_PASSWORD:-local-only-team-a-ho-b-db}
+      HO_FHIR_EXTERNAL_BASE: https://ho-b-gateway:8080/fhir
+      HO_FHIR_TLS_CERTIFICATE: /runtime/certs/ho-b-hapi.crt
+      HO_FHIR_TLS_PRIVATE_KEY: /runtime/certs/ho-b-hapi.key
+      PCM_LOCAL_JWT_ISSUER: https://ho-b-adapter.internal/ho-b
+      PCM_LOCAL_JWT_AUDIENCE: urn:pcm:ho:b:fhir-server
+      PCM_LOCAL_JWT_CERTIFICATE: /runtime/certs/ho-b-gateway.crt
+      PCM_IMPORT_CREDENTIAL: ${PCM_B_IMPORT_CREDENTIAL:-}
+
+  ho-c-hapi:
+    <<: *hapi-common
+    volumes:
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-c-hapi:/runtime/logs/hapi
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-c-hapi-runtime:/runtime/logs/hapi-runtime
+    environment:
+      <<: *hapi-environment
+      HO_ID: ho-c
+      PCM_HAPI_DETAIL_STARTED_AT: ${HO_C_HAPI_DETAIL_STARTED_AT:-}
+      PCM_HAPI_DETAIL_EXPIRES_AT: ${HO_C_HAPI_DETAIL_EXPIRES_AT:-}
+      HO_FHIR_DATABASE_URL: jdbc:postgresql://ho-postgres:5432/${PCM_C_DB_NAME:-pcm_team_a_ho_c}
+      # The reference HMO target needs headroom to parse large atomic bundles.
+      JAVA_TOOL_OPTIONS: ${PCM_C_HAPI_JAVA_TOOL_OPTIONS:--Xmx8g}
+      HO_FHIR_DATABASE_USER: ${PCM_C_DB_USER:-pcm_team_a_c}
+      HO_FHIR_DATABASE_PASSWORD: ${PCM_C_DB_PASSWORD:-local-only-team-a-ho-c-db}
+      HO_FHIR_EXTERNAL_BASE: https://ho-c-gateway:8080/fhir
+      HO_FHIR_TLS_CERTIFICATE: /runtime/certs/ho-c-hapi.crt
+      HO_FHIR_TLS_PRIVATE_KEY: /runtime/certs/ho-c-hapi.key
+      PCM_LOCAL_JWT_ISSUER: https://ho-c-adapter.internal/ho-c
+      PCM_LOCAL_JWT_AUDIENCE: urn:pcm:ho:c:fhir-server
+      PCM_LOCAL_JWT_CERTIFICATE: /runtime/certs/ho-c-gateway.crt
+      PCM_IMPORT_CREDENTIAL: ${PCM_C_IMPORT_CREDENTIAL:-}
+
+  ho-a-gateway:
+    <<: *gateway-common
+    ports: ["${HO_A_GATEWAY_PORT:-8180}:8080"]
+    volumes:
+      - ./pcm-connectathon/nginx/nginx.conf.template:/etc/nginx/templates/pcm-connectathon.conf.template:ro
+      - ./src/ds-gateway/runtime-reload.sh:/usr/local/bin/runtime-reload.sh:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-a-gateway:/runtime/logs/ds-gateway
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+    environment:
+      <<: *gateway-environment
+      HO_ID: ho-a
+      DS_GATEWAY_CERT: /runtime/certs/ho-a-gateway.crt
+      DS_GATEWAY_KEY: /runtime/certs/ho-a-gateway.key
+      DS_AUTH_ADAPTER_HOST: ho-a-adapter
+      DS_AUTH_ADAPTER_PORT: 3000
+      DS_FHIR_SERVER_HOST: ho-a-hapi
+      DS_FHIR_SERVER_PORT: 8080
+    depends_on:
+      ho-a-adapter:
+        condition: service_started
+      ho-a-hapi:
+        condition: service_healthy
+
+  ho-b-gateway:
+    <<: *gateway-common
+    ports: ["${HO_B_GATEWAY_PORT:-8181}:8080"]
+    volumes:
+      - ./pcm-connectathon/nginx/nginx.conf.template:/etc/nginx/templates/pcm-connectathon.conf.template:ro
+      - ./src/ds-gateway/runtime-reload.sh:/usr/local/bin/runtime-reload.sh:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-b-gateway:/runtime/logs/ds-gateway
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+    environment:
+      <<: *gateway-environment
+      HO_ID: ho-b
+      DS_GATEWAY_CERT: /runtime/certs/ho-b-gateway.crt
+      DS_GATEWAY_KEY: /runtime/certs/ho-b-gateway.key
+      DS_AUTH_ADAPTER_HOST: ho-b-adapter
+      DS_AUTH_ADAPTER_PORT: 3000
+      DS_FHIR_SERVER_HOST: ho-b-hapi
+      DS_FHIR_SERVER_PORT: 8080
+    depends_on:
+      ho-b-adapter:
+        condition: service_started
+      ho-b-hapi:
+        condition: service_healthy
+
+  ho-c-gateway:
+    <<: *gateway-common
+    ports: ["${HO_C_GATEWAY_PORT:-8182}:8080"]
+    volumes:
+      - ./pcm-connectathon/nginx/nginx.conf.template:/etc/nginx/templates/pcm-connectathon.conf.template:ro
+      - ./src/ds-gateway/runtime-reload.sh:/usr/local/bin/runtime-reload.sh:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/ho-c-gateway:/runtime/logs/ds-gateway
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+    environment:
+      <<: *gateway-environment
+      HO_ID: ho-c
+      DS_GATEWAY_CERT: /runtime/certs/ho-c-gateway.crt
+      DS_GATEWAY_KEY: /runtime/certs/ho-c-gateway.key
+      DS_AUTH_ADAPTER_HOST: ho-c-adapter
+      DS_AUTH_ADAPTER_PORT: 3000
+      DS_FHIR_SERVER_HOST: ho-c-hapi
+      DS_FHIR_SERVER_PORT: 8080
+    depends_on:
+      ho-c-adapter:
+        condition: service_started
+      ho-c-hapi:
+        condition: service_healthy
+
+  clinical-loader:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    image: node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+    profiles: [import]
+    networks: [pcm-ho-private]
+    working_dir: /clinical-data
+    entrypoint: [node, /clinical-data/loader.js]
+    volumes:
+      - ./clinical-data:/clinical-data:ro
+      - ./src/shared:/src/shared:ro
+      - ./src/pcm-core/src/data-operations.js:/pcm-core/data-operations.js:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/state/import:/runtime/import-state
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/state:/runtime/state
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs/rootCA.crt:/runtime/certs/rootCA.crt:ro
+    environment:
+      HO_ID: ${HO_IMPORT_TARGET:-ho-a}
+      HO_IMPORT_ENDPOINT: ${HO_IMPORT_PROTOCOL:-https}://clinical-import-hapi:8080/fhir
+      PCM_IMPORT_CREDENTIAL: ${PCM_IMPORT_CREDENTIAL:-}
+      PCM_IMPORT_ONLY: "true"
+      PCM_IMPORT_STATE_DIR: /runtime/import-state
+      CLINICAL_DATA_CONNECT_UPLOAD_TIMEOUT_MS: ${CLINICAL_DATA_CONNECT_UPLOAD_TIMEOUT_MS:-120000}
+      CLINICAL_DATA_TRANSACTION_WAIT_TIMEOUT_MS: ${CLINICAL_DATA_TRANSACTION_WAIT_TIMEOUT_MS:-3600000}
+      CLINICAL_DATA_VERIFICATION_TIMEOUT_MS: ${CLINICAL_DATA_VERIFICATION_TIMEOUT_MS:-300000}
+      PCM_CONFORMANCE_MODE: ${PCM_CONFORMANCE_MODE:-strict}
+      NODE_EXTRA_CA_CERTS: /runtime/certs/rootCA.crt
+    depends_on:
+      clinical-import-hapi:
+        condition: service_healthy
+
+  clinical-import-hapi:
+    <<: *hapi-common
+    volumes:
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/certs:/runtime/certs:ro
+      - ${TEAM_CONFIG_HOST_PATH:-./pcm-connectathon/example-team-config.json}:/runtime/team-config.json:ro
+      - ${TEAM_RUNTIME_DIR:-.}/catalog:/runtime/catalog:ro
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}/logs/${HO_IMPORT_TARGET:-ho-a}-hapi:/runtime/logs/hapi
+    profiles: [import]
+    networks:
+      pcm-ho-private:
+        aliases: ["${HO_IMPORT_TARGET:-ho-a}-hapi"]
+    environment:
+      <<: *hapi-environment
+      HO_ID: ${HO_IMPORT_TARGET:-ho-a}
+      PCM_IMPORT_CREDENTIAL: ${PCM_IMPORT_CREDENTIAL:-}
+      PCM_IMPORT_ONLY: "true"
+      HO_FHIR_DATABASE_URL: jdbc:postgresql://ho-postgres:5432/${HO_IMPORT_DB_NAME:-pcm_team_a_ho_a}
+      HO_FHIR_DATABASE_USER: ${HO_IMPORT_DB_USER:-pcm_team_a_a}
+      HO_FHIR_DATABASE_PASSWORD: ${HO_IMPORT_DB_PASSWORD:-local-only-team-a-ho-a-db}
+      HO_FHIR_EXTERNAL_BASE: https://${HO_IMPORT_TARGET:-ho-a}-gateway:8080/fhir
+      HO_FHIR_TLS_CERTIFICATE: /runtime/certs/${HO_IMPORT_TARGET:-ho-a}-hapi.crt
+      HO_FHIR_TLS_PRIVATE_KEY: /runtime/certs/${HO_IMPORT_TARGET:-ho-a}-hapi.key
+      PCM_LOCAL_JWT_ISSUER: https://clinical-import.invalid/${HO_IMPORT_TARGET:-ho-a}
+      PCM_LOCAL_JWT_AUDIENCE: urn:pcm:clinical-import
+      PCM_LOCAL_JWT_CERTIFICATE: /runtime/certs/${HO_IMPORT_TARGET:-ho-a}-gateway.crt
+
+  ho-reset-helper:
+    image: node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+    profiles: [maintenance]
+    network_mode: none
+    volumes:
+      - ${TEAM_RUNTIME_DIR:-./teams/team-a}:/runtime/team
+
+networks:
+  pcm-net:
+    driver: bridge
+  pcm-ho-private:
+    internal: true
+
+volumes:
+  ho-postgres-data:

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "release": "0.4.2",
+  "fhirVersion": "4.0.1",
+  "source": {
+    "repository": "https://github.com/MohGovIL/Swagger",
+    "commit": "c048db3bb8ed4eca563c60849cefc780ce115924"
+  },
+  "inputs": "docs/external-contract-inputs.json",
+  "profiles": "https://simplifier.net/pcm-il"
+}

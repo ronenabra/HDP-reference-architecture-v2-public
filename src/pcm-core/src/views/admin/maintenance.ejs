@@ -1,0 +1,42 @@
+<% const migration = require('../migration-checkpoint').observedStatus(process.env.STATE_DIR || config.runtime.stateDir); const selected = sourceDirectory.find(source => source.id === state.source); const operation = selected?.server ? getDataOperationRegistry().list(selected.server.id)[0] : null; %>
+<% if (options.maintenanceResult) { %><p class="alert alert-success" role="status" data-help-key="common.feedback"><%= options.maintenanceResult %></p><% } %>
+<section class="card" aria-labelledby="maintenance-backup"><h3 class="card-header" id="maintenance-backup">Backup &amp; restore</h3><div class="card-body">
+<p data-help-key="admin.backup-download">Configuration backup includes credentials and private keys. It excludes clinical databases, complete runtime Consent state and log history. Protect the downloaded file.</p>
+<p><a class="btn btn-outline-primary" href="<%= basePath %>/admin/backup" data-help-key="admin.backup-download">Download backup JSON</a></p>
+<form method="post" action="<%= basePath %>/admin/restore<%= state.source ? '?source=' + encodeURIComponent(state.source) : '' %>" data-maintenance-restore data-confirm="Restore this backup and replace current runtime configuration?" data-progress="admin-operation-state">
+<input type="hidden" name="expectedRevision" value="<%= Number(config.runtime.revision) || 0 %>">
+<p>Team <strong><%= config.teamId %></strong> · saved revision <%= Number(config.runtime.revision) || 0 %> · <%= config.configVersion %></p>
+<label class="form-label" for="restore-backup-file" data-help-key="admin.backup-file">Select backup JSON file</label>
+<input type="file" id="restore-backup-file" accept=".json,application/json" class="form-control mb-2" data-help-key="admin.backup-file" aria-describedby="restore-backup-status">
+<p class="small">Or paste the complete backup below. Both inputs use the same validation. Maximum 1 MiB.</p>
+<label class="form-label" for="restore-backup-json" data-help-key="admin.backup-input">Paste backup JSON</label>
+<textarea class="form-control mb-2" id="restore-backup-json" name="backupJson" rows="5" required autocomplete="off" data-help-key="admin.backup-input" aria-describedby="restore-backup-status"></textarea>
+<p id="restore-backup-status" role="status" aria-live="polite" tabindex="-1"></p>
+<p>Restore resets PCM resources and issued tokens, then bootstraps the configured catalog. It does not recover previous runtime Consents or runtime catalog choices. Changed deployment, preset or credential material requires the stopped-team operator workflow before any publication; this running page refuses those changes.</p>
+<button class="btn btn-outline-primary" data-help-key="admin.backup-restore">Restore backup</button>
+</form></div></section>
+<section class="card" aria-labelledby="maintenance-migration"><h3 class="card-header" id="maintenance-migration">Migration/restart</h3><div class="card-body">
+<div data-metadata-migration-status role="status" data-help-key="admin.migration-status"><strong>Observed migration: <%= migration.phase %></strong>
+<p>Checkpoint resource scope: <%= migration.scope.join(', ') %> and owner-private authority. Clinical HO data and original usage files remain with their owners.</p>
+<% if (migration.runtimeId) { %><p class="admin-exact">PCM artifact: <%= migration.runtimeId %><br>Private schema: <%= migration.privateSchema %> · Public projection: <%= migration.publicProjectionSchema %></p><% } %>
+<% if (migration.summary) { %><p>Reviewed records: <%= Number(migration.summary.changed) || 0 %> changed · <%= Number(migration.summary.unchanged) || 0 %> unchanged · <%= Number(migration.summary.rejected) || 0 %> rejected.</p><% } %></div>
+<p>Reading this page does not freeze PCM. Freeze checkpoint blocks writes: then stop PCM, Doctor/SP, adapters and all import/maintenance workers and drain private tokens for 31 seconds before offline preview/apply/recovery.</p>
+<p data-help-key="admin.private-backup">Private checkpoint backup: <code>pcm-public-metadata-migration/1</code> preserves public/private authority with exact component and owner bindings. It excludes clinical databases and transient tokens; later restrictions or changed bindings block restore.</p>
+<p><a href="<%= CONNECTATHON_REPO_URL %>/blob/main/pcm-connectathon/retained-team-migration.md#ordinary-configuration-backup-and-live-restore" data-help-key="admin.maintenance-owners">Configuration restore and stopped-team operator procedure</a></p>
+<p>Certificate renewal and Strict preset transitions require reviewed backup, controlled stop, publication/recreation and verification. Component adoption stays unobserved; preserve uncertain journals/fences and keep source artifact roots available at restart.</p>
+<p><a href="<%= shell.address(basePath, 'certificates', state.source) %><%= selected ? '&owner=' + encodeURIComponent(selected.id) : '' %>" data-help-key="admin.maintenance-owners">How to renew certificates</a> · <a href="<%= shell.address(basePath, 'security', state.source) %>" data-help-key="admin.maintenance-owners">Review security preset</a></p>
+<form method="post" action="<%= basePath %>/admin/migration/checkpoint<%= state.source ? '?source=' + encodeURIComponent(state.source) : '' %>" data-confirm="Freeze this PCM runtime for an explicit migration checkpoint? All team workers must then be stopped."><button class="btn btn-outline-warning" data-help-key="admin.migration-checkpoint">Freeze migration checkpoint</button></form>
+</div></section>
+<section class="card" aria-labelledby="maintenance-reset"><h3 class="card-header" id="maintenance-reset">PCM runtime reset</h3><div class="card-body">
+<p data-help-key="admin.runtime-reset">Clear PCM Organization, Endpoint, HealthcareService, Consent and Contract resources, private runtime authority and issued tokens; bootstrap the configured initial catalog/resources. Runtime Consents and runtime catalog edits/assignments are lost. Saved configuration, clinical source databases and log history remain unchanged. A retained migration checkpoint requires its guarded recovery workflow.</p>
+<form method="post" action="<%= basePath %>/admin/reset<%= state.source ? '?source=' + encodeURIComponent(state.source) : '' %>" data-confirm="Reset PCM runtime resources and issued tokens?" data-progress="admin-operation-state"><button class="btn btn-outline-danger" data-help-key="admin.runtime-reset">Reset runtime</button></form>
+<p id="admin-operation-state" class="progress-state" role="status" aria-live="polite" hidden></p>
+</div></section>
+<section class="card" aria-labelledby="maintenance-owners"><h3 class="card-header" id="maintenance-owners">Other operation owners</h3><div class="card-body">
+<% if (selected) { %><p>Selected source: <strong><%= selected.name %></strong> · <span class="admin-exact"><%= selected.id %></span></p><% } %>
+<ul class="admin-maintenance-links">
+<li><a href="<%= shell.address(basePath, 'sources', state.source, 'data') %>" data-help-key="admin.maintenance-owners">Source deletion and import recovery</a></li>
+<% if (operation) { %><li><a href="<%= basePath %>/admin/api/data-operations/<%= encodeURIComponent(operation.id) %>" data-help-key="admin.maintenance-owners">Saved operation · <%= operation.id %></a> · <a href="<%= basePath %>/logs-view?diagnostics=true&amp;operationId=<%= encodeURIComponent(operation.id) %>&amp;sourceId=<%= encodeURIComponent(selected.id) %>" data-help-key="admin.maintenance-owners">Open this operation in Logs</a></li><% } %>
+<li><a href="<%= shell.address(basePath, 'logs', state.source) %>" data-help-key="admin.maintenance-owners">Log export and clear</a></li>
+<li><a href="<%= urls.spClient %>" data-help-key="admin.maintenance-doctor">Doctor local reset</a> — open Tools → Reset to clear that Doctor mount’s request draft in this tab after its existing confirmation.</li>
+</ul></div></section>

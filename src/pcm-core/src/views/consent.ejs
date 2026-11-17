@@ -1,51 +1,190 @@
+<% const basePath = typeof browserBase === 'string' ? browserBase : ''; %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Review Consent</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-</head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= consent.status === 'proposed' ? 'Review consent request' : 'Consent details' %></title>
+    <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+    <script defer src="<%= basePath %>/assets/connectathon.js"></script>
+    <script defer src="<%= basePath %>/assets/source-change.js"></script>
+    <script defer src="<%= basePath %>/assets/consent-cancellation.js"></script>
+<script defer src="<%= basePath %>/assets/approval-scopes.js"></script>
+<script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script></head>
 
-<body class="container mt-5">
-    <h1>Approve Consent Access</h1>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Request Details</h5>
-            <p><strong>Consent ID:</strong> <span class="text-muted">
-                    <%= consent.id %>
-                </span></p>
-            <p><strong>Requestor:</strong>
-                <%= requesterName %>
-            </p>
-            <p><strong>Purpose / Service:</strong>
-                <%= serviceName %>
-            </p>
-            <p><strong>Patient ID:</strong>
-                <%= consent.patient.identifier.value %>
-            </p>
-            <hr>
-            <h5>Select Information Sources</h5>
-            <form action="/ui/approve/<%= consent.id %>" method="POST">
-                <% dataSources.forEach(function(ds) { %>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="sources" value="<%= ds.id %>" checked
-                            id="ds-<%= ds.id %>">
-                        <label class="form-check-label" for="ds-<%= ds.id %>">
-                            <%= ds.name %>
-                        </label>
-                    </div>
-                    <% }); %>
-                        <br>
-                        <div class="d-flex gap-2">
-                            <button type="submit" name="action" value="approve" class="btn btn-success">Approve
-                                Access</button>
-                            <button type="submit" name="action" value="decline" class="btn btn-danger">Decline
-                                Access</button>
-                            <a href="/ui" class="btn btn-secondary">Cancel</a>
-                        </div>
-            </form>
+<body data-browser-base="<%= basePath %>" class="container portal-page consent-review" data-help-team="<%= typeof teamId !== "undefined" ? teamId : "local" %>"><main>
+    <header class="sandbox-header mb-3">
+        <div class="sandbox-heading">
+            <h1 data-help-key="pcm.details-title" class="mb-0"><span class="badge bg-dark align-middle" data-help-key="common.team"><%= teamId %></span> <%= consent.status === 'proposed' ? 'Review consent request' : 'Consent details' %></h1>
         </div>
-    </div>
-</body>
-
+        <nav aria-label="Sandbox pages" class="sandbox-navigation">
+            <% if (typeof publicBaseUrls !== 'undefined') { %><a class="btn btn-sm btn-outline-secondary" href="<%= publicBaseUrls.spClient %>" data-help-key="common.nav-doctor">Doctor</a><% } %>
+            <a class="btn btn-sm btn-outline-secondary" aria-current="page" href="<%= basePath %>/ui" data-help-key="common.nav-consents">Consents</a>
+            <a class="btn btn-sm btn-outline-secondary" data-help-key="services.nav" href="<%= basePath %>/admin/services">Services</a>
+            <% if (typeof publicBaseUrls !== 'undefined') { %>
+            <a class="btn btn-sm btn-outline-secondary" href="<%= publicBaseUrls.pcmUi %>/admin" data-help-key="common.nav-admin">Admin</a>
+            <a class="btn btn-sm btn-outline-secondary" href="<%= publicBaseUrls.pcmUi %>/logs-view" data-help-key="common.nav-logs">Logs</a>
+            <a class="btn btn-sm btn-outline-secondary" href="<%= publicBaseUrls.pcmUi %>/docs/api" data-help-key="common.nav-api">API Docs</a>
+            <% } %>
+            <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox"> Explain this page</label>
+        </nav>
+    </header>
+    <% const pending = consent.status === 'proposed' && (typeof lifecycle === 'undefined' || lifecycle.code === 'requested');
+       const snapshot = typeof approvalSnapshot !== 'undefined' ? approvalSnapshot : null;
+       const choice = typeof selectedChoice !== 'undefined' ? selectedChoice : 'service-provided';
+       const summary = typeof scopePresentation !== 'undefined' ? scopePresentation.accessSummary(selectedScope) : { rows: [], sensitiveDetails: [], limited: true };
+       const history = consentPresentation.sourceHistory(sourceView.audit, sourceView.choices);
+       const displayStatus = pending ? 'Awaiting approval' : typeof lifecycle === 'undefined' ? consent.status
+           : lifecycle.code === 'active' ? lifecycle.periodExpired ? 'Expired' : 'Approved'
+           : lifecycle.event?.cause === 'approval-period-expired' ? 'Expired' : lifecycle.label; %>
+    <% if (typeof approvalError !== 'undefined' && approvalError) { %><div class="alert alert-danger" data-approval-error role="alert" data-help-key="pcm.approval-error"><%= approvalError %></div><% } %>
+    <section class="card mb-3" aria-label="Consent facts" data-help-key="pcm.request-information">
+        <div class="card-header d-flex justify-content-between gap-2 flex-wrap">
+            <h2 class="h5 mb-0" data-help-key="pcm.service"><%= serviceName %></h2>
+            <strong data-help-key="pcm.status"><%= displayStatus %></strong>
+        </div>
+        <div class="card-body">
+            <dl class="consent-facts">
+                <dt>Patient</dt><dd data-help-key="pcm.patient"><%= consent.patient?.identifier?.value || 'Not recorded' %></dd>
+                <dt>Requested by</dt><dd data-help-key="pcm.requester"><%= requesterName %></dd>
+                <dt>Service</dt><dd data-help-key="pcm.service"><%= serviceName %></dd>
+                <dt>Access</dt><dd data-help-key="pcm.approval-dates"><%= typeof accessMode !== 'undefined' && accessMode === 'continuous' ? 'Repeated access' : typeof accessMode !== 'undefined' && accessMode === 'one-time' ? 'One-time access' : 'Access mode not recorded' %><% if (pending && typeof requestedDuration !== 'undefined' && requestedDuration) { %> · up to <%= consentPresentation.historyLabel(requestedDuration).replace(/^Past /, '') %> after approval<% } %></dd>
+                <% if (pending) { %><dt>Requested</dt><dd><%= consentPresentation.readableDate(consent.dateTime) %></dd><% } %>
+                <dt>Approval starts</dt><dd data-help-key="pcm.approval-dates"><%= pending ? 'Set on approval' : consentPresentation.readableDate(consent.provision?.period?.start) %></dd>
+                <dt>Valid until</dt><dd data-help-key="pcm.approval-dates"><%= pending ? 'Set on approval' : consentPresentation.readableDate(consent.provision?.period?.end) %></dd>
+                <% if (snapshot) { %><dt>Decision</dt><dd data-approval-provenance><%= snapshot.actor.simulation ? 'Approved in sandbox simulation; no verified patient decision' : 'Recorded approval' %></dd><% } %>
+            </dl>
+            <% if (typeof lifecycle !== 'undefined') { %><section data-consent-status data-help-key="pcm.status" aria-live="polite">
+                <p class="mt-3 mb-0"><strong>Consent status: <%= lifecycle.label %>.</strong> <%= lifecycle.description || lifecycle.restoration %></p>
+            </section><% } %>
+            <% if (consent.testAutoApproved) { %><p class="mt-3" data-help-key="consent.test-approved">Originally approved automatically for testing. No patient approval decision was recorded.</p><% } %>
+            <% if (typeof grantSummary !== 'undefined' && grantSummary.unavailable) { %><div class="alert alert-danger mt-3" data-help-key="pcm.grant-notice"><strong>Data permissions could not be checked</strong><p>Refresh the details or ask the sandbox administrator to investigate. No usable permissions are confirmed.</p></div><% } %>
+        </div>
+    </section>
+    <section class="card mb-3"><div class="card-body">
+    <% if (pending) { %>
+        <form data-scope-approval data-scope-types="<%= JSON.stringify((scopeOptions[0]?.value || '').split(' ').map(token => token.split('/')[1]?.split('.')[0]).filter(Boolean)) %>" action="<%= basePath %>/ui/approve/<%= consent.id %>" method="POST">
+            <input type="hidden" name="expectedVersion" value="<%= consent.meta?.versionId || '' %>">
+            <input type="hidden" name="approvalReview" value="<%= JSON.stringify(typeof approvalDisplay !== 'undefined' ? approvalDisplay : null) %>">
+            <h2 class="h5" data-help-key="pcm.sources">Choose data sources</h2>
+            <p>Allow this provider to request data from the selected sources.</p>
+            <% dataSources.forEach(function(ds) { %>
+                <div class="form-check">
+                    <input data-help-key="pcm.source-choice" class="form-check-input" type="checkbox" name="sources" value="<%= ds.id %>" <%= ds.selected ? 'checked' : '' %> id="ds-<%= ds.id %>">
+                    <label data-help-key="pcm.source-choice" class="form-check-label" for="ds-<%= ds.id %>"><%= ds.name %><% if (ds.builtIn) { %> <span class="badge bg-secondary">built-in</span><% } %></label>
+                    <div data-help-key="pcm.source-address" class="form-text"><%= ds.endpoint %></div>
+                </div>
+            <% }); %>
+            <hr>
+            <h2 class="h5" data-help-key="pcm.scope">Choose permissions</h2>
+            <% function optionRow(option) { %>
+                <div class="consent-choice form-check mb-2">
+                    <input data-help-key="<%= option.kind === 'generated' ? 'scope.' + option.id : 'scope.authored' %>" class="form-check-input" type="radio" name="scopeChoice" value="<%= option.id %>" data-scope-value="<%= option.value %>" data-scope-advice="<%= option.description %>" id="scope-<%= option.id %>" <%= option.id === choice ? 'checked' : '' %>>
+                    <label class="form-check-label" for="scope-<%= option.id %>"><%= option.label %></label>
+                    <% if (Object.entries(option.diagnostics).some(([axis, value]) => axis !== 'issues' && !['valid', 'supported'].includes(value))) { %><p class="text-danger">Unusable experimental scope: <%= option.diagnostics.issues.join(' ') %></p><% } %>
+                </div>
+            <% } %>
+            <% if (scopeOptions[0]) { optionRow(scopeOptions[0]); } else { %><p class="alert alert-danger">Service permissions are unavailable. Refresh or explicitly choose a sandbox alternative.</p><% } %>
+            <details class="consent-disclosure" data-alternative-permissions <%= choice !== 'service-provided' ? 'open' : '' %>>
+                <summary data-help-key="pcm.alternative-permissions">Alternative permissions · sandbox testing</summary>
+                <p>These choices may grant more access than the service requests.</p>
+                <% scopeOptions.slice(1).forEach(optionRow); %>
+                <div class="consent-choice form-check mb-2">
+                    <input class="form-check-input" type="radio" name="scopeChoice" value="custom" id="scope-custom" data-help-key="scope.custom" data-scope-advice="Manual input replaces the service permissions, including category, history and sensitivity restrictions. The exact text is saved without repair; invalid or unsupported permissions cannot be used for data access." <%= choice === 'custom' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="scope-custom">Enter OAuth scope manually</label>
+                </div>
+                <div data-custom-fields>
+                    <label class="form-label" for="custom-scope" data-help-key="scope.custom">OAuth scope text</label>
+                    <textarea class="form-control font-monospace" id="custom-scope" name="customScope" data-help-key="scope.custom" rows="4" aria-describedby="scope-advice scope-warnings"><%= choice === 'custom' ? selectedScope : '' %></textarea>
+                    <p id="scope-advice" data-help-key="scope.custom"><strong>Manual scope warnings do not block approval. Unsupported or invalid saved text is unusable for data access.</strong> Ordinary finite scopes require Patient read/search and explicit V exclusions. Exact sandbox scope <code>patient/*.rs</code> includes all supported patient data, including R and V; Patient/source context still applies.</p>
+                </div>
+            </details>
+            <p data-choice-advice data-help-key="pcm.scope"><%= scopeOptions.find(option => option.id === choice)?.description || 'Review the complete exact permissions before approval.' %></p>
+            <p id="scope-warnings" data-scope-warnings role="status" aria-live="polite"></p>
+    <% } else { %>
+        <h2 class="h5" data-help-key="pcm.saved-permissions"><%= snapshot ? 'Approved data access' : 'Saved data access' %></h2>
+        <p>Saved permissions are read-only. For different permissions, request a new Consent and approval.</p>
+        <% if (!snapshot || !snapshot.usable) { %><div class="alert alert-danger" data-approval-unusable><strong>Unusable approval scope</strong><p><%= snapshot ? snapshot.diagnostics.issues.join(' ') : 'Private approval is unavailable. No scope is inferred; request a new Consent approval.' %></p></div><% } %>
+    <% } %>
+        <% if (pending) { %><h3 class="h5" data-help-key="pcm.access-summary">Permissions to be saved</h3><% } %>
+        <div data-access-summary data-help-key="pcm.access-summary">
+            <p data-access-limited <%= summary.limited ? '' : 'hidden' %>>Limited summary: some permissions or filters cannot be described here. Review the complete exact permissions. This summary does not confirm usable access.</p>
+            <table class="table consent-access-table"><thead><tr><th data-help-key="pcm.service-category">Data</th><th>Actions</th><th data-help-key="pcm.service-history">Record dates</th><th>Sensitive data</th></tr></thead><tbody data-access-rows>
+                <% summary.rows.forEach(function(row) { %><tr><td data-label="Data"><%= row.data %></td><td data-label="Actions"><%= row.actions %></td><td data-label="Record dates"><%= row.dates %></td><td data-label="Sensitive data"><%= row.restrictions %></td></tr><% }); %>
+            </tbody></table>
+            <details data-sensitive-details <%= summary.sensitiveDetails.length ? '' : 'hidden' %>><summary data-help-key="pcm.service-sensitivity">Excluded sensitive categories</summary><p><%= summary.sensitiveDetails.join('; ') %></p></details>
+        </div>
+        <% if (!pending) { %><h3 class="h5" data-help-key="pcm.recorded-sources">Data sources</h3>
+            <p data-help-key="pcm.recorded-sources"><%= sourceView.choices.filter(source => source.selected).map(source => source.name + (source.eligible ? '' : ' (cannot currently be added)')).join(', ') || 'No data sources are currently recorded for this consent.' %></p>
+            <p class="text-muted">These sources are recorded on the consent. Their current availability is checked when used; being listed does not confirm patient records.</p>
+        <% } %>
+        <details class="consent-disclosure" data-exact-permissions>
+            <summary data-help-key="pcm.exact-permissions">Exact permissions and identifiers</summary>
+            <dl class="consent-facts">
+                <dt>Consent ID</dt><dd><code id="consent-id" data-help-key="pcm.consent-id"><%= consent.id %></code> <button class="btn btn-sm btn-outline-secondary" type="button" data-help-key="pcm.copy-value" data-consent-copy="consent-id">Copy Consent ID</button></dd>
+                <dt>Patient identifier</dt><dd><code id="consent-patient"><%= consent.patient?.identifier?.system || 'Not recorded' %>|<%= consent.patient?.identifier?.value || 'Not recorded' %></code> <button class="btn btn-sm btn-outline-secondary" type="button" data-help-key="pcm.copy-value" data-consent-copy="consent-patient">Copy patient identifier</button></dd>
+                <dt>Service registration</dt><dd><code id="consent-service"><%= typeof serviceId !== 'undefined' ? 'HealthcareService/' + serviceId : 'Not recorded' %></code> <button class="btn btn-sm btn-outline-secondary" type="button" data-help-key="pcm.copy-value" data-consent-copy="consent-service">Copy service ID</button></dd>
+                <dt>Requesting provider</dt><dd><code id="consent-provider"><%= typeof requesterId !== 'undefined' ? requesterId : 'Not recorded' %></code> <button class="btn btn-sm btn-outline-secondary" type="button" data-help-key="pcm.copy-value" data-consent-copy="consent-provider">Copy provider ID</button></dd>
+                <% if (!pending) { %><dt>Permission choice</dt><dd data-scope-origin data-help-key="pcm.permission-choice"><%= consentPresentation.permissionChoice(typeof scopeOrigin !== 'undefined' ? scopeOrigin : '') %></dd><% } %>
+            </dl>
+            <h3 class="h6 mt-3"><%= pending ? 'Selected' : 'Saved' %> OAuth scope</h3>
+            <pre class="scope-value" id="consent-exact-scope"><code <%- pending ? 'data-exact-scope' : 'data-approved-scope' %>><%= selectedScope %></code></pre>
+            <button class="btn btn-outline-secondary" type="button" data-help-key="pcm.copy-value" data-consent-copy="consent-exact-scope">Copy scope</button>
+            <p class="text-muted" data-help-key="pcm.grant-notice">Every security preset enforces that scope and Patient/source context. <%= pending ? 'The selected scope is saved when you approve.' : 'Service changes and source edits do not replace this saved decision.' %></p>
+        </details>
+        <p data-copy-result role="status" aria-live="polite"></p>
+    <% if (pending) { %>
+        <p data-help-key="pcm.approve">Approval saves the selected sources and exact permissions. Declining rejects this request. Neither decision fetches patient data.</p>
+        <div class="portal-actions">
+            <button type="submit" name="action" value="approve" class="btn btn-primary" data-help-key="pcm.approve">Approve request</button>
+            <button type="submit" name="action" value="decline" class="btn btn-outline-danger" data-help-key="pcm.decline">Decline request</button>
+            <a href="<%= basePath %>/ui" class="btn btn-secondary" data-help-key="pcm.cancel">Back to Consents</a>
+        </div></form>
+    <% } else { %>
+        <details class="consent-disclosure"><summary data-help-key="pcm.status-history">Approval and source-change history</summary>
+            <% if (typeof lifecycle !== 'undefined') { %><p>Reason: <%= lifecycle.cause %></p><p>Status change: <% if (lifecycle.event) { %><%= consentPresentation.readableDate(lifecycle.event.at) %>. <%= lifecycle.initiator %>.<% } else { %>No status-change time or person responsible is available for this record.<% } %></p><p>FHIR status: <%= lifecycle.fhirStatus %>; PCM status: <%= lifecycle.code || 'unknown' %></p><% } %>
+            <p data-help-key="pcm.source-history" data-source-audit role="status"><% if (history) { %>Sandbox source list changed on <%= history.at %>. Added: <%= history.added %>. Removed: <%= history.removed %>.<% } else { %>No source-change history is available for this record.<% } %></p>
+        </details>
+    <% } %>
+    </div></section>
+    <% if (!pending && sourceView.canEdit) { %>
+        <details class="card mb-3" data-source-settings><summary class="card-body" data-help-key="demo.source-change">Test a source-list change</summary><div class="card-body">
+            <p data-help-key="demo.source-change">Add or remove sources to test how the application responds. Saving changes does not record a new patient approval or change the saved permissions, patient, service or approval dates. Clear every checkbox to save an empty source list.</p>
+            <p>Source eligibility does not confirm online availability or patient records. <a data-help-key="pcm.admin-login" href="<%= basePath %>/admin" target="_blank" rel="noopener">Open Admin to log in</a> before saving, then refresh this page.</p>
+            <form data-source-change action="<%= basePath %>/admin/consents/<%= consent.id %>/sandbox-sources">
+                <input type="hidden" name="expectedVersion" value="<%= sourceView.version %>">
+                <input type="hidden" name="csrf" value="<%= sourceCsrf %>">
+                <% sourceView.choices.forEach(function(source) { %>
+                <div class="form-check mb-2">
+                    <input data-help-key="pcm.source-edit" data-help-disabled-key="pcm.source-unavailable" class="form-check-input" type="checkbox" name="sourceIds" id="sim-<%= source.id %>" value="<%= source.id %>" data-label="<%= source.name %>" <%= source.selected ? 'checked' : '' %> <%= !source.eligible && !source.selected ? 'disabled' : '' %>>
+                    <label class="form-check-label" for="sim-<%= source.id %>"><%= source.name %> · <%= source.eligible ? 'Can be selected' : 'Cannot currently be added; an already selected source can still be removed' %></label>
+                </div>
+                <% }); %>
+                <p data-help-key="pcm.source-result" data-source-result role="status" aria-live="polite"></p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button data-help-key="pcm.source-save" data-help-disabled-key="pcm.source-unchanged" class="btn btn-primary" type="submit" data-source-apply disabled>Save source changes</button>
+                    <button data-help-key="pcm.source-discard" data-help-disabled-key="pcm.source-unchanged" data-help-proxy class="btn btn-secondary" type="button" data-source-cancel disabled>Discard unsaved changes</button>
+                    <a data-help-key="pcm.refresh" href="" class="btn btn-secondary">Refresh details</a>
+                </div>
+            </form>
+        </div></details>
+    <% } %>
+    <% if (!pending) { %><div class="portal-actions mb-3"><a href="<%= basePath %>/ui" class="btn btn-secondary" data-help-key="pcm.cancel">Back to Consents</a></div><% } %>
+    <% if (typeof cancellation !== 'undefined') { %>
+        <details class="consent-disclosure mb-3" data-cancellation-settings><summary data-help-key="pcm.cancel-consent">Permanently cancel this consent</summary>
+            <p>This permanently cancels the consent on behalf of <strong><%= cancellation.providerName %></strong>, the requesting organization. It cannot be undone. Further access requires a new request and approval.</p>
+            <p>PCM rejects new tokens and fresh token-validation checks. A source may continue using a cached access decision for up to 30 seconds. Separate Contract workflows retain their own authorization.</p>
+            <p>If required, <a href="<%= basePath %>/admin" data-help-key="pcm.admin-login" target="_blank" rel="noopener">open Admin in a new tab and sign in</a>, then return and refresh. The requesting organization must be authorized to cancel.</p>
+                <form data-consent-cancellation data-provider-name="<%= cancellation.providerName %>" action="<%= basePath %>/admin/consents/<%= consent.id %>/cancel">
+                    <input type="hidden" name="expectedVersion" value="<%= cancellation.version %>">
+                    <input type="hidden" name="providerRole" value="<%= cancellation.providerRole %>">
+                    <input type="hidden" name="csrf" value="<%= cancellation.csrf %>">
+                    <button type="submit" class="btn btn-danger" data-help-proxy data-help-key="pcm.cancel-consent" data-help-disabled-key="pcm.cancel-disabled" data-help-context="<%= cancellation.reason %>" <%= cancellation.canCancel ? '' : 'disabled' %>>Permanently cancel consent</button>
+                    <p data-help-key="pcm.cancel-result" data-cancellation-result role="status"><%= cancellation.reason %></p>
+                    <a href="" data-help-key="pcm.refresh">Refresh details</a>
+                </form>
+        </details>
+    <% } %>
+</main></body>
 </html>

@@ -1,0 +1,21 @@
+<section data-workflow-sources aria-labelledby="workflow-sources-title">
+<h3 id="workflow-sources-title" data-help-key="admin.workflow-sources">Eligible HMO sources</h3>
+<p>Review existing authentication and discovery Contract source assets. Classification alone grants no access and does not activate an Organization or Endpoint. This action cannot create, renew or revive a Contract.</p>
+<p><a class="btn btn-outline-primary" href="<%= basePath %>/admin/workflow-sources/preview" data-help-key="admin.workflow-sources">Preview eligible sources</a></p>
+<% if (options.workflowResult) { %><p role="status">Reconciliation saved at revision <%= options.workflowResult.revision %>. Runtime readiness not checked.</p><% } %>
+<% const review = options.workflowPreview; if (review) { %>
+<h4>Reviewed revision <%= review.revision %></h4>
+<p>Eligible configured HMO identities:</p><ul><% review.sources.forEach(reference => { const id = reference.slice('Organization/'.length); %><li><a href="<%= shell.address(basePath, 'sources', id) %>" data-help-key="admin.source-context"><%= reference %></a></li><% }); %></ul>
+<% if (!review.sources.length) { %><p>No enabled HMO source is configured.</p><% } %>
+<% review.missingScenarios.forEach(scenario => { %><p role="alert">Missing Contract: <%= scenario %>. Explicit valid replacement required.</p><% }); %>
+<% review.blockers.forEach(reason => { %><p role="alert"><%= reason %></p><% }); %>
+<% review.policies.forEach(policy => { %><article class="card"><div class="card-body"><h4><%= policy.scenario %></h4><p><code>Contract/<%= policy.id %></code> · version <%= policy.version %> · <%= policy.status %> · <%= policy.validNow ? 'currently valid' : 'unavailable' %></p><p><%= policy.reason %> End: <%= policy.end || 'not specified' %>.</p><p>Before:</p><ul><% policy.before.forEach(reference => { %><li><code><%= reference %></code></li><% }); %></ul><p>After:</p><ul><% policy.after.forEach(reference => { %><li><code><%= reference %></code></li><% }); %></ul></div></article><% }); %>
+<details><summary data-help-key="admin.workflow-sources">Exact reviewed source versions</summary><dl class="admin-facts"><% Object.entries(review.sourceVersions).forEach(([id, version]) => { %><div><dt><code><%= id %></code></dt><dd><%= version || 'missing version' %></dd></div><% }); %></dl></details>
+<% const blocked = review.missingScenarios.length || review.blockers.length || review.policies.some(policy => !policy.validNow); %>
+<form method="post" action="<%= basePath %>/admin/workflow-sources/apply">
+<input type="hidden" name="expectedRevision" value="<%= review.revision %>"><input type="hidden" name="reviewDigest" value="<%= review.reviewDigest %>">
+<% for (const field of ['versions', 'sources', 'sourceVersions']) { %><input type="hidden" name="<%= field %>" value="<%= JSON.stringify(review[field]) %>"><% } %>
+<p>Apply requires these exact current versions. A source/policy/configuration change requires another preview.</p>
+<button class="btn btn-primary" data-help-key="admin.workflow-sources" <%- blocked ? 'disabled' : '' %>>Apply reviewed source reconciliation</button>
+</form><% } %>
+</section>

@@ -1,0 +1,10 @@
+{
+  "name": "pcm-connectathon-browser-qualification",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "test": "playwright test" },
+  "dependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.62.1"
+  }
+}

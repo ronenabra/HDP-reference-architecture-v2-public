@@ -1,0 +1,61 @@
+<% const limitsModel = require('../admin-source-limits'); const selectedSource = workspace.selected; const path = selectedSource ? `/admin/config/data-sources/${encodeURIComponent(selectedSource.id)}/limits` : '/admin/config/presence-limits'; const rows = limitsModel.limitRows(config, selectedSource);
+const groups = [
+    { id: 'pcm-requests', title: 'PCM requests to this source', helpKey: 'admin.limits-requests', keys: ['maxPatients', 'maxPayloadBytes', 'timeoutMilliseconds'] },
+    { id: 'pcm-authorization', title: 'PCM authorization for this source', helpKey: 'admin.limits-authorization', keys: ['maxRarBytes', 'maxFormBytes', 'maxEncodedFormBytes', 'maxResponseBytes'] }
+]; %>
+<section id="presence-limits" data-presence-limits>
+<p data-help-key="admin.presence-limits">Control request sizes and waiting time for <%= selectedSource ? 'this source' : 'sources using the shared defaults' %>. Larger limits do not grant more access or increase server capacity.</p>
+<% if (selectedSource?.hosting === 'custom') { %><p data-help-key="admin.limits-external"><strong>External source:</strong> These settings control PCM and local integration components. The external server has its own limits, managed by its operator.</p>
+<% } else if (!selectedSource) { %><p data-help-key="admin.limits-inherit">Sources use these shared defaults unless they have an override. External servers keep their own server settings.</p><% } %>
+<% if (req.query?.limitsSaved === String(config.runtime.revision)) { %><p role="status" class="alert alert-info" data-help-key="admin.limits-adoption">Settings saved (revision <%= config.runtime.revision %>). This page has not checked whether running services are using them.</p><% } %>
+<form method="post" action="<%= basePath + path %>" data-limits-form>
+<input type="hidden" name="adminForm" value="presence-limits"><input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>">
+<% for (const group of groups) { %>
+<section aria-labelledby="<%= group.id %>-title">
+<h5 id="<%= group.id %>-title" class="<%= group.id === 'pcm-requests' ? 'admin-limit-heading' : '' %>" data-help-key="<%= group.helpKey %>"><%= selectedSource ? group.title : group.title.replace('this source', 'sources') %></h5>
+<% if (group.id === 'pcm-requests') { %>
+<p data-help-key="admin.limits-requests">Controls how PCM groups patient checks and how long it waits. A presence check asks whether the source has a matching patient record; it does not retrieve clinical records.</p>
+<% if (selectedSource?.hosting === 'managed' || !selectedSource) { %><p data-help-key="admin.limits-managed"><strong>Also enforced by managed sources:</strong> Their presence batch patient count, payload checks and batch execution timeout use these same settings.</p><% } %>
+<% } else { %><p data-help-key="admin.limits-authorization">Controls the size of OAuth requests and responses handled by PCM when authorizing access to <%= selectedSource ? 'this source' : 'each source' %>.</p><% } %>
+<% for (const row of rows.filter(row => group.keys.includes(row.key))) { const mode = draft(path, `mode.${row.key}`, row.custom ? 'custom' : 'inherit'); %>
+<div class="admin-limit-row" data-limit="<%= row.key %>">
+<div><label for="limit-<%= row.key %>" data-help-key="admin.limit-<%= row.key %>"><%= row.label %> (<%= row.unit %>)</label>
+<p class="small" data-help-key="admin.limit-<%= row.key %>">Saved value: <strong><%= row.value %> <%= row.unit %></strong> · <%= row.origin %></p></div>
+<% if (selectedSource) { %><input type="hidden" name="mode.<%= row.key %>" value="<%= mode %>" data-limit-mode><% } %>
+<input class="form-control" id="limit-<%= row.key %>" name="<%= row.key %>" value="<%= draft(path, row.key, selectedSource && mode === 'inherit' ? '' : row.value) %>" inputmode="decimal" <%- selectedSource ? '' : 'required' %> placeholder="<%= selectedSource ? `default: ${row.defaultValue}` : '' %>" data-limit-value data-help-key="admin.limit-<%= row.key %>" aria-describedby="raw-<%= row.key %>" <%- options.adminError?.details?.field === row.key ? 'aria-invalid="true" aria-errormessage="admin-error-summary"' : '' %>>
+<details class="small"><summary data-help-key="common.details">Exact saved value and bounds</summary><p id="raw-<%= row.key %>"><code><%= row.key %></code>: <%= row.raw %> <%= row.scale === 1000 ? 'milliseconds' : row.scale === 1000000 ? 'bytes' : 'patients' %>. Range <%= row.minimum %>–<%= row.maximum %>; 1 MB = 1,000,000 bytes, 1 second = 1,000 milliseconds.</p></details>
+</div><% } %>
+</section><% } %>
+<button class="btn btn-primary" data-help-key="admin.limits-save">Save <%= selectedSource ? 'source limits' : 'default limits' %></button>
+</form>
+<section class="admin-data-task" id="clinical-query-limits" aria-labelledby="clinical-query-title" style="margin-top:1.5rem;padding-top:1rem;border-top:2px solid var(--bs-border-color, #cbd5e1)">
+<h5 id="clinical-query-title" class="admin-limit-heading" data-help-key="admin.clinical-query">Clinical query processing</h5>
+<% if (!selectedSource || selectedSource.hosting === 'managed') { const queryPath = selectedSource ? `/admin/config/data-sources/${encodeURIComponent(selectedSource.id)}/clinical-query-limits` : '/admin/config/clinical-query-limits'; %>
+<p data-help-key="admin.clinical-query">Local managed HAPI query budgets. After supporting services are installed, saved limits apply to new requests without a restart. Running requests keep their captured limits. Saving alone does not prove an older image supports these controls.</p>
+<p class="small">Candidate visits measure work, not returned records. Cumulative worker allocation is not JVM heap size. Lower paging capacity or lifetime may remove cursors; restart the search after HTTP 410.</p>
+<% if (selectedSource) { %><p><a href="<%= shell.address(basePath, 'sources', '', 'defaults') %>">Manage shared defaults</a></p><% } %>
+<form method="post" action="<%= basePath + queryPath %>" data-limits-form data-clinical-query-form>
+<input type="hidden" name="adminForm" value="clinical-query-limits"><input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>">
+<% for (const row of limitsModel.queryRows(config, selectedSource)) { const mode = draft(queryPath, `mode.${row.key}`, row.custom ? 'custom' : 'inherit'); %>
+<div class="admin-limit-row" data-limit="<%= row.key %>" data-query-limit="<%= row.key %>">
+<div><label for="query-<%= row.key %>" data-help-key="admin.clinical-query"><%= row.label %> (<%= row.unit %>)</label><p class="small">Saved value: <strong><%= row.value %> <%= row.unit %></strong> · <%= row.origin %></p></div>
+<% if (selectedSource) { %><input type="hidden" name="mode.<%= row.key %>" value="<%= mode %>" data-limit-mode><% } %>
+<input class="form-control" id="query-<%= row.key %>" name="<%= row.key %>" value="<%= draft(queryPath, row.key, selectedSource && mode === 'inherit' ? '' : row.value) %>" inputmode="numeric" <%- selectedSource ? '' : 'required' %> placeholder="<%= selectedSource ? `default: ${row.defaultValue}` : '' %>" data-limit-value data-help-key="admin.clinical-query" aria-describedby="query-bounds-<%= row.key %>" <%- options.adminError?.details?.field === row.key ? 'aria-invalid="true" aria-errormessage="admin-error-summary"' : '' %>>
+<details class="small"><summary>Exact units and bounds</summary><p id="query-bounds-<%= row.key %>"><code><%= row.key %></code>: <%= row.raw %> <%= row.unit %>. Range <%= row.minimum %>–<%= row.maximum %> whole <%= row.unit %>.</p></details>
+</div><% } %>
+<p class="small" data-help-key="admin.clinical-query-transport">Timeout includes a 1,000 millisecond completion reserve and remains bounded by verified authorization expiry. Private authorization may be reduced within the 57,344 byte transport envelope; query URI length cannot exceed 8,192 characters. These controls do not change proxy buffers, native HAPI page sizes, Doctor's preview, or access permissions.</p>
+<button class="btn btn-primary" data-help-key="admin.clinical-query-save">Save clinical query <%= selectedSource ? 'limits' : 'defaults' %></button>
+</form>
+<% } else { %><p data-help-key="admin.clinical-query">Clinical query processing controls apply only to this sandbox's managed HAPI sources. This <%= selectedSource.hosting === 'custom' ? 'external' : 'legacy' %> source has no supported local HAPI query worker to configure.</p><% } %>
+</section>
+<% if (selectedSource?.server) { const server = selectedSource.server; const uploadPath = `/admin/config/fhir-servers/${server.id}/limits`; let blocked = ''; try { limitsModel.assertUploadIdle(getDataOperationRegistry(), server.id); } catch (error) { blocked = error.message; } %>
+<section class="admin-data-task" aria-labelledby="upload-limits-title"><h5 id="upload-limits-title" class="admin-limit-heading" data-help-key="admin.limits-upload">Managed source imports</h5>
+<p data-help-key="admin.limits-upload">Applies only to imports into this sandbox-managed FHIR server, through Admin or the command line. These settings do not affect external sources. Larger uploads still need enough server memory and storage.</p>
+<% if (blocked) { %><p role="alert" class="alert alert-warning"><%= blocked %></p><% } %>
+<form method="post" action="<%= basePath + uploadPath %>" data-limits-form>
+<input type="hidden" name="adminForm" value="upload-limits"><input type="hidden" name="expectedRevision" value="<%= config.runtime.revision || 0 %>">
+<% for (const field of limitsModel.UPLOAD_FIELDS) { %><div class="admin-limit-row"><label for="upload-<%= field.key %>" data-help-key="admin.limits-upload"><%= field.label %> (<%= field.unit %>)<span class="small">Saved: <%= limitsModel.displayValue(server.limits[field.key], field.scale) %> <%= field.unit %></span></label><input class="form-control" id="upload-<%= field.key %>" name="<%= field.key %>" <%- options.adminError?.details?.field === field.key ? 'aria-invalid="true" aria-errormessage="admin-error-summary"' : '' %> inputmode="decimal" required value="<%= draft(uploadPath, field.key, limitsModel.displayValue(server.limits[field.key], field.scale)) %>" data-help-key="admin.limits-upload"><details class="small"><summary data-help-key="common.details">Exact saved value and bounds</summary><p><%= field.key %>: <%= server.limits[field.key] %> <%= field.key === 'maxBytes' ? 'bytes' : 'entries' %>. Range <%= field.minimum %>–<%= field.maximum %>.</p></details></div><% } %>
+<button class="btn btn-primary" <%= blocked ? 'disabled' : '' %> data-help-key="admin.limits-save" data-help-disabled-key="admin.limits-upload-blocked">Save upload limits</button>
+</form></section><% } %>
+<p class="small" data-help-key="admin.limits-adoption">Saving stores the settings, but does not check that running services are using them. Ask your sandbox administrator to confirm they have taken effect. Let current requests and imports finish before lowering limits.</p>
+</section>

@@ -1,0 +1,13 @@
+<header class="sandbox-header" aria-label="Admin header">
+  <div class="sandbox-heading"><h1><span class="badge bg-dark align-middle" data-help-key="common.team"><%= config.teamId %></span> Admin</h1></div>
+  <nav class="sandbox-navigation" aria-label="Sandbox pages">
+    <a class="btn btn-sm btn-outline-secondary" href="<%= urls.spClient %>" data-help-key="common.nav-doctor">Doctor</a>
+    <a class="btn btn-sm btn-outline-secondary" href="<%= basePath %>/ui" data-help-key="common.nav-consents">Consents</a>
+    <a class="btn btn-sm btn-outline-secondary" href="<%= basePath %>/admin/services" data-help-key="services.page">Services</a>
+    <a class="btn btn-sm btn-outline-secondary" href="<%= shell.address(basePath) %>" aria-current="page" data-help-key="common.nav-admin">Admin</a>
+    <a class="btn btn-sm btn-outline-secondary" href="<%= basePath %>/logs-view" data-help-key="common.nav-logs">Logs</a>
+    <a class="btn btn-sm btn-outline-secondary" href="<%= basePath %>/docs/admin-api" data-help-key="common.nav-api">API docs</a>
+    <a class="btn btn-sm btn-outline-secondary" href="<%= CONNECTATHON_REPO_URL %>" data-help-key="common.nav-repository">Repository</a>
+    <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox"> Explain this page</label>
+  </nav>
+</header>

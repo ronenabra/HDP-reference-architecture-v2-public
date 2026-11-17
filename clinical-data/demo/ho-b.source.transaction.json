@@ -1,0 +1,736 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:c25d1fa2-f6ff-5262-8777-03cfb0a4b27a",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-ho-b-0001",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000018"
+          }
+        ],
+        "name": [
+          {
+            "text": "Fictional HO B Patient"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patient-ho-b-0001"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6b233d10-2ed2-51b9-84ec-f286da812e0b",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-ho-b-htest-1",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+            "value": "1"
+          }
+        ],
+        "name": [
+          {
+            "text": "Synthetic HTEST Patient 1"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patient-ho-b-htest-1"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:8b5a58ad-6c3e-521e-bf62-cdb7e36aaeae",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-ho-b-htest-2",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+            "value": "2"
+          }
+        ],
+        "name": [
+          {
+            "text": "Synthetic HTEST Patient 2"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patient-ho-b-htest-2"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:8ae2fe68-3b3b-5fb6-a41d-cb86d57b9002",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "practitioner-ho-b-0001",
+        "identifier": [
+          {
+            "system": "http://example.test/practitioner",
+            "value": "HO-B-CLINICIAN"
+          }
+        ],
+        "name": [
+          {
+            "text": "Fictional HO B Clinician"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/practitioner-ho-b-0001"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:57dd0710-fd58-550a-91f3-42d29032de50",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-b-0001",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional laboratory result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-0001"
+        },
+        "performer": [
+          {
+            "reference": "Practitioner/practitioner-ho-b-0001"
+          }
+        ],
+        "effectiveDateTime": "2026-01-01T00:00:00Z",
+        "valueString": "B"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-b-0001"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:fc87fc8c-6747-5a1a-ad01-885f8f98179b",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-b-0002",
+        "status": "preliminary",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional paging result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-0001"
+        },
+        "effectiveDateTime": "2026-01-02T00:00:00Z",
+        "valueString": "B2"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-b-0002"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ed62a96c-8fec-511a-b5ca-ce0b5749b079",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-b-0003",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "procedures"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional differently classified result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-0001"
+        },
+        "effectiveDateTime": "2026-01-03T00:00:00Z",
+        "valueString": "B3"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-b-0003"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a5320078-bdaa-52f7-9033-ff4fdaa5caed",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "observation-ho-b-0004",
+        "status": "final",
+        "meta": {
+          "security": [
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+              "code": "V"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "code": {
+          "text": "Fictional restricted result"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-0001"
+        },
+        "effectiveDateTime": "2026-01-04T00:00:00Z",
+        "valueString": "B4"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/observation-ho-b-0004"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:93f45e77-df74-51ed-b6db-6839846d887f",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "demo-ho-b-diagnosticreport",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "laboratoryTests"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "final",
+        "code": {
+          "text": "Synthetic report"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "effectiveDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "DiagnosticReport/demo-ho-b-diagnosticreport"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b876788b-53b5-54a3-af73-d4dd3b2c8813",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-ho-b-medicationrequest",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "authoredOn": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationRequest/demo-ho-b-medicationrequest"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:201620d5-3d4b-59f5-a703-1d7a9b016423",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "demo-ho-b-medicationstatement",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "active",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "effectiveDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationStatement/demo-ho-b-medicationstatement"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:63882494-d0d0-5c3e-8327-d2af8aa7077a",
+      "resource": {
+        "resourceType": "MedicationDispense",
+        "id": "demo-ho-b-medicationdispense",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "whenHandedOver": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationDispense/demo-ho-b-medicationdispense"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:820df146-406e-5f56-bf6b-5c0cd7f7a811",
+      "resource": {
+        "resourceType": "MedicationAdministration",
+        "id": "demo-ho-b-medicationadministration",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "medications"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "completed",
+        "medicationCodeableConcept": {
+          "text": "Synthetic medication"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "effectiveDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationAdministration/demo-ho-b-medicationadministration"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:8ba68d73-2c22-5393-99bd-2b5fc709e45c",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-ho-b-condition",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "diagnoses"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "code": {
+          "text": "Synthetic condition"
+        },
+        "recordedDate": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/demo-ho-b-condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e8972ba0-2de1-5818-9b3a-a5966b4fc296",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "demo-ho-b-allergyintolerance",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "allergiesAndIntolerances"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "code": {
+          "text": "Synthetic allergy"
+        },
+        "recordedDate": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "AllergyIntolerance/demo-ho-b-allergyintolerance"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:f5d770c1-9eca-5ca3-9dec-c06abf3a8a1f",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-ho-b-encounter",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "encounterInformation"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB"
+        },
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "period": {
+          "start": "2026-10-05T12:00:00Z",
+          "end": "2026-10-05T13:00:00Z"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Encounter/demo-ho-b-encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d93d9fed-2b33-52e7-982c-f60fd41dd6ed",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "demo-ho-b-procedure",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "procedures"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "code": {
+          "text": "Synthetic procedure"
+        },
+        "performedDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Procedure/demo-ho-b-procedure"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e001b142-2e16-5fc3-9ba5-905e013dd0eb",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-ho-b-immunization",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+              "code": "HTEST"
+            },
+            {
+              "system": "http://fhir.health.gov.il/cs/il-hdp-information-buckets",
+              "code": "immunizations"
+            }
+          ],
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ci-sprint32-v1"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            }
+          ]
+        },
+        "status": "completed",
+        "patient": {
+          "reference": "Patient/patient-ho-b-htest-1"
+        },
+        "vaccineCode": {
+          "text": "Synthetic vaccine"
+        },
+        "occurrenceDateTime": "2026-10-05T12:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Immunization/demo-ho-b-immunization"
+      }
+    }
+  ]
+}

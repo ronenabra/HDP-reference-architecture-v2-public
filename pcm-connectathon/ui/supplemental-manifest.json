@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "pcm-ui-supplemental/1",
+  "projects": [
+    "chromium-desktop",
+    "chromium-mobile",
+    "firefox-smoke",
+    "webkit-smoke"
+  ],
+  "suites": [
+    {
+      "name": "admin-plain",
+      "files": [
+        "admin-plain.spec.js"
+      ],
+      "fixtures": [
+        "recovery-markup",
+        "assets"
+      ]
+    },
+    {
+      "name": "admin-refresh",
+      "files": [
+        "admin-refresh.spec.js"
+      ],
+      "fixtures": [
+        "empty-markup",
+        "assets"
+      ]
+    },
+    {
+      "name": "admin-reload-http",
+      "files": [
+        "admin-reload-http.spec.js"
+      ],
+      "fixtures": [
+        "reload-server",
+        "ci"
+      ]
+    },
+    {
+      "name": "approval-scopes",
+      "files": [
+        "approval-scopes.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "fresh-certificates"
+      ]
+    },
+    {
+      "name": "consent-cancellation",
+      "files": [
+        "consent-cancellation.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "assets"
+      ]
+    },
+    {
+      "name": "consent-banner",
+      "files": [
+        "consent-banner.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "assets"
+      ]
+    },
+    {
+      "name": "services",
+      "files": [
+        "services.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "fresh-certificates",
+        "assets"
+      ]
+    },
+    {
+      "name": "browser-navigation",
+      "files": [
+        "browser-navigation.spec.js",
+        "navigation-runtime.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "team"
+      ]
+    },
+    {
+      "name": "doctor-selection",
+      "files": [
+        "doctor-selection.spec.js"
+      ],
+      "fixtures": [
+        "assets"
+      ]
+    },
+    {
+      "name": "sampling",
+      "files": [
+        "sampling-library.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "assets"
+      ]
+    },
+    {
+      "name": "help-component",
+      "files": [
+        "help-controller.spec.js"
+      ],
+      "fixtures": [
+        "empty-markup",
+        "assets"
+      ]
+    },
+    {
+      "name": "help-runtime",
+      "files": [
+        "help-integration.spec.js"
+      ],
+      "fixtures": [
+        "team",
+        "team-certificates"
+      ]
+    },
+    {
+      "name": "ui-ops-rem",
+      "files": [
+        "ui-ops-rem.spec.js"
+      ],
+      "fixtures": [
+        "ops-server"
+      ]
+    },
+    {
+      "name": "logs-landmarks",
+      "files": [
+        "logs-landmarks.spec.js"
+      ],
+      "fixtures": [
+        "ops-server"
+      ]
+    },
+    {
+      "name": "logs-workbench",
+      "files": [
+        "logs-workbench.spec.js",
+        "logs-scroll.spec.js"
+      ],
+      "fixtures": [
+        "ops-server"
+      ]
+    },
+    {
+      "name": "logs-bottom-event",
+      "files": [
+        "logs-bottom-event.spec.js"
+      ],
+      "fixtures": [
+        "ops-server"
+      ]
+    },
+    {
+      "name": "logging-active-integration",
+      "files": [
+        "logging-active-integration.spec.js"
+      ],
+      "fixtures": [
+        "repository",
+        "assets"
+      ]
+    }
+  ]
+}

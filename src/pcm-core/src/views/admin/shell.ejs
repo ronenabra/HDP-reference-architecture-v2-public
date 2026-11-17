@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= areas.find(([id]) => id === state.selected)[1] %> · Admin</title>
+<link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css"><link rel="stylesheet" href="<%= basePath %>/assets/admin-shell.css">
+<script defer src="<%= basePath %>/assets/admin-maintenance.js"></script><script defer src="<%= basePath %>/assets/admin-feedback.js"></script><script defer src="<%= basePath %>/assets/connectathon.js"></script><script defer src="<%= basePath %>/assets/admin-shell.js"></script><script defer src="<%= basePath %>/assets/admin-source.js"></script><script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script></head>
+<body class="admin-workspace" data-help-team="<%= config.teamId %>" data-browser-base="<%= basePath %>">
+<%- partial('header') %>
+<p class="alert alert-<%= policy.exposure.bannerClass %>" role="status" data-help-key="common.mode"><strong><%= policy.resultLabel %></strong>. Scope, Patient/source context and authority remain enforced. Legacy Node clinical access is unsupported.</p>
+<p data-admin-navigation-status role="status" aria-live="polite"></p>
+<div class="admin-layout"><nav class="admin-sections" aria-label="Admin areas"><% areas.forEach(([id, label]) => { %><a href="<%= shell.address(basePath, id, state.source) %>" data-admin-section="<%= id %>" data-help-key="admin.area-<%= id %>" <%- state.selected === id ? 'aria-current="page"' : '' %>><%= label %></a><% }) %></nav>
+<main id="admin-main" aria-labelledby="admin-area-title"><h2 id="admin-area-title" data-help-key="admin.area-<%= state.selected %>"><%= areas.find(([id]) => id === state.selected)[1] %></h2>
+<% if (state.error) { %><p role="alert" class="alert alert-warning" data-help-key="admin.source-context"><%= state.error %></p><% } %>
+<%- adminErrorAlert %><% if (options.adminError) { %><p><a href="<%= shell.address(basePath, state.selected, state.source) %>" data-help-key="common.nav-admin">Back to <%= areas.find(([id]) => id === state.selected)[1] %></a></p><% } %>
+<% if (state.selected === 'sources') { %>
+<%- partial('source-workspace') %>
+<% } else if (state.selected === 'security') { %><section class="card"><div class="card-body"><%- partial('security') %></div></section>
+<% } else if (state.selected === 'apps') { %><%- partial('apps') %>
+<% } else { %><%- partial(state.selected) %><% } %>
+</main></div></body></html>

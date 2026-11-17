@@ -11,8 +11,13 @@ const crypto = require('crypto');
 function certToX5tS256(certInput) {
     let der = certInput;
 
-    if (typeof certInput === 'string') {
-        const lines = certInput.split('\n');
+    const pem = typeof certInput === 'string'
+        ? certInput
+        : (Buffer.isBuffer(certInput) && certInput.includes(Buffer.from('-----BEGIN CERTIFICATE-----'))
+            ? certInput.toString('utf8')
+            : null);
+    if (pem !== null) {
+        const lines = pem.split('\n');
         let base64Body = '';
         for (const line of lines) {
             if (line.trim().startsWith('-----')) continue;

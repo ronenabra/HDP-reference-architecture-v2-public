@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "pcm-public-image-spec/1",
+  "platform": "linux/amd64",
+  "images": [
+    {"roles": ["pcm-core"], "reference": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-pcm-core:${VERSION}", "context": "src/pcm-core"},
+    {"roles": ["regular-doctor"], "reference": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-sp-client:${VERSION}", "context": "src/sp-client"},
+    {"roles": ["managed-and-legacy-adapter"], "reference": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-auth-adapter:${VERSION}", "context": "src/ds-auth-adapter"},
+    {"roles": ["labelled-legacy-fhir"], "reference": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-fhir-server:${VERSION}", "context": "src/ds-fhir-server"},
+    {"roles": ["managed-and-legacy-gateway"], "reference": "ghcr.io/ronenabra/hdp-reference-architecture-v2-public-ds-gateway:${VERSION}", "context": "src/ds-gateway"},
+    {"roles": ["three-managed-hapi", "clinical-import-hapi"], "reference": "pcm-ho-fhir:${HAPI_VERSION}", "context": "src/ho-fhir-server"},
+    {"roles": ["postgres-three-isolated-databases"], "reference": "postgres:17-alpine@sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193"},
+    {"roles": ["clinical-import-loader", "target-reset", "runtime-mount-repair"], "reference": "node:24.22.1-alpine3.24@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53"},
+    {"roles": ["standalone-clinical-loader"], "reference": "pcm-clinical-data-loader:${VERSION}", "context": "clinical-data"}
+  ]
+}

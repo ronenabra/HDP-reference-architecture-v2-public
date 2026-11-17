@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= title %> · PCM sandbox</title>
+    <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+    <script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script>
+</head>
+<body class="aux-page <%= reference ? 'aux-reference' : 'container' %>" data-browser-base="<%= basePath %>" data-help-team="<%= teamId %>">
+    <header class="sandbox-header">
+        <div class="sandbox-heading"><p data-help-key="common.team"><%= teamId %></p><h1><%= title %></h1></div>
+        <nav class="sandbox-navigation" aria-label="Sandbox pages">
+            <a class="btn btn-outline-secondary" href="<%= urls.spClient %>" data-help-key="common.nav-doctor" <%- ownKey === 'spClient' ? 'aria-current="page"' : '' %>>Doctor</a>
+            <a class="btn btn-outline-secondary" href="<%= urls.pcmUi %>/ui" data-help-key="common.nav-consents">Consents</a>
+            <% if (ownKey === 'pcmUi') { %><a class="btn btn-outline-secondary" href="<%= basePath %>/admin/services" data-help-key="services.page">Services</a><a class="btn btn-outline-secondary" href="<%= basePath %>/admin" data-help-key="common.nav-admin">Admin</a><% } %>
+            <a class="btn btn-outline-secondary" href="<%= urls.pcmUi %>/logs-view" data-help-key="common.nav-logs">Logs</a>
+            <% if (reference) { %><a class="btn btn-outline-secondary" href="<%= basePath %>/docs/api" data-help-key="common.nav-api" <%- reference === 'api' ? 'aria-current="page"' : '' %>>PCM API</a><a class="btn btn-outline-secondary" href="<%= basePath %>/docs/admin-api" data-help-key="common.nav-api" <%- reference === 'admin-api' ? 'aria-current="page"' : '' %>>Admin API</a><% } %>
+            <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox"> Explain this page</label>
+        </nav>
+    </header>
+    <main>
+        <% if (reference) { %>
+            <p class="aux-reference-context" data-help-key="common.nav-api">API reference. Documentation does not report service health. <a class="btn btn-outline-secondary" href="<%= basePath %>/docs/<%= reference %>/content">Open reference document</a></p>
+            <iframe title="<%= title %> reference document" src="<%= basePath %>/docs/<%= reference %>/content"></iframe>
+        <% } else { %>
+            <div class="alert alert-danger" role="alert" data-help-key="common.feedback"><p><%= message %></p><p>HTTP status: <%= status %></p></div>
+            <a class="btn btn-outline-primary" href="<%= returnTo %>" data-help-key="<%= ownKey === 'spClient' ? 'common.nav-doctor' : 'common.nav-consents' %>"><%= ownKey === 'spClient' ? 'Back to Doctor' : 'Back to Consents' %></a>
+        <% } %>
+    </main>
+</body>
+</html>

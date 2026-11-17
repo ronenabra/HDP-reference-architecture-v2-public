@@ -1,0 +1,17 @@
+node_modules
+target
+.git
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+certs
+logs
+state
+tmp
+backups
+backlog.md
+.idea
+*.iml

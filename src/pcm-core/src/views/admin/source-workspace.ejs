@@ -1,0 +1,41 @@
+<% if (workspace.selected) { const source = workspace.selected; const viewLabels = { ...sourceModel.views, limits: 'Request & processing limits' }; %>
+<div class="admin-toolbar"><a href="<%= shell.address(basePath, 'sources') %>#group-<%= source.hosting %>" data-help-key="admin.source-context">Back to <%= {managed:'Managed HAPI',custom:'Custom sources',legacy:'Legacy compatibility'}[source.hosting] %></a></div>
+<section aria-labelledby="source-workspace-name" data-source-workspace="<%= source.id %>">
+<h3 id="source-workspace-name" data-help-key="admin.sources"><%= source.name %></h3>
+<p class="source-summary"><%= {managed:'Managed HAPI',custom:'Custom external',legacy:'Built-in legacy'}[source.hosting] %> · <%= {hmo:'HMO',hospital:'Hospital',other:'Other'}[source.institutionType] || source.institutionType %> · <%= source.role %></p>
+<p role="status"><%= source.status %></p>
+<% if (source.hosting === 'legacy') { %><p class="alert alert-warning" data-help-key="admin.mapping-section">Legacy clinical access is unsupported. Mappings and custom upstream do not enable clinical access or create Patient resources.</p><% } %>
+<% if (!source.available) { %><p role="alert" class="alert alert-warning">This source is unavailable for ordinary use. Review its registration with the source operator; no replacement source was selected.</p><% } %>
+<nav class="admin-source-links" aria-label="Source workspace views"><% source.tabs.forEach(view => { %><a href="<%= shell.address(basePath, 'sources', source.id, view) %>" data-help-key="admin.source-workspace" <%- workspace.view === view ? 'aria-current="page"' : '' %>><%= viewLabels[view] %></a><% }); %></nav>
+<% if (workspace.invalidView) { %><p role="alert">That view does not apply to this source. Review Registration or choose a named view.</p><% } %>
+<div class="admin-source-panel" aria-label="<%= viewLabels[workspace.view] %>"><h4><%= viewLabels[workspace.view] %></h4>
+<% if (!source.builtIn && workspace.view === 'credentials') { %><p><a href="<%= shell.address(basePath, 'certificates', source.id) + '&owner=' + encodeURIComponent(source.id) %>" data-help-key="admin.certificates">View source in Certificates</a></p><% } %>
+<% if (['registration','trust','credentials'].includes(workspace.view)) { %>
+<% if (source.builtIn) { %><%- partial('source-managed', { source }) %><% } else { %><%- partial('source-form', { source, formView: workspace.view }) %><% } %>
+<% if (source.builtIn && workspace.view !== 'registration') { %><p data-help-key="admin.source-built-in">Built-in credentials and server trust are deployment-controlled. Ask the team operator to review them.</p><a href="<%= shell.address(basePath, 'certificates', source.id) + '&owner=' + encodeURIComponent(source.id) %>" data-help-key="admin.area-certificates">Open Certificates</a><% } %>
+<% if (workspace.view === 'registration') { %><p><%= source.capability %>. Institution type alone does not authorize workflow participation.</p><a href="<%= shell.address(basePath, 'overview', source.id) %>" data-help-key="admin.area-overview">Deployment facts and operator handoff</a><% } %>
+<% } else if (workspace.view === 'data') { %><%- partial('data') %>
+<% } else if (workspace.view === 'limits') { %><%- partial('limits', { configuredSources: [source] }) %><a href="<%= shell.address(basePath, 'sources', '', 'defaults') %>" data-help-key="admin.limits-inherit">Manage shared defaults</a>
+<% } else if (workspace.view === 'mappings') { %><%- partial('identity') %>
+<% } else if (workspace.view === 'upstream') { %><%- partial('upstream') %>
+<% } else if (workspace.view === 'diagnostics') { %><p>Runtime not checked. Readiness requires an explicit check and is not conformance certification. Logs show only records carrying this exact registered source ID.</p>
+<% if (!source.builtIn && source.available) { %><form method="post" action="<%= basePath %>/admin/config/data-sources/<%= encodeURIComponent(source.id) %>/test"><button class="btn btn-outline-primary" data-help-key="admin.source-test">Test source</button></form><% } %>
+<a href="<%= basePath %>/logs-view?diagnostics=true&amp;sourceId=<%= encodeURIComponent(source.id) %>" data-help-key="admin.operation-logs">Open related diagnostics</a>
+<% } %>
+</div></section>
+<% } else if ((!workspace.sourceId && req.query?.view === 'onboarding') || (options.adminError && req.path === '/admin/config/data-sources/add')) { %>
+<a href="<%= shell.address(basePath, 'sources') %>#group-custom" data-help-key="admin.source-context">Back to Custom sources</a><%- partial('sources') %>
+<% } else if (!workspace.sourceId && req.query?.view === 'workflows') { %>
+<a href="<%= shell.address(basePath, 'sources') %>" data-help-key="admin.source-context">Back to Sources</a><%- partial('workflow-sources') %>
+<% } else if (!workspace.sourceId && req.query?.view === 'defaults') { %>
+<a href="<%= shell.address(basePath, 'sources') %>" data-help-key="admin.source-context">Back to Sources</a><h3>Default limits</h3><%- partial('limits') %>
+<% } else { %>
+<div class="admin-toolbar"><p>Select one source to review its registration and applicable operations.</p><div><a href="<%= shell.address(basePath, 'sources', '', 'defaults') %>" data-help-key="admin.presence-limits">Default limits</a> <a class="btn btn-primary" href="<%= shell.address(basePath, 'sources', '', 'onboarding') %>" data-help-key="admin.source-add">Add custom source</a></div></div>
+<% for (const [group, label] of [['managed','Managed HAPI'],['custom','Custom sources'],['legacy','Legacy compatibility']]) { const rows = sourceDirectory.filter(source => source.hosting === group); %>
+<section id="group-<%= group %>" class="card source-directory"><h3 class="card-header"><%= label %> (<%= rows.length %>)</h3><div class="card-body">
+<% if (!rows.length) { %><p>No <%= label.toLowerCase() %> sources configured.</p><% } %>
+<% rows.forEach(source => { %><a class="source-directory-row" href="<%= shell.address(basePath, 'sources', source.id) %>" data-source-address="<%= source.id %>" data-source-hosting="<%= source.hosting %>" data-server-address="<%= source.server?.id || '' %>" data-help-key="admin.source-context"><strong><%= source.name %></strong><span><%= {hmo:'HMO',hospital:'Hospital',other:'Other'}[source.institutionType] || source.institutionType %> · <%= source.role %></span><span><%= source.capability %></span><span><%= source.status %></span><code><%= source.id %></code></a><% }); %>
+</div></section><% } %>
+<p><a href="<%= shell.address(basePath, 'sources', '', 'workflows') %>" data-help-key="admin.workflow-sources">Eligible HMO source reconciliation</a></p>
+<%- partial('source-api') %>
+<% } %>

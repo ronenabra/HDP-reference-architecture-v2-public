@@ -1,0 +1,13 @@
+<div class="admin-toolbar"><p>Application and integration addresses</p><button type="button" class="btn btn-outline-secondary" data-admin-refresh data-help-key="admin.refresh">Refresh</button></div>
+<p data-admin-refresh-status role="status" aria-live="polite" data-help-key="admin.refresh-status"></p>
+<% for (const [label, rows] of [['Browser applications', deploymentEndpoints.filter(row => ['spClient','pcmUi'].includes(row.key))], ['Configured API addresses', deploymentEndpoints.filter(row => /^pcm/i.test(row.key) && row.key !== 'pcmUi' && row.audience !== 'internal')]]) { %>
+<h3><%= label %></h3><table class="table admin-addresses"><thead><tr><th scope="col">Purpose</th><th scope="col">Exact configured address</th><th scope="col">Actions</th></tr></thead><tbody>
+<% rows.forEach(endpoint => { %><%- partial('overview-address', { endpoint }) %><% }) %>
+</tbody></table><% } %>
+<p class="small" data-help-key="admin.protocol-identity">Browser links do not change registered issuers, audiences or callbacks.</p>
+<details><summary data-help-key="common.details">Source, protocol and internal addresses</summary>
+<dl><dt>Exact OAuth issuer</dt><dd><code><%= config.contract.operational.oauthBase %></code></dd><dt>Exact FHIR identity</dt><dd><code><%= config.contract.operational.fhirBase %></code></dd></dl>
+<table class="table admin-addresses"><thead><tr><th scope="col">Purpose</th><th scope="col">Exact configured address</th><th scope="col">Actions</th></tr></thead><tbody><% deploymentEndpoints.filter(row => row.audience === 'internal' || (!['spClient','pcmUi'].includes(row.key) && !/^pcm/i.test(row.key))).forEach(endpoint => { %><%- partial('overview-address', { endpoint }) %><% }) %></tbody></table>
+<a data-help-key="admin.source-context" href="<%= shell.address(basePath,'sources',state.source) %>">Open source registrations</a></details>
+<details><summary data-help-key="common.details">Configuration details</summary><p data-help-key="admin.runtime-state">Saved configuration revision: <strong><%= config.runtime.revision ?? 'not recorded' %></strong>. Running revision: unknown — component adoption has not been checked.</p><p>Refresh rereads saved configuration. It does not restart components or run health checks.</p></details>
+<% if (options.sanityResult) { %><h3>Last sanity check</h3><p><strong><%= sanityView.title %></strong></p><a data-help-key="admin.source-context" href="<%= shell.address(basePath,'logs',state.source) %>">View results in Logs &amp; diagnostics</a><% } %>

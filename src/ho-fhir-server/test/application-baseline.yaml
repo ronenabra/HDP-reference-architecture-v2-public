@@ -1,0 +1,61 @@
+server:
+  port: 8080
+  tomcat:
+    relaxed-query-chars: "|"
+
+management:
+  server:
+    port: 8081
+    address: 127.0.0.1
+  endpoints:
+    access:
+      default: none
+
+spring:
+  ai:
+    mcp:
+      server:
+        enabled: false
+  datasource:
+    url: jdbc:postgresql://postgres:5432/hapi
+    username: hapi
+    password: matrix-only
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: false
+  jpa:
+    properties:
+      hibernate:
+        dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+        hbm2ddl:
+          auto: update
+
+hapi:
+  fhir:
+    fhir_version: R4
+    default_encoding: JSON
+    default_pretty_print: false
+    server_address: https://ho-a.example/fhir
+    openapi_enabled: false
+    ig_runtime_upload_enabled: false
+    bulk_export_enabled: false
+    bulk_import_enabled: false
+    graphql_enabled: false
+    cr:
+      enabled: false
+    cdshooks:
+      enabled: false
+    narrative_enabled: false
+    mdm_enabled: false
+    cors: null
+    subscription:
+      resthook_enabled: false
+      websocket_enabled: false
+    validation:
+      requests_enabled: true
+      responses_enabled: false
+    tester: null
+
+logging:
+  level:
+    root: WARN

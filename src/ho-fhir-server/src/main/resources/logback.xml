@@ -1,0 +1,25 @@
+<configuration>
+  <!-- Existing Spring/HAPI INFO diagnostics remain visible in container stdout. -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="org.hl7.hdp.pcm.hapi.PcmSafeConsoleEncoder" />
+  </appender>
+  <!-- Only the private import interceptor is retained in the per-HO Admin stream. -->
+  <appender name="IMPORT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/runtime/logs/hapi/current.log</file>
+    <append>true</append>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>/runtime/logs/hapi/history/%d{yyyy-MM-dd,UTC}/app.log</fileNamePattern>
+      <maxHistory>5</maxHistory>
+    </rollingPolicy>
+    <encoder><pattern>%msg%n</pattern></encoder>
+  </appender>
+  <logger name="org.hl7.hdp.pcm.hapi.PcmImportDiagnosticInterceptor" level="INFO" additivity="true">
+    <appender-ref ref="IMPORT_FILE" />
+  </logger>
+  <!-- Native files are a separate trusted source; stdout is not ingested twice. -->
+  <appender name="HAPI_RUNTIME" class="org.hl7.hdp.pcm.hapi.PcmRuntimeAppender" />
+  <logger name="org.hl7.hdp.pcm.hapi.PcmRuntimeObservability" level="INFO" additivity="false">
+    <appender-ref ref="HAPI_RUNTIME" />
+  </logger>
+  <root level="INFO"><appender-ref ref="CONSOLE" /><appender-ref ref="HAPI_RUNTIME" /></root>
+</configuration>

@@ -1,137 +1,121 @@
-/**
- * Tests for Consent update authorization rules.
- */
+require('../../../test-support/team-config').installTestRuntime();
+/** Public Consent deactivation route authorization and projection tests. */
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+
+process.env.LOG_DIR = process.env.LOG_DIR || '/tmp/pcm-core-consent-update-tests';
+
 const store = require('../src/fhir/store');
 const fhirRouter = require('../src/routes/fhir');
+const { validateWriteRequest } = require('../src/fhir/contract');
+const { consentBusinessStatus } = require('../src/fhir/consent-lifecycle');
+const { CODE_SYSTEMS, IDENTIFIER_SYSTEMS } = require('../../shared/pcm-contract');
+
+const examples = path.resolve(__dirname, '../../../docs/FHIR-examples');
+const read = name => JSON.parse(fs.readFileSync(path.join(examples, name), 'utf8'));
 
 function resetStore() {
-    store.data.Organization = new Map();
-    store.data.Endpoint = new Map();
-    store.data.HealthcareService = new Map();
-    store.data.VerificationResult = new Map();
-    store.data.Consent = new Map();
-}
-
-function addPcmOrg() {
+    store.reset();
     store.add({
-        resourceType: 'Organization',
-        id: 'org-pcm-system',
-        active: true,
-        type: [{ coding: [{ system: 'http://fhir.health.gov.il/cs/pcm-org-type', code: 'pcm' }] }]
+        resourceType: 'Organization', id: 'parent', active: true,
+        identifier: [{ use: 'official', system: IDENTIFIER_SYSTEMS.organization, value: 'PCM-PARENT' }],
+        type: [{ coding: [{ system: CODE_SYSTEMS.organizationType, code: 'parent-org' }] }]
+    });
+    for (const id of ['org-sp', 'org-other']) store.add({
+        resourceType: 'Organization', id, active: true,
+        identifier: [{ use: 'official', system: IDENTIFIER_SYSTEMS.organization, value: `PCM-${id}` }],
+        type: [{ coding: [{ system: CODE_SYSTEMS.organizationType, code: 'service-provider' }] }],
+        partOf: { reference: 'Organization/parent' }
     });
 }
 
 function getConsentPutHandler() {
-    const layer = fhirRouter.stack.find(l =>
-        l.route && l.route.path === '/Consent/:id' && l.route.methods.put
-    );
-    return layer.route.stack[layer.route.stack.length - 1].handle;
+    const layer = fhirRouter.stack.find(item =>
+        item.route && item.route.path === '/Consent/:id' && item.route.methods.put);
+    return layer.route.stack.at(-1).handle;
 }
 
-function createRes() {
+function responseDouble() {
     return {
-        statusCode: 200,
-        body: null,
-        status(code) {
-            this.statusCode = code;
-            return this;
-        },
-        json(payload) {
-            this.body = payload;
-            return this;
-        }
+        statusCode: 200, body: null, headers: {},
+        status(code) { this.statusCode = code; return this; },
+        type(value) { this.headers['content-type'] = value; return this; },
+        set(name, value) { this.headers[name.toLowerCase()] = value; return this; },
+        json(payload) { this.body = payload; return this; }
     };
 }
 
-test('Consent update allows requestor to set status=inactive only', () => {
-    resetStore();
-    const consent = {
-        resourceType: 'Consent',
-        id: 'consent-1',
-        status: 'proposed',
-        provision: {
-            actor: [
-                {
-                    role: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType', code: 'IRCP' }] },
-                    reference: { reference: 'Organization/org-sp' }
-                }
-            ]
-        }
-    };
-    store.add(consent);
+function lifecycleResources() {
+    const parameters = read('Parameters-parameters-consent-hosp-a-lifecycle.json');
+    return Object.fromEntries(parameters.parameter.map(parameter => [parameter.name, parameter.resource]));
+}
 
-    const handler = getConsentPutHandler();
-    const req = {
-        params: { id: 'consent-1' },
-        body: { id: 'consent-1', status: 'inactive' },
-        user: { organization_id: 'org-sp' }
-    };
-    const res = createRes();
-
-    handler(req, res);
-
-    assert.equal(res.statusCode, 200);
-    assert.equal(res.body.status, 'inactive');
-    assert.equal(store.get('Consent', 'consent-1').status, 'inactive');
+test('requesting provider can terminally deactivate proposed or active Consent with the closed DTO', () => {
+    for (const sourceName of ['created', 'approved']) {
+        resetStore();
+        const { deactivationRequest, [sourceName]: source } = lifecycleResources();
+        source.provision.actor.find(actor => actor.role.coding[0].code === 'IRCP').reference.reference = 'Organization/org-sp';
+        const existing = store.add(source);
+        deactivationRequest.id = existing.id;
+        const res = responseDouble();
+        getConsentPutHandler()({
+            params: { id: existing.id }, body: deactivationRequest,
+            user: { organization_id: 'org-sp' }, protocol: 'https', get: () => 'pcm.test'
+        }, res);
+        assert.equal(res.statusCode, 200, sourceName);
+        assert.equal(res.body.status, 'inactive', sourceName);
+        assert.equal(consentBusinessStatus(res.body), 'service-provider-cancelled', sourceName);
+        assert.equal(res.body.patient.identifier.value, source.patient.identifier.value, sourceName);
+    }
 });
 
-test('Consent update rejects non-requestor and non-inactive status', () => {
+test('deactivation rejects wrong owner, non-request states, malformed policy, and server-field smuggling', () => {
     resetStore();
-    const consent = {
-        resourceType: 'Consent',
-        id: 'consent-2',
-        status: 'active',
-        provision: {
-            actor: [
-                {
-                    role: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType', code: 'IRCP' }] },
-                    reference: { reference: 'Organization/org-sp' }
-                }
-            ]
-        }
-    };
-    store.add(consent);
+    const { approved, deactivationRequest } = lifecycleResources();
+    approved.provision.actor.find(actor => actor.role.coding[0].code === 'IRCP').reference.reference = 'Organization/org-sp';
+    const existing = store.add(approved);
+    deactivationRequest.id = existing.id;
 
-    const handler = getConsentPutHandler();
-
-    const resWrongOrg = createRes();
-    handler({
-        params: { id: 'consent-2' },
-        body: { id: 'consent-2', status: 'inactive' },
+    let res = responseDouble();
+    getConsentPutHandler()({
+        params: { id: existing.id }, body: deactivationRequest,
         user: { organization_id: 'org-other' }
-    }, resWrongOrg);
-    assert.equal(resWrongOrg.statusCode, 403);
+    }, res);
+    assert.equal(res.statusCode, 403);
+    assert.equal(res.body.resourceType, 'OperationOutcome');
 
-    const resBadStatus = createRes();
-    handler({
-        params: { id: 'consent-2' },
-        body: { id: 'consent-2', status: 'active' },
-        user: { organization_id: 'org-sp' }
-    }, resBadStatus);
-    assert.equal(resBadStatus.statusCode, 403);
+    const wrongPolicy = JSON.parse(JSON.stringify(deactivationRequest));
+    wrongPolicy.policy[0].uri = 'https://example.invalid/policy';
+    res = responseDouble();
+    getConsentPutHandler()({ params: { id: existing.id }, body: wrongPolicy, user: { organization_id: 'org-sp' } }, res);
+    assert.equal(res.statusCode, 400);
+
+    assert.throws(() => validateWriteRequest({
+        ...deactivationRequest,
+        patient: approved.patient
+    }, { resourceType: 'Consent', interaction: 'update', id: existing.id }), /Unsupported Consent field/);
 });
 
-test('Consent update allows PCM admin to modify full resource', () => {
+test('terminal Consent cannot reactivate and PCM admin has no public full-resource update bypass', () => {
     resetStore();
-    addPcmOrg();
-    const consent = {
-        resourceType: 'Consent',
-        id: 'consent-3',
-        status: 'active'
-    };
-    store.add(consent);
-
-    const handler = getConsentPutHandler();
-    const res = createRes();
-    handler({
-        params: { id: 'consent-3' },
-        body: { id: 'consent-3', status: 'inactive', note: [{ text: 'Admin update' }] },
-        user: { organization_id: 'org-pcm-system' }
-    }, res);
-
+    const { deactivated, deactivationRequest } = lifecycleResources();
+    deactivated.provision.actor.find(actor => actor.role.coding[0].code === 'IRCP').reference.reference = 'Organization/org-sp';
+    const existing = store.add(deactivated);
+    deactivationRequest.id = existing.id;
+    let res = responseDouble();
+    getConsentPutHandler()({ params: { id: existing.id }, body: deactivationRequest, user: { organization_id: 'org-sp' } }, res);
     assert.equal(res.statusCode, 200);
-    assert.equal(res.body.status, 'inactive');
-    assert.equal(res.body.note[0].text, 'Admin update');
+    assert.equal(res.body.meta.versionId, existing.meta.versionId);
+
+    store.add({
+        resourceType: 'Organization', id: 'org-pcm-system', active: true,
+        identifier: [{ use: 'official', system: 'http://institutions.health.gov.il/Institutions', value: 'PCM' }],
+        type: [{ coding: [{ system: CODE_SYSTEMS.organizationType, code: 'pcm' }] }]
+    });
+    res = responseDouble();
+    getConsentPutHandler()({ params: { id: existing.id }, body: deactivationRequest, user: { organization_id: 'org-pcm-system' } }, res);
+    assert.equal(res.statusCode, 403);
+    assert.equal(res.body.resourceType, 'OperationOutcome');
 });

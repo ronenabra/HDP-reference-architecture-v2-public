@@ -1,0 +1,524 @@
+{
+  "schemaVersion": 1,
+  "clinicalServices": [
+    {
+      "key": "lab-follow-up",
+      "name": "Laboratory follow-up",
+      "purpose": "Laboratory follow-up for the selected patient at approved sources.",
+      "canonicalIdentifier": "PCM-DEMO-CAT-LAB-FOLLOW-UP",
+      "accessMode": "continuous",
+      "durationMonths": 6,
+      "allowPatientBucketChange": true,
+      "buckets": [
+        {
+          "code": "laboratoryTests",
+          "historyYears": 2
+        }
+      ],
+      "queries": [
+        "GET [FHIR BASE]/Observation?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/DiagnosticReport?patient=[PATIENT]&_count=10"
+      ],
+      "sandboxFullAccess": false,
+      "approvalScopeOptions": [
+        {
+          "id": "final-labs",
+          "label": "Final laboratory Observations",
+          "scope": "patient/Patient.rs patient/Observation.s?status=final"
+        }
+      ],
+      "serviceGrant": {
+        "model": "pcm-service-grant/1",
+        "compiler": "pcm-service-scope/1",
+        "origin": "generated",
+        "scope": "patient/Patient.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Observation.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|laboratoryTests&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/DiagnosticReport.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|laboratoryTests&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V",
+        "anchor": "2026-11-08T00:00:00.000Z",
+        "historyMode": "creation-fixed",
+        "authoring": {
+          "name": "Laboratory follow-up",
+          "purpose": "Laboratory follow-up for the selected patient at approved sources.",
+          "category": "35",
+          "accessMode": "continuous",
+          "duration": 6,
+          "durationUnit": "mo",
+          "allowChanges": true,
+          "buckets": [
+            {
+              "code": "laboratoryTests",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            }
+          ],
+          "permissions": [
+            {
+              "type": "Patient",
+              "actions": "rs"
+            },
+            {
+              "type": "Observation",
+              "actions": "rs"
+            },
+            {
+              "type": "DiagnosticReport",
+              "actions": "rs"
+            }
+          ],
+          "scopeOrigin": "generated"
+        },
+        "diagnostics": {
+          "syntax": "valid",
+          "applicability": "valid",
+          "capability": "supported",
+          "issues": []
+        }
+      }
+    },
+    {
+      "key": "medication-reconciliation",
+      "name": "Medication and allergy review",
+      "purpose": "Medication and allergy review for the selected patient at approved sources.",
+      "canonicalIdentifier": "PCM-DEMO-CAT-MEDICATION-RECONCILIATION",
+      "accessMode": "continuous",
+      "durationMonths": 6,
+      "allowPatientBucketChange": true,
+      "buckets": [
+        {
+          "code": "medications",
+          "historyYears": 2
+        },
+        {
+          "code": "allergiesAndIntolerances",
+          "historyYears": 2
+        }
+      ],
+      "queries": [
+        "GET [FHIR BASE]/MedicationRequest?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationStatement?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationDispense?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationAdministration?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/AllergyIntolerance?patient=[PATIENT]&_count=10"
+      ],
+      "sandboxFullAccess": false,
+      "approvalScopeOptions": [
+        {
+          "id": "medications-only",
+          "label": "Medication records only",
+          "scope": "patient/Patient.rs patient/MedicationRequest.rs patient/MedicationStatement.rs patient/MedicationDispense.rs patient/MedicationAdministration.rs"
+        }
+      ],
+      "serviceGrant": {
+        "model": "pcm-service-grant/1",
+        "compiler": "pcm-service-scope/1",
+        "origin": "generated",
+        "scope": "patient/Patient.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationRequest.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&authoredon=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationStatement.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&effective=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationAdministration.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&effective-time=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationDispense.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&whenhandedover=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/AllergyIntolerance.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|allergiesAndIntolerances&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V",
+        "anchor": "2026-11-08T00:00:00.000Z",
+        "historyMode": "creation-fixed",
+        "authoring": {
+          "name": "Medication and allergy review",
+          "purpose": "Medication and allergy review for the selected patient at approved sources.",
+          "category": "35",
+          "accessMode": "continuous",
+          "duration": 6,
+          "durationUnit": "mo",
+          "allowChanges": true,
+          "buckets": [
+            {
+              "code": "medications",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            },
+            {
+              "code": "allergiesAndIntolerances",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            }
+          ],
+          "permissions": [
+            {
+              "type": "Patient",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationRequest",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationStatement",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationAdministration",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationDispense",
+              "actions": "rs"
+            },
+            {
+              "type": "AllergyIntolerance",
+              "actions": "rs"
+            }
+          ],
+          "scopeOrigin": "generated"
+        },
+        "diagnostics": {
+          "syntax": "valid",
+          "applicability": "valid",
+          "capability": "supported",
+          "issues": []
+        }
+      }
+    },
+    {
+      "key": "longitudinal-summary",
+      "name": "Cross-organization clinical summary",
+      "purpose": "Cross-organization clinical summary for the selected patient at approved sources.",
+      "canonicalIdentifier": "PCM-DEMO-CAT-LONGITUDINAL-SUMMARY",
+      "accessMode": "continuous",
+      "durationMonths": 6,
+      "allowPatientBucketChange": true,
+      "buckets": [
+        {
+          "code": "diagnoses",
+          "historyYears": 5
+        },
+        {
+          "code": "laboratoryTests",
+          "historyYears": 2
+        },
+        {
+          "code": "medications",
+          "historyYears": 2
+        },
+        {
+          "code": "allergiesAndIntolerances",
+          "historyYears": 5
+        },
+        {
+          "code": "encounterInformation",
+          "historyYears": 2
+        }
+      ],
+      "queries": [
+        "GET [FHIR BASE]/Condition?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/Observation?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/DiagnosticReport?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationRequest?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationStatement?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationDispense?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/MedicationAdministration?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/AllergyIntolerance?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/Encounter?patient=[PATIENT]&_count=10"
+      ],
+      "sandboxFullAccess": false,
+      "approvalScopeOptions": [
+        {
+          "id": "diagnoses-only",
+          "label": "Diagnoses only",
+          "scope": "patient/Patient.rs patient/Condition.rs"
+        }
+      ],
+      "serviceGrant": {
+        "model": "pcm-service-grant/1",
+        "compiler": "pcm-service-scope/1",
+        "origin": "generated",
+        "scope": "patient/Patient.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Condition.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|diagnoses&recorded-date=ge2021-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Observation.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|laboratoryTests&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/DiagnosticReport.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|laboratoryTests&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationRequest.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&authoredon=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationStatement.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&effective=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationAdministration.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&effective-time=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/MedicationDispense.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|medications&whenhandedover=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/AllergyIntolerance.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|allergiesAndIntolerances&date=ge2021-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Encounter.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|encounterInformation&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V",
+        "anchor": "2026-11-08T00:00:00.000Z",
+        "historyMode": "creation-fixed",
+        "authoring": {
+          "name": "Cross-organization clinical summary",
+          "purpose": "Cross-organization clinical summary for the selected patient at approved sources.",
+          "category": "35",
+          "accessMode": "continuous",
+          "duration": 6,
+          "durationUnit": "mo",
+          "allowChanges": true,
+          "buckets": [
+            {
+              "code": "diagnoses",
+              "history": 5,
+              "historyUnit": "a",
+              "sensitivity": []
+            },
+            {
+              "code": "laboratoryTests",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            },
+            {
+              "code": "medications",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            },
+            {
+              "code": "allergiesAndIntolerances",
+              "history": 5,
+              "historyUnit": "a",
+              "sensitivity": []
+            },
+            {
+              "code": "encounterInformation",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            }
+          ],
+          "permissions": [
+            {
+              "type": "Patient",
+              "actions": "rs"
+            },
+            {
+              "type": "Condition",
+              "actions": "rs"
+            },
+            {
+              "type": "Observation",
+              "actions": "rs"
+            },
+            {
+              "type": "DiagnosticReport",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationRequest",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationStatement",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationAdministration",
+              "actions": "rs"
+            },
+            {
+              "type": "MedicationDispense",
+              "actions": "rs"
+            },
+            {
+              "type": "AllergyIntolerance",
+              "actions": "rs"
+            },
+            {
+              "type": "Encounter",
+              "actions": "rs"
+            }
+          ],
+          "scopeOrigin": "generated"
+        },
+        "diagnostics": {
+          "syntax": "valid",
+          "applicability": "valid",
+          "capability": "supported",
+          "issues": []
+        }
+      }
+    },
+    {
+      "key": "procedure-follow-up",
+      "name": "Procedure and immunization review",
+      "purpose": "Procedure and immunization review for the selected patient at approved sources.",
+      "canonicalIdentifier": "PCM-DEMO-CAT-PROCEDURE-FOLLOW-UP",
+      "accessMode": "one-time",
+      "durationMonths": 1,
+      "allowPatientBucketChange": true,
+      "buckets": [
+        {
+          "code": "procedures",
+          "historyYears": 2
+        },
+        {
+          "code": "immunizations",
+          "historyYears": 2
+        }
+      ],
+      "queries": [
+        "GET [FHIR BASE]/Procedure?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/Immunization?patient=[PATIENT]&_count=10"
+      ],
+      "sandboxFullAccess": false,
+      "approvalScopeOptions": [
+        {
+          "id": "immunizations-only",
+          "label": "Immunization records only",
+          "scope": "patient/Patient.rs patient/Immunization.rs"
+        }
+      ],
+      "serviceGrant": {
+        "model": "pcm-service-grant/1",
+        "compiler": "pcm-service-scope/1",
+        "origin": "generated",
+        "scope": "patient/Patient.rs?_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Procedure.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|procedures&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V patient/Immunization.rs?_security=http://fhir.health.gov.il/cs/il-hdp-information-buckets|immunizations&date=ge2024-11-08T00:00:00.000Z&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|genetics&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|mental-health&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|gynecology&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|fertility&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|adoption-surrogacy&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|domestic-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|sexual-violence&_security:not=http://fhir.health.gov.il/cs/il-core-sensitivity-labels|social-work&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|HIV&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PHY&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|PRS&_security:not=http://terminology.hl7.org/CodeSystem/v3-ActCode|NOPAT&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|R&_security:not=http://terminology.hl7.org/CodeSystem/v3-Confidentiality|V",
+        "anchor": "2026-11-08T00:00:00.000Z",
+        "historyMode": "creation-fixed",
+        "authoring": {
+          "name": "Procedure and immunization review",
+          "purpose": "Procedure and immunization review for the selected patient at approved sources.",
+          "category": "35",
+          "accessMode": "one-time",
+          "duration": 1,
+          "durationUnit": "mo",
+          "allowChanges": true,
+          "buckets": [
+            {
+              "code": "procedures",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            },
+            {
+              "code": "immunizations",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            }
+          ],
+          "permissions": [
+            {
+              "type": "Patient",
+              "actions": "rs"
+            },
+            {
+              "type": "Procedure",
+              "actions": "rs"
+            },
+            {
+              "type": "Immunization",
+              "actions": "rs"
+            }
+          ],
+          "scopeOrigin": "generated"
+        },
+        "diagnostics": {
+          "syntax": "valid",
+          "applicability": "valid",
+          "capability": "supported",
+          "issues": []
+        }
+      }
+    },
+    {
+      "key": "sandbox-full-access",
+      "name": "Sandbox: full clinical access",
+      "purpose": "Sandbox: full clinical access for the selected patient at approved sources.",
+      "canonicalIdentifier": "PCM-DEMO-CAT-SANDBOX-FULL-ACCESS",
+      "accessMode": "continuous",
+      "durationMonths": 6,
+      "allowPatientBucketChange": true,
+      "buckets": [
+        {
+          "code": "laboratoryTests",
+          "historyYears": 2
+        }
+      ],
+      "queries": [
+        "GET [FHIR BASE]/Observation?patient=[PATIENT]&_count=10",
+        "GET [FHIR BASE]/DiagnosticReport?patient=[PATIENT]&_count=10"
+      ],
+      "sandboxFullAccess": true,
+      "approvalScopeOptions": [],
+      "serviceGrant": {
+        "model": "pcm-service-grant/1",
+        "compiler": "pcm-service-scope/1",
+        "origin": "custom",
+        "scope": "patient/*.rs",
+        "anchor": "2026-11-08T00:00:00.000Z",
+        "historyMode": "manual-literal",
+        "authoring": {
+          "name": "Sandbox: full clinical access",
+          "purpose": "Sandbox: full clinical access for the selected patient at approved sources.",
+          "category": "35",
+          "accessMode": "continuous",
+          "duration": 6,
+          "durationUnit": "mo",
+          "allowChanges": true,
+          "buckets": [
+            {
+              "code": "laboratoryTests",
+              "history": 2,
+              "historyUnit": "a",
+              "sensitivity": []
+            }
+          ],
+          "permissions": [
+            {
+              "type": "Patient",
+              "actions": "rs"
+            },
+            {
+              "type": "Observation",
+              "actions": "rs"
+            },
+            {
+              "type": "DiagnosticReport",
+              "actions": "rs"
+            }
+          ],
+          "scopeOrigin": "custom",
+          "approvalScope": "patient/*.rs",
+          "confidentialityPolicy": {
+            "allowRestricted": true
+          }
+        },
+        "diagnostics": {
+          "syntax": "valid",
+          "applicability": "valid",
+          "capability": "supported",
+          "issues": []
+        }
+      }
+    }
+  ],
+  "systemPolicies": [
+    {
+      "scenario": "presence-check",
+      "policyId": "policy-presence",
+      "policyIdentifier": "PCM-POLICY-PRESENCE-001",
+      "name": "PCM presence-check",
+      "purpose": "Count-only source presence",
+      "queries": [
+        "GET [FHIR BASE]/Patient?identifier=[SYSTEM]|[VALUE]&_summary=count"
+      ],
+      "validitySeconds": 31536000
+    },
+    {
+      "scenario": "patient-authentication",
+      "policyId": "policy-patient-authentication",
+      "policyIdentifier": "PCM-POLICY-PATIENT-AUTHENTICATION-001",
+      "name": "PCM patient-authentication",
+      "purpose": "Home-HMO identity and OTP contact lookup",
+      "queries": [
+        "GET [FHIR BASE]/Patient?identifier=[SYSTEM]|[VALUE]&_elements=identifier,birthDate,telecom"
+      ],
+      "validitySeconds": 31536000
+    },
+    {
+      "scenario": "dependent-discovery",
+      "policyId": "policy-dependent-discovery",
+      "policyIdentifier": "PCM-POLICY-DEPENDENT-DISCOVERY-001",
+      "name": "PCM dependent-discovery",
+      "purpose": "Authenticated representative dependent discovery",
+      "queries": [
+        "GET [FHIR BASE]/Patient?_has:RelatedPerson:patient:identifier=[SYSTEM]|[VALUE]",
+        "GET [FHIR BASE]/RelatedPerson?identifier=[SYSTEM]|[VALUE]"
+      ],
+      "validitySeconds": 31536000
+    }
+  ],
+  "sandboxSampling": {
+    "key": "sandbox-patient-sample",
+    "serviceId": "sandbox-patient-sampling-service-v2",
+    "policyId": "sandbox-patient-sampling-policy-v2",
+    "serviceIdentifier": "PCM-SERVICE-SANDBOX-PATIENT-SAMPLE-001",
+    "policyIdentifier": "PCM-POLICY-SANDBOX-PATIENT-SAMPLE-001",
+    "name": "Sandbox patient sample",
+    "purpose": "Only for sandbox tests. Application-owned fixed current Patient GUID search, identifier/name projection, one page of at most ten HTEST synthetic patients.",
+    "validitySeconds": 31536000
+  }
+}

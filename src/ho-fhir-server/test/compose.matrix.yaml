@@ -1,0 +1,53 @@
+name: pcm-hapi-foundation-matrix
+
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: matrix-only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    volumes:
+      - matrix-postgres:/var/lib/postgresql/data
+
+  baseline:
+    image: hapiproject/hapi:v8.10.0-3@sha256:55213612779ab3eeec919226b7bad378f0061ade823393a61d7dd46dd5087a3d
+    profiles: [baseline]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${PCM_HAPI_MATRIX_PORT:-19080}:8080"
+    volumes:
+      - ./application-baseline.yaml:/app/config/application.yaml:ro
+
+  secure:
+    image: pcm-ho-fhir:0.4.0
+    build:
+      context: ..
+    profiles: [secure]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${PCM_HAPI_MATRIX_PORT:-19080}:8080"
+    volumes:
+      - ../../../teams/team-test/certs:/runtime/certs:ro
+      - ./team-config.json:/runtime/team-config.json:ro
+    environment:
+      HO_ID: ho-a
+      HO_FHIR_DATABASE_URL: jdbc:postgresql://postgres:5432/hapi
+      HO_FHIR_DATABASE_USER: hapi
+      HO_FHIR_DATABASE_PASSWORD: matrix-only
+      HO_FHIR_EXTERNAL_BASE: https://ho-a.example/fhir
+      PCM_LOCAL_JWT_ISSUER: https://ho-a-adapter.internal/ho-a
+      PCM_LOCAL_JWT_AUDIENCE: urn:pcm:ho:a:fhir-server
+      PCM_LOCAL_JWT_CERTIFICATE: /runtime/certs/ds-gateway.crt
+
+volumes:
+  matrix-postgres:

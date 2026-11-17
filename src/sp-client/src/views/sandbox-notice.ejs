@@ -1,0 +1,107 @@
+<%
+// Present existing page data only; these labels do not select policy or authority.
+const hasNoticeSources = sandboxNotice && Array.isArray(sandboxNotice.sources);
+const noticeSources = hasNoticeSources ? sandboxNotice.sources : [];
+const affectedCount = noticeSources.filter(source => source.relaxed.length).length;
+const modeKey = conformance.resultLabel.split(' — ')[0];
+const modeHeading = ({ 'CONNECTATHON-EASY': 'Easy simulation', 'CONNECTATHON-BALANCED': 'Balanced simulation', 'CONNECTATHON-MTLS': 'mTLS simulation', 'STRICT SANDBOX': 'Strict sandbox' })[modeKey] || conformance.resultLabel;
+const sourceGroups = new Map();
+noticeSources.forEach(source => {
+    const key = JSON.stringify([...source.relaxed].sort());
+    if (!sourceGroups.has(key)) sourceGroups.set(key, { names: [], relaxed: source.relaxed });
+    sourceGroups.get(key).names.push(source.name);
+});
+const checkDescriptions = [
+    ['client certificate', 'Client certificate (mTLS)', 'The caller presents a trusted client certificate.'],
+    ['server certificate verification', 'Server certificate', 'The remote server’s TLS certificate is trusted.'],
+    ['assertion signature', 'Assertion signature', 'The client assertion has a valid signature.'],
+    ['assertion audience', 'Assertion audience', 'The client assertion targets the expected endpoint.'],
+    ['assertion replay', 'Assertion replay', 'The same client assertion has not already been used.'],
+    ['assertion expiry', 'Assertion expiry', 'The client assertion is within its valid time period.']
+];
+// Keep unfamiliar configured checks visible if future page data adds one.
+const knownChecks = new Set(checkDescriptions.map(check => check[0]));
+new Set(noticeSources.flatMap(source => source.relaxed)).forEach(label => {
+    if (!knownChecks.has(label)) checkDescriptions.push([label, label, 'Additional configured check.']);
+});
+const compatibilityCopy = new Map([
+    ['connectathon adapter legacy-jose-kid normalized a client assertion', ['legacy-jose-kid', 'Legacy assertion key identifiers', 'Allows a non-thumbprint key identifier when one eligible registered assertion key exists.']],
+    ['connectathon adapter legacy-introspection-token-audience normalized an assertion audience', ['legacy-introspection-token-audience', 'Legacy introspection audience', 'Allows the token-endpoint audience to be normalized to the introspection-endpoint audience in a client assertion.']],
+    ['connectathon adapter legacy-rs256-assertion accepted a registered assertion algorithm', ['legacy-rs256-assertion', 'Registered RSA assertions', 'Allows RS256 assertion verification using an explicitly registered RSA assertion certificate.']],
+    ['legacy-es384-assertion is a retained migration setting; approved ES384 is normative and does not use this adapter', ['legacy-es384-assertion', 'Retained ES384 migration setting', 'Approved P-384/ES384 assertions are supported without this adapter. This retained setting does not provide an additional exception.']],
+    ['connectathon adapter legacy-organization-url-client-id normalized a client identifier', ['legacy-organization-url-client-id', 'Legacy client identifiers', 'Maps an allowlisted registered Organization URL to its assigned opaque client identifier.']],
+    ['connectathon adapter legacy-management-scope-cruds normalized a management scope', ['legacy-management-scope-cruds', 'Legacy management scope spelling', 'Maps the exact legacy system/*.cruds spelling to system/*.crus before scope validation.']]
+]);
+const compatibilityNotes = conformance.warnings.map(warning => compatibilityCopy.get(warning) || [null, 'Additional configured compatibility note', warning]);
+%>
+<aside class="doctor-shell-notice doctor-environment-notice" aria-label="Sandbox notice" data-doctor-notice>
+    <div class="doctor-notice-banner">
+        <div class="doctor-notice-heading"><h2 data-help-key="doctor.sandbox-mode"><%= modeHeading %></h2><span class="doctor-notice-synthetic">Synthetic data only</span></div>
+        <% if (!hasNoticeSources) { %>
+            <p>Configuration summary is unavailable. Inspect effective source transport settings in Admin.</p>
+        <% } else if (!noticeSources.length) { %>
+            <p>No enabled data sources are configured.</p>
+        <% } else if (affectedCount === noticeSources.length) { %>
+            <p><%= noticeSources.length === 1 ? 'The configured data source has' : `All ${noticeSources.length} configured data sources have` %> relaxed security checks.</p>
+        <% } else if (affectedCount) { %>
+            <p><%= affectedCount %> of <%= noticeSources.length %> configured data sources have relaxed security checks.</p>
+        <% } else { %>
+            <p>Transport and client-assertion checks are enabled for <%= noticeSources.length === 1 ? 'the configured data source' : `all ${noticeSources.length} configured data sources` %>.</p>
+        <% } %>
+        <p data-help-key="demo.full-access">Approved permissions and applicable patient/source restrictions still apply. Broad access requires an explicitly chosen service or approval scope.</p>
+        <p class="doctor-notice-warning"><%= conformance.mode === 'strict' ? 'Strict settings alone do not establish production readiness or independent conformance. Successful data access does not prove an explicit patient approval.' : 'Success here is not evidence of strict conformance or an explicit patient approval.' %></p>
+    </div>
+    <details class="doctor-notice-disclosure">
+        <summary data-help-key="doctor.sandbox-details">Configured checks and compatibility<span class="doctor-notice-snapshot">Configuration snapshot · not a live source check</span></summary>
+        <div class="doctor-notice-content">
+            <div class="doctor-notice-tabs" role="tablist" aria-label="Sandbox configuration details" data-doctor-notice-tabs hidden>
+                <% [['checks', 'Security checks'], ['compatibility', `Compatibility (${compatibilityNotes.length})`], ['troubleshooting', 'Troubleshooting'], ['diagnostics', 'Diagnostics']].forEach(([key, label], index) => { %>
+                    <button type="button" role="tab" id="doctor-notice-tab-<%= key %>" aria-controls="doctor-notice-<%= key %>" aria-selected="<%= index === 0 ? 'true' : 'false' %>" tabindex="<%= index === 0 ? '0' : '-1' %>" data-doctor-notice-tab data-help-key="doctor.sandbox-<%= key %>" data-help-proxy><%= label %></button>
+                <% }); %>
+            </div>
+            <section id="doctor-notice-checks" role="tabpanel" aria-labelledby="doctor-notice-tab-checks" data-doctor-notice-panel>
+                <% if (!hasNoticeSources) { %><p>Source check settings are unavailable. Inspect them in Admin.</p>
+                <% } else if (!noticeSources.length) { %><p>No enabled data sources are configured.</p>
+                <% } else { %>
+                    <% sourceGroups.forEach(group => { %>
+                        <div class="doctor-notice-source-group">
+                            <h3><%= sourceGroups.size === 1 && group.names.length > 1 ? `Same configured checks for all ${group.names.length} sources` : group.names.length > 1 ? `Same configured checks for ${group.names.length} sources` : group.names[0] %></h3>
+                            <% if (group.names.length > 1) { %><p class="doctor-notice-caption"><%= group.names.join(', ') %></p><% } %>
+                            <table class="doctor-notice-checks" aria-label="Configured security checks for <%= group.names.join(', ') %>">
+                                <thead><tr><th scope="col">Check</th><th scope="col">Configured</th><th scope="col">Normally verifies</th></tr></thead>
+                                <tbody><% checkDescriptions.forEach(([key, label, explanation]) => { const relaxed = group.relaxed.includes(key); const enabled = !relaxed && knownChecks.has(key); %>
+                                    <tr><th scope="row"><%= label %></th><td><span class="doctor-notice-check-state <%= relaxed ? 'is-relaxed' : enabled ? 'is-enabled' : 'is-unreported' %>"><%= relaxed ? 'Relaxed' : enabled ? 'Enabled' : 'Not reported' %></span></td><td class="doctor-notice-check-definition"><%= explanation %></td></tr>
+                                <% }); %></tbody>
+                            </table>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </section>
+            <section id="doctor-notice-compatibility" role="tabpanel" aria-labelledby="doctor-notice-tab-compatibility" data-doctor-notice-panel>
+                <h3>Enabled compatibility accommodations</h3>
+                <p class="doctor-notice-caption">These settings permit legacy formats. Their presence does not mean a request used them.</p>
+                <% if (!compatibilityNotes.length) { %><p>No compatibility accommodations are configured.</p><% } %>
+                <% compatibilityNotes.forEach(([adapter, title, description]) => { %>
+                    <h3><%= title %></h3><p><%= description %></p>
+                    <% if (adapter) { %><p class="doctor-notice-caption">Adapter: <code><%= adapter %></code></p><% } %>
+                <% }); %>
+                <% if (compatibilityNotes.length) { %><p>Use Logs to investigate whether a particular request used a compatibility accommodation.</p><% } %>
+            </section>
+            <section id="doctor-notice-troubleshooting" role="tabpanel" aria-labelledby="doctor-notice-tab-troubleshooting" data-doctor-notice-panel>
+                <h3>After a service or source changes</h3>
+                <ol><li>Displayed results may be cleared when the request context changes.</li><li>Cached positive decisions can take up to 30 seconds to reflect changes.</li><li>Refresh status before retrying. Refreshing does not approve or restore a Consent.</li></ol>
+                <h3>A successful fetch does not prove a patient decision</h3>
+                <p>Check the recorded Consent and its approval origin. Test auto-approvals are labelled separately.</p>
+            </section>
+            <section id="doctor-notice-diagnostics" role="tabpanel" aria-labelledby="doctor-notice-tab-diagnostics" data-doctor-notice-panel>
+                <h3>Use fabricated data and credentials only</h3>
+                <p data-help-key="common.diagnostics">Logs and diagnostics may contain patient identifiers, access tokens, client assertions and clinical payloads.</p>
+                <p>Review diagnostic content before sharing it.</p>
+            </section>
+            <details class="doctor-notice-technical"><summary data-help-key="doctor.sandbox-technical">Technical notes</summary>
+                <p>Profile: <%= conformance.resultLabel %> · Policy: <code><%= conformance.version %></code></p>
+                <p>The legacy Node clinical-data backend is unavailable.</p>
+            </details>
+        </div>
+    </details>
+</aside>

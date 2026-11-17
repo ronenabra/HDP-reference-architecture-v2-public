@@ -1,29 +1,29 @@
 # Changelog
 
-## [Unreleased] - 2026-01-28
-### Added
-- PCM API split into HTTPS (FHIR + OAuth2) and HTTP (UI/logs/docs) servers with mTLS enforced on API.
-- FHIR API surface completion for Organization, Endpoint, HealthcareService (catalog/instance), Consent, and VerificationResult.
-- x5t#S256 thumbprint calculation (base64url SHA-256 of DER) and cnf claim in tokens.
-- DS identity mapping and local JWT minting with patient claim; Observation responses keyed by patient context.
-- Node test coverage for crypto, store, mapper, observation, and constants.
-- Manual mTLS+OAuth2 verification harness (`tests/manual/verify_standard_ops.sh`).
-- PCM admin Organization (type `pcm`) bootstrapped and authorized for full FHIR REST access.
-- PCM system org/endpoint identifiers standardized (`org-pcm-system`, `endpoint-pcm-system`).
-- Split OpenAPI specs into `openapi-fhir.yaml` and `openapi-oauth.yaml`, with a combined `openapi.yaml`.
-- HealthcareService fhirContext helper for deriving catalog identifiers with canonical fallback.
+## 0.2.0 — 18 November 2026
 
-### Changed
-- PCM FHIR base aligned to `/r4` with SMART discovery and CapabilityStatement under the same base.
-- OAuth2 flow updated to require RFC 8707 resource parameter and validate requested resource against Consent/Endpoint.
-- Introspection response expanded to include `fhirContext` and `cnf` fields; adapter preserves context.
-- DS components (ds-gateway/ds-auth-adapter/ds-fhir-server) share a single certificate.
-- Documentation refreshed: openapi, PCM process flow, FHIR examples, README, and architecture notes.
-- Consent update via FHIR now restricted to requestor setting `status=inactive` only.
-- fhirContext HealthcareService now emits catalog identifier only (no reference).
-- PCM logs warning when client_assertion cert and mTLS peer cert differ; continues.
-- DS auth adapter logs warning when mTLS peer cert and introspected cnf differ; continues.
+- Three isolated HAPI/PostgreSQL health organizations with authorization gateways.
+- Doctor, Consent, Services, Admin and centralized Logs interfaces.
+- Approved clinical permissions in every profile, with bounded GET/form POST
+  search, counts, Patient paging and supported Patient operations.
+- Explicit dataset import, recovery tools and fresh credentials for each team.
+- Public PCM, IL Core and HDP references, with hash-checked test-input downloads.
+  PCM FHIR/OAuth definitions link to [MohGovIL/Swagger](https://github.com/MohGovIL/Swagger).
+  The sandbox's [Admin API](docs/openapi-admin.yaml) and
+  [rendered reference](docs/admin-api-docs.html) remain local.
+- Known dependency vulnerabilities accepted for this sandbox release; see the
+  [security findings](docs/releases/0.2.0.md).
 
-### Fixed
-- Applicable certificate thumbprints aligned to `x5t#S256` (base64url SHA-256).
-- Manual token generator scripts consolidated to a single source of truth.
+See [migration](docs/migration.md) before moving from the previous four-service
+demonstration. Population datasets are distributed separately in
+[HDP-synthetic-dataset](https://github.com/ronenabra/HDP-synthetic-dataset); the
+[import guide](docs/datasets.md) pins release **4.2.2-2026-10-10** and records
+the offline 1k compatibility check and its limits.
+Seven Linux/amd64 sandbox images are available on GHCR with the tag
+`0.2.0-rc.1-audit-20261117`. Full regression validation and follow-up fixes are planned for 0.2.1.
+See [prebuilt installation](README.md#start-with-the-published-images).
+
+## February 2026 demonstration
+
+The earlier public version through `0ceed0c` used four services. Its image tags,
+certificates and Compose instructions belong to that version.

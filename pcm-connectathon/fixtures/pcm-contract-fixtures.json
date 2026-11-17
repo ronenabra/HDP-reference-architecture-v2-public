@@ -1,0 +1,76 @@
+{
+  "patients": {
+    "positive": [
+      {
+        "case": "israeli-national-id",
+        "identifier": {
+          "system": "http://fhir.health.gov.il/identifier/il-national-id",
+          "value": "324573740"
+        }
+      },
+      {
+        "case": "synthetic-test-patient-1",
+        "identifier": {
+          "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+          "value": "1"
+        },
+        "security": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+          "code": "HTEST"
+        }
+      },
+      {
+        "case": "synthetic-test-patient-2",
+        "identifier": {
+          "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+          "value": "2"
+        },
+        "security": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+          "code": "HTEST"
+        }
+      },
+      {
+        "case": "israeli-passport",
+        "identifier": {
+          "system": "http://hl7.org/fhir/sid/passport-ISR",
+          "value": "IL-PASSPORT-42"
+        }
+      }
+    ],
+    "negative": [
+      {
+        "case": "national-id-checksum",
+        "reason": "invalid-check-digit",
+        "identifier": {
+          "system": "http://fhir.health.gov.il/identifier/il-national-id",
+          "value": "324573741"
+        }
+      },
+      {
+        "case": "synthetic-test-value",
+        "reason": "test-value-not-1-or-2",
+        "identifier": {
+          "system": "http://fhir.health.gov.il/identifier/il-hdp-test-id",
+          "value": "3"
+        }
+      },
+      {
+        "case": "passport-whitespace",
+        "reason": "surrounding-whitespace",
+        "identifier": {
+          "system": "http://hl7.org/fhir/sid/passport-ISR",
+          "value": " IL-PASSPORT-42"
+        }
+      }
+    ]
+  },
+  "lifecycle": {
+    "organization": ["active", "frozen", "cancelled"],
+    "endpoint": ["active", "suspended", "off", "entered-in-error"],
+    "canonicalService": ["pending", "active", "frozen", "cancelled", "rejected"],
+    "instanceService": ["pending", "active", "suspended", "frozen", "cancelled", "rejected"],
+    "consent": ["proposed", "active", "rejected", "temporarily-inactive", "permanently-inactive", "cancelled"],
+    "presence": ["online-present", "online-absent", "batch-present", "batch-absent"]
+  }
+}

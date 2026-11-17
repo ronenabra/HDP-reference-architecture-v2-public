@@ -1,0 +1,18 @@
+<% const basePath = typeof browserBase === 'string' ? browserBase : ''; %>
+<!doctype html><html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SMART test could not continue</title>
+  <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+  <script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script>
+</head><body class="container portal-page smart-authorization-page" data-help-team="<%= teamId %>"><main>
+  <header class="sandbox-header mb-3">
+    <div class="sandbox-heading"><h1 data-help-key="smart.error"><span class="badge bg-dark" data-help-key="common.team"><%= teamId %></span> SMART test could not continue</h1></div>
+    <nav aria-label="Page controls" class="sandbox-navigation"><label class="explain-toggle" data-help-key="common.explain"><input type="checkbox" data-help-key="common.explain"> Explain this page</label></nav>
+  </header>
+  <section class="card p-3">
+    <h2 class="h5">Start a fresh request</h2>
+    <div id="smart-error" class="alert alert-danger" role="alert" tabindex="-1" data-help-key="smart.error"><%= message %></div>
+    <p>No approval was made by this error page. Return to the configured Doctor address and start a fresh request. If it fails again, ask the sandbox operator for help.</p>
+    <a class="btn btn-primary" href="<%= doctorUrl %>" data-help-key="smart.restart" data-help-proxy>Return to Doctor for a fresh test</a>
+  </section>
+</main></body></html>

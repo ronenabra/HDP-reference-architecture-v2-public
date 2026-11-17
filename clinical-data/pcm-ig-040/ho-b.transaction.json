@@ -1,0 +1,249 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "dependent-one-b",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000026"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Fabricated",
+            "given": [
+              "Dependent One"
+            ]
+          }
+        ],
+        "birthDate": "2015-02-03",
+        "address": [
+          {
+            "text": "Must never appear in system-search projections"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/dependent-one-b"
+      },
+      "fullUrl": "urn:uuid:18916334-26a1-576e-aa54-d1383d6f1025"
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "dependent-three-b",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000042"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Fabricated",
+            "given": [
+              "Inactive Candidate"
+            ]
+          }
+        ],
+        "birthDate": "2015-02-03",
+        "address": [
+          {
+            "text": "Must never appear in system-search projections"
+          }
+        ],
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/dependent-three-b"
+      },
+      "fullUrl": "urn:uuid:834cdd54-9b27-5fff-b3e4-72d07d60ae48"
+    },
+    {
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "rep-one-b",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000018"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/dependent-one-b"
+        },
+        "active": true,
+        "relationship": [
+          {
+            "coding": [
+              {
+                "system": "http://pcm.fhir.health.gov.il/sandbox/CodeSystem/representative-relationship",
+                "code": "parent"
+              }
+            ]
+          }
+        ],
+        "name": [
+          {
+            "text": "Must never appear in discovery projections"
+          }
+        ],
+        "period": {
+          "end": "2020-01-01"
+        },
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "RelatedPerson/rep-one-b"
+      },
+      "fullUrl": "urn:uuid:dd47a0ca-ddbf-5d4b-a34e-d0cad430fa00"
+    },
+    {
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "rep-inactive-b",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000018"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/dependent-three-b"
+        },
+        "active": false,
+        "relationship": [
+          {
+            "coding": [
+              {
+                "system": "http://pcm.fhir.health.gov.il/sandbox/CodeSystem/representative-relationship",
+                "code": "parent"
+              }
+            ]
+          }
+        ],
+        "name": [
+          {
+            "text": "Must never appear in discovery projections"
+          }
+        ],
+        "period": {
+          "end": "2020-01-01"
+        },
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "RelatedPerson/rep-inactive-b"
+      },
+      "fullUrl": "urn:uuid:e11d5e28-e828-54af-9746-0462fe997b19"
+    },
+    {
+      "resource": {
+        "resourceType": "RelatedPerson",
+        "id": "other-active-b",
+        "identifier": [
+          {
+            "system": "http://fhir.health.gov.il/identifier/il-national-id",
+            "value": "000000059"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/dependent-three-b"
+        },
+        "active": true,
+        "relationship": [
+          {
+            "coding": [
+              {
+                "system": "http://pcm.fhir.health.gov.il/sandbox/CodeSystem/representative-relationship",
+                "code": "parent"
+              }
+            ]
+          }
+        ],
+        "name": [
+          {
+            "text": "Must never appear in discovery projections"
+          }
+        ],
+        "period": {
+          "end": "2020-01-01"
+        },
+        "meta": {
+          "tag": [
+            {
+              "system": "urn:hdp-test-bundle:synthetic-source",
+              "code": "ho-b"
+            },
+            {
+              "system": "urn:hdp-test-bundle:synthetic-dataset",
+              "code": "pcm-ig-040-system-workflows"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "RelatedPerson/other-active-b"
+      },
+      "fullUrl": "urn:uuid:2f5a673c-2c81-5a8a-b902-0aba95f04826"
+    }
+  ]
+}

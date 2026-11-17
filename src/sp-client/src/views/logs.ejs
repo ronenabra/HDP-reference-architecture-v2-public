@@ -1,3 +1,4 @@
+<% const basePath = typeof browserBase === 'string' ? browserBase : ''; %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,8 +8,9 @@
     <title>
         <%= serviceName %> Logs
     </title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="<%= basePath %>/assets/connectathon.css">
+    <script defer src="<%= basePath %>/assets/connectathon.js"></script>
+    <script defer src="<%= basePath %>/assets/log-clipboard.js"></script>
     <style>
         body {
             height: 100vh;
@@ -25,6 +27,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .header h5,
+        .header > .d-flex {
+            min-width: 0;
+        }
+
+        .header h5 {
+            overflow-wrap: anywhere;
+        }
+
+        .header > .d-flex {
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 767.98px) {
+            .header > .d-flex {
+                width: 100%;
+                gap: 0.5rem !important;
+            }
         }
 
         .content {
@@ -36,7 +60,7 @@
 
         .log-list {
             flex: 1 1 50%;
-            overflow-y: auto;
+            overflow: auto;
             border-bottom: 1px solid #ddd;
         }
 
@@ -72,112 +96,161 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+        [hidden] { display: none !important; }
+        .local-logs-page { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+        .local-logs-page > .sandbox-header { padding-inline: 16px; }
+        .local-toolbar .local-pause { margin-left: auto; }
+        .sandbox-heading h1 { font-size: 24px; margin: 8px 0 0; }
+        .local-toolbar, .local-tools { padding: 8px 16px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; background: #fff; border-bottom: 1px solid #d8e0eb; }
+        .local-toolbar .btn, .local-tools .btn, .local-pause { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .local-tools p { flex-basis: 100%; margin: 0; font-size: 14px; }
+        .local-tools textarea { width: 100%; max-height: 80px; }
+        .log-entry { min-height: 44px; font-size: 14px; text-align: left; background: #fff; color: #182b46; border: 0; border-bottom: 1px solid #d8e0eb; }
+        .log-entry:focus-visible, .btn:focus-visible { outline: 3px solid #1f6feb; outline-offset: -3px; }
+        .log-details-pane { min-height: 0; overflow: auto; }
+        .log-details-pane pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        .log-details-pane p { overflow-wrap: anywhere; }
     </style>
     <script>
         let isPaused = false;
         let selectedId = null;
 
-        function selectLog(id, entry) {
+        let records = new Map();
+        let refreshing = false;
+
+        /** Render full stored values as text, including payloads containing markup. */
+        function selectLog(id) {
             selectedId = id;
-
-            // UI Highlight
-            document.querySelectorAll('.log-entry').forEach(el => el.classList.remove('selected'));
-            document.getElementById('log-' + id).classList.add('selected');
-
-            // Render Details
-            const details = JSON.parse(decodeURIComponent(entry.getAttribute('data-details')));
-            const html = `
-                <h4>Log Details</h4>
-                <div class="mb-2">
-                    <span class="badge bg-${entry.getAttribute('data-level') === 'ERROR' ? 'danger' : (entry.getAttribute('data-level') === 'WARN' ? 'warning' : 'secondary')}">${entry.getAttribute('data-level')}</span>
-                    <span class="text-muted ms-2">${entry.getAttribute('data-timestamp')}</span>
-                </div>
-                <div class="mb-3"><strong>Message:</strong> ${entry.getAttribute('data-message')}</div>
-                <div class="mb-3"><strong>ID:</strong> ${id}</div>
-                <div><strong>Full Payload:</strong></div>
-                <pre>${JSON.stringify(details, null, 2)}</pre>
-            `;
-            document.getElementById('details-pane').innerHTML = html;
+            document.querySelectorAll('.log-entry').forEach(el => el.classList.toggle('selected', el.dataset.logId === id));
+            const log = records.get(id);
+            if (!log) return;
+            const pane = document.getElementById('details-pane');
+            const heading = document.createElement('h4');
+            heading.dataset.helpKey = 'logs.details';
+            heading.textContent = 'Selected event';
+            const summary = document.createElement('p');
+            summary.dataset.helpKey = 'logs.message';
+            summary.textContent = `${log.level} · ${log.timestamp} · ${log.message} · ID: ${id}`;
+            const payload = document.createElement('pre');
+            payload.dataset.helpKey = 'logs.payload';
+            payload.textContent = JSON.stringify(log.details, null, 2);
+            pane.replaceChildren(heading, summary, payload);
+            document.getElementById('copy-local').disabled = false;
         }
 
-        function refreshLogs() {
-            if (isPaused) return;
-
-            fetch('/api/logs')
-                .then(res => res.json())
-                .then(logs => {
-                    const list = document.getElementById('log-list');
-                    const currentScroll = list.scrollTop;
-
-                    const html = logs.map(log => {
-                        const isSelected = selectedId === log.id ? 'selected' : '';
-                        const levelColor = log.level === 'ERROR' ? 'danger' : (log.level === 'WARN' ? 'warning' : 'secondary');
-                        // Encode details to store in data attribute
-                        const detailsEncoded = encodeURIComponent(JSON.stringify(log.details));
-
-                        return `
-                        <div id="log-${log.id}" class="log-entry ${isSelected}" 
-                             data-level="${log.level}" 
-                             data-timestamp="${log.timestamp}" 
-                             data-message="${log.message}"
-                             data-details="${detailsEncoded}"
-                             onclick="selectLog('${log.id}', this)">
-                            <span class="badge bg-${levelColor} me-2" style="width: 60px;">${log.level}</span>
-                            <span class="text-muted me-3 small">${log.timestamp.split('T')[1].split('.')[0]}</span>
-                            <span>${log.message}</span>
-                        </div>
-                        `;
-                    }).join('');
-
-                    if (list.innerHTML !== html) {
-                        list.innerHTML = html;
-                        // Restore selection if it exists in new list
-                        if (selectedId && document.getElementById('log-' + selectedId)) {
-                            // Keep selection
-                        } else if (selectedId) {
-                            // ID gone (rotated out), clear details? No, keep logic simple.
-                        }
-                    }
+        /** Refresh with explicit missing/empty/error state and preserve selection by ID. */
+        async function refreshLogs() {
+            if (isPaused || refreshing) return;
+            refreshing = true;
+            const status = document.getElementById('local-log-status');
+            try {
+                const response = await fetch(`${document.body.dataset.browserBase || ''}/api/logs`);
+                if (!response.ok) throw new Error(`Log read failed (HTTP ${response.status})`);
+                const logs = await response.json();
+                if (!Array.isArray(logs)) throw new Error('Malformed log response');
+                status.textContent = response.headers.get('X-Log-State') === 'missing' ? `No ${document.body.dataset.serviceName} log file has been created.`
+                    : logs.length ? `${logs.length} recorded events` : `${document.body.dataset.serviceName} log file is empty.`;
+                const list = document.getElementById('log-list');
+                const currentScroll = list.scrollTop;
+                records = new Map(logs.map(log => [String(log.id), log]));
+                const rows = logs.map(log => {
+                    const entry = document.createElement('button');
+                    entry.type = 'button';
+                    entry.className = `log-entry w-100 text-start ${selectedId === String(log.id) ? 'selected' : ''}`;
+                    entry.dataset.helpKey = 'logs.row';
+                    entry.dataset.logId = String(log.id);
+                    entry.textContent = `${log.level} · ${log.timestamp} · ${log.message}`;
+                    entry.addEventListener('click', () => selectLog(String(log.id)));
+                    return entry;
                 });
+                list.replaceChildren(...rows);
+                list.scrollTop = currentScroll;
+                if (selectedId && records.has(selectedId)) selectLog(selectedId);
+                else if (selectedId) {
+                    selectedId = null;
+                    document.getElementById('copy-local').disabled = true;
+                    document.getElementById('details-pane').textContent = 'Selected event is no longer in the current log.';
+                }
+            } catch (error) {
+                status.textContent = `${error.message}. Displaying the last successful result; retrying.`;
+            } finally {
+                refreshing = false;
+            }
         }
 
+        /** Local Tools is presentation only; opening it never reads or changes logs. */
+        function closeLocalTools() {
+            document.getElementById('local-tools').hidden = true;
+            const trigger = document.getElementById('local-tools-button');
+            trigger.setAttribute('aria-expanded', 'false'); trigger.focus();
+        }
+        /** Open the existing secondary section and focus its close action. */
+        function toggleLocalTools() {
+            const panel = document.getElementById('local-tools');
+            if (!panel.hidden) return closeLocalTools();
+            panel.hidden = false;
+            document.getElementById('local-tools-button').setAttribute('aria-expanded', 'true');
+            document.getElementById('close-local-tools').focus();
+        }
+        /** Share the existing truthful clipboard fallback without persisting event text. */
+        function copyLocalRecord() {
+            const id = selectedId;
+            const record = records.get(id);
+            if (!record) return;
+            const manual = document.getElementById('local-copy-text');
+            window.PCM_LOG_CLIPBOARD.create({ document, navigator,
+                status: text => { document.getElementById('local-copy-status').textContent = text; },
+                manual: text => { manual.hidden = text === null; manual.value = text || ''; }
+            }).copy(JSON.stringify(record, null, 2), { current: () => selectedId === id });
+        }
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !event.defaultPrevented && document.getElementById('pcm-help-tooltip')?.hidden !== false && !document.getElementById('local-tools').hidden) {
+                event.preventDefault(); closeLocalTools();
+            }
+        });
         setInterval(refreshLogs, 3000);
         window.onload = refreshLogs;
     </script>
-</head>
+<script defer src="<%= basePath %>/assets/help-copy.js"></script><script defer src="<%= basePath %>/assets/help.js"></script></head>
 
-<body>
-    <div class="header">
-        <h5 class="m-0">
-            <%= serviceName %> Logs
-        </h5>
-        <div class="d-flex align-items-center gap-3">
-            <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="logsNav"
-                    data-bs-toggle="dropdown">
-                    Switch Log View
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="http://localhost:4000/logs-view">PCM Logs</a></li>
-                    <li><a class="dropdown-item" href="http://localhost:3000/logs-view">Doctor App Logs</a></li>
-                    <li><a class="dropdown-item" href="http://localhost:3001/logs-view">Adapter Logs</a></li>
-                    <li><a class="dropdown-item" href="http://localhost:3002/logs-view">FHIR Logs</a></li>
-                </ul>
-            </div>
-            <div class="form-check form-switch m-0">
-                <input class="form-check-input" type="checkbox" id="pauseSwitch" onchange="isPaused = this.checked">
-                <label class="form-check-label" for="pauseSwitch">Pause</label>
-            </div>
-        </div>
-    </div>
+<body data-service-name="<%= serviceName %>" data-browser-base="<%= basePath %>" data-help-team="<%= typeof teamId !== "undefined" ? teamId : "local" %>">
+    <main class="local-logs-page" aria-labelledby="local-logs-title">
+    <header class="sandbox-header">
+        <div class="sandbox-heading"><span class="badge bg-dark" data-help-key="common.team"><%= teamId %></span>
+            <h1 id="local-logs-title" data-help-key="service-logs.page"><%= serviceName %> Logs</h1></div>
+        <nav class="sandbox-navigation" aria-label="Sandbox pages">
+            <a class="btn btn-outline-secondary" href="<%= publicUrls.spClient %>" data-help-key="common.nav-doctor">Doctor</a>
+            <a class="btn btn-outline-secondary" href="<%= publicUrls.pcmUi %>/ui" data-help-key="common.nav-consents">Consents</a>
+            <a class="btn btn-outline-secondary" href="<%= publicUrls.pcmUi %>/admin/services" data-help-key="services.nav">Services</a>
+            <a class="btn btn-outline-secondary" href="<%= publicUrls.pcmUi %>/admin" data-help-key="common.nav-admin">Admin</a>
+            <a class="btn btn-outline-secondary" href="<%= basePath %>/logs-view" aria-current="page" data-help-key="service-logs.page">Local logs</a>
+            <label class="explain-toggle" data-help-key="common.explain"><input type="checkbox"> Explain this page</label>
+        </nav>
+    </header>
+    <nav class="local-toolbar" aria-label="Service event controls">
+        <span data-help-key="service-logs.page">This service only</span>
+        <a class="btn" href="<%= publicUrls.pcmUi %>/logs-view?role=doctor" data-help-key="service-logs.central">Open central Logs</a>
+        <label class="local-pause"><input type="checkbox" data-help-key="service-logs.pause" id="pauseSwitch" onchange="isPaused = this.checked"> Pause updates</label>
+        <button type="button" class="btn" onclick="refreshLogs()" data-help-key="service-logs.refresh">Refresh</button>
+        <button type="button" id="local-tools-button" class="btn" aria-controls="local-tools" aria-expanded="false" onclick="toggleLocalTools()" data-help-key="service-logs.tools">Tools</button>
+    </nav>
+    <section id="local-tools" class="local-tools" aria-label="Local log tools" hidden>
+        <button type="button" id="close-local-tools" class="btn" onclick="closeLocalTools()" data-help-key="service-logs.close-tools">Close tools</button>
+        <button type="button" id="copy-local" class="btn" onclick="copyLocalRecord()" data-help-key="service-logs.copy" disabled>Copy selected JSON</button>
+        <p>Full export, source coverage and built-in clear are available in central Logs Tools. Local events do not establish a complete cross-service trace.</p>
+        <p id="local-copy-status" role="status"></p>
+        <textarea id="local-copy-text" aria-label="Manual copy text" data-help-key="service-logs.copy" readonly hidden></textarea>
+    </section>
+    <p data-help-key="logs.empty" id="local-log-status" class="small m-2" role="status">Loading service logs…</p>
     <div class="content">
-        <div id="log-list" class="log-list">
+        <div data-help-key="service-logs.page" id="log-list" class="log-list" role="region" aria-label="Service Provider event log" tabindex="0">
             <div class="p-3 text-muted">Loading logs...</div>
         </div>
-        <div id="details-pane" class="log-details-pane">
+        <div data-help-key="logs.details" id="details-pane" class="log-details-pane" role="region" aria-label="Selected log details" tabindex="0">
             <div class="text-muted text-center mt-5">Select a log entry to view details</div>
         </div>
     </div>
+    </main>
 </body>
 
 </html>

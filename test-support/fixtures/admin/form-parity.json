@@ -1,0 +1,267 @@
+{
+  "startingRevision": "86eed211bab988e53ce1fdadf24115dfc8c286f5",
+  "beforeForms": 26,
+  "afterForms": 27,
+  "missing": [],
+  "forms": [
+    {
+      "action": "/admin/api/fhir-servers/ho-a/imports",
+      "method": "post",
+      "names": [
+        "bundle",
+        "replace"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/api/fhir-servers/ho-a/data",
+      "method": "post",
+      "names": [
+        "confirmation"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/fhir-servers/ho-a/bootstrap",
+      "method": "post",
+      "names": [
+        "policy",
+        "bundleReference",
+        "expectedSource"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/api/fhir-servers/ho-b/imports",
+      "method": "post",
+      "names": [
+        "bundle",
+        "replace"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/api/fhir-servers/ho-b/data",
+      "method": "post",
+      "names": [
+        "confirmation"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/fhir-servers/ho-b/bootstrap",
+      "method": "post",
+      "names": [
+        "policy",
+        "bundleReference",
+        "expectedSource"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/api/fhir-servers/ho-c/imports",
+      "method": "post",
+      "names": [
+        "bundle",
+        "replace"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/api/fhir-servers/ho-c/data",
+      "method": "post",
+      "names": [
+        "confirmation"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/fhir-servers/ho-c/bootstrap",
+      "method": "post",
+      "names": [
+        "policy",
+        "bundleReference",
+        "expectedSource"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/data-sources/org-team-a-ho-a-source/institution",
+      "method": "post",
+      "names": [
+        "expectedRevision",
+        "institutionType"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/data-sources/org-team-a-ho-b-source/institution",
+      "method": "post",
+      "names": [
+        "expectedRevision",
+        "institutionType"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/data-sources/org-team-a-ho-c-source/institution",
+      "method": "post",
+      "names": [
+        "expectedRevision",
+        "institutionType"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/data-sources/org-vaccine-repo/institution",
+      "method": "post",
+      "names": [
+        "expectedRevision",
+        "institutionType"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/data-sources/add",
+      "method": "post",
+      "names": [
+        "institutionType",
+        "name",
+        "endpoint",
+        "clientId",
+        "pcmClientAuthCertThumbprint",
+        "pcmClientAuthCertFile",
+        "pcmClientAuthKeyFile",
+        "generateCertificate",
+        "reusePcmClientCertForServerTrust",
+        "serverTrustMode",
+        "serverTrustCaCert",
+        "serverTrustCaFile",
+        "serverTrustCertThumbprint",
+        "serverTrustCertFile"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/security",
+      "method": "post",
+      "names": [
+        "adminForm",
+        "expectedRevision",
+        "dsGatewayToFhirServerCustomUrl"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/identity-mapping/remove",
+      "method": "post",
+      "names": [
+        "businessId"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/identity-mapping/remove",
+      "method": "post",
+      "names": [
+        "businessId"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/identity-mapping/add",
+      "method": "post",
+      "names": [
+        "businessId",
+        "internalId"
+      ],
+      "section": "sources"
+    },
+    {
+      "action": "/admin/config/simulation",
+      "method": "post",
+      "names": [
+        "completeControls",
+        "preset",
+        "control.publicClientMtls",
+        "control.serverCertificateVerification",
+        "control.clientAssertionSignature",
+        "control.clientAssertionAudience",
+        "control.clientAssertionReplay",
+        "control.clientAssertionExpiry",
+        "perSourceJson"
+      ],
+      "section": "security"
+    },
+    {
+      "action": "/admin/config/own-token-introspection",
+      "method": "post",
+      "names": [
+        "allowServiceProviderOwnTokenIntrospection"
+      ],
+      "section": "security"
+    },
+    {
+      "action": "/admin/config/security",
+      "method": "post",
+      "names": [
+        "adminForm",
+        "expectedRevision",
+        "dsGatewayToFhirServerCustomUrl",
+        "pcmApiClientAuth",
+        "pcmApiClientAuth",
+        "dataSourceGatewayClientAuth",
+        "dataSourceGatewayClientAuth",
+        "dsGatewayToFhirServerProtocol",
+        "dsGatewayToFhirServerProtocol",
+        "spDsVerifyServerCertificate",
+        "spDsVerifyServerCertificate",
+        "dsGatewayToFhirServerVerifyServerCertificate",
+        "dsGatewayToFhirServerVerifyServerCertificate",
+        "dsFhirServerEnforceMappedPatients",
+        "dsFhirServerEnforceMappedPatients",
+        "accessTokenExpiresInSeconds"
+      ],
+      "section": "security"
+    },
+    {
+      "action": "/admin/certs/regenerate",
+      "method": "post",
+      "names": [],
+      "section": "certificates"
+    },
+    {
+      "action": "/admin/logs/clear",
+      "method": "post",
+      "names": [],
+      "section": "logs"
+    },
+    {
+      "action": "/admin/sanity-check",
+      "method": "post",
+      "names": [],
+      "section": "logs"
+    },
+    {
+      "action": "/admin/migration/checkpoint",
+      "method": "post",
+      "names": [],
+      "section": "maintenance"
+    },
+    {
+      "action": "/admin/reset",
+      "method": "post",
+      "names": [],
+      "section": "maintenance"
+    },
+    {
+      "action": "/admin/restore",
+      "method": "post",
+      "names": [
+        "backupJson"
+      ],
+      "section": "maintenance"
+    }
+  ],
+  "intentional": "Existing combined security form split between Security and legacy Sources, sharing its old endpoint; server preserves non-owned fields and checks revision. Retired allowAnyTokenResource pseudo-editor removed; backend continues rejection."
+}
